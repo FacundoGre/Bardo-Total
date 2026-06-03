@@ -43,6 +43,7 @@ async function simularCombateVisual(jugadorA, jugadorB) {
     registrar(`⚡ ${atacante.nombre} toma la iniciativa.`, 'sistema', 1000);
 
     // BUCLE MATEMÁTICO (Sin await, termina en 1 milisegundo)
+    // BUCLE MATEMÁTICO DATA-DRIVEN (Con Hooks, sin awaits, para la cinta de reproducción)
     while (clonA.vidaActual > 0 && clonB.vidaActual > 0) {
         let tipoAtacante = (atacante === clonA) ? 'jugador' : 'enemigo';
         let tipoDefensor = (defensor === clonA) ? 'jugador' : 'enemigo';
@@ -62,9 +63,12 @@ async function simularCombateVisual(jugadorA, jugadorB) {
             mensajeTurno += `💨 ¡Pero falla!`; 
         } else {
             let dañoBruto = atacante.calcularDaño();
-            if (atacante.pasivas.includes('berserker') && atacante.vidaActual <= 25) {
-                dañoBruto = Math.floor(dañoBruto * 1.5); mensajeTurno += `<span style="color:#ff3333; font-weight:bold;">😡 ¡MODO BERSERKER!</span><br>`;
-            }
+            
+            // 🌟 HOOK: Modificar Daño Bruto (Ej: Berserker)
+            let logsExtraAtaque = [];
+            dañoBruto = atacante.ejecutarHookRetorno('modificarDañoBruto', dañoBruto, logsExtraAtaque);
+            if (logsExtraAtaque.length > 0) mensajeTurno += logsExtraAtaque.join("");
+
             if (atacante.esCritico()) { dañoBruto = Math.floor(dañoBruto * 1.5); mensajeTurno += `<span style="color:gold;">💥 ¡CRÍTICO!</span><br>`; }
 
             let dañoFinal = dañoBruto;
@@ -76,20 +80,22 @@ async function simularCombateVisual(jugadorA, jugadorB) {
             defensor.vidaActual -= dañoFinal; if (defensor.vidaActual < 0) defensor.vidaActual = 0;
             mensajeTurno += `🩸 Impacto de <strong>${dañoFinal}</strong> daño.`;
 
-            if (defensor.pasivas.includes('espinas') && dañoFinal > 0) {
-                atacante.vidaActual -= 3; if (atacante.vidaActual < 0) atacante.vidaActual = 0;
-                mensajeTurno += `<br>🌵 ¡${atacante.nombre} se pincha con espinas por 3 dmg!`;
+            // 🌟 HOOKS: Reacción al daño (Ej: Vampirismo, Espinas)
+            let logsEfectosDeDaño = [];
+            defensor.ejecutarHookAccion('alRecibirDaño', dañoFinal, atacante, logsEfectosDeDaño);
+            atacante.ejecutarHookAccion('alHacerDaño', dañoFinal, defensor, logsEfectosDeDaño);
+            if (logsEfectosDeDaño.length > 0) {
+                mensajeTurno += logsEfectosDeDaño.join("");
             }
-            if (atacante.pasivas.includes('vampirismo') && dañoFinal > 0 && atacante.vidaActual > 0) {
-                let cura = Math.max(1, Math.floor(dañoFinal * 0.3)); atacante.vidaActual = Math.min(atacante.vidaMaxima, atacante.vidaActual + cura);
-                mensajeTurno += `<br>🧛‍♂️ Absorbe ${cura} HP!`;
-            }
+
+            // Aplicar Efectos de Estado
             if (atacante.armaEquipada && atacante.armaEquipada.efecto && atacante.vidaActual > 0) {
-                if (defensor.pasivas.includes('sangre_fria')) {
-                    mensajeTurno += `<br>❄️ ¡Sangre Fría inmuniza a ${defensor.nombre} contra el efecto de ${atacante.armaEquipada.efecto.tipo}!`;
+                // 🌟 HOOK: Inmunidades (Ej: Sangre Fría)
+                if (defensor.ejecutarHookRetorno('esInmuneEstados', false)) {
+                    mensajeTurno += `<br>❄️ ¡La pasiva de ${defensor.nombre} bloquea el efecto de ${atacante.armaEquipada.efecto.tipo}!`;
                 } else {
                     defensor.estados.push({ ...atacante.armaEquipada.efecto });
-                    let ic = atacante.armaEquipada.efecto.tipo === 'veneno' ? '☠️' : '🔥';
+                    let ic = atacante.armaEquipada.efecto.tipo === 'veneno' ? '☠️' : atacante.armaEquipada.efecto.tipo === 'sangrado' ? '🩸' : '🌀';
                     mensajeTurno += `<br>${ic} Aplica ${atacante.armaEquipada.efecto.tipo}!`;
                 }
             }
@@ -98,9 +104,11 @@ async function simularCombateVisual(jugadorA, jugadorB) {
         registrar(mensajeTurno, tipoAtacante, 1200);
         if (defensor.vidaActual <= 0 || atacante.vidaActual <= 0) break; 
 
-        if (defensor.vidaActual > 0 && defensor.pasivas.includes('contraataque') && Math.random() <= 0.25) {
-            let dañoContra = Math.max(1, Math.floor(defensor.fuerza * 0.8)); atacante.vidaActual -= dañoContra; if (atacante.vidaActual < 0) atacante.vidaActual = 0;
-            registrar(`💢 ¡CONTRAATAQUE de ${defensor.nombre} por ${dañoContra} daño!`, tipoDefensor, 1200);
+        // 🌟 HOOK: Contraataques luego de sufrir un ataque
+        let logsContraataque = [];
+        defensor.ejecutarHookAccion('despuesDeSerAtacado', atacante, logsContraataque);
+        if (logsContraataque.length > 0) {
+            registrar(logsContraataque.join("<br>"), tipoDefensor, 1200);
             if (atacante.vidaActual <= 0) break;
         }
 
@@ -110,13 +118,17 @@ async function simularCombateVisual(jugadorA, jugadorB) {
             let dañoMascota = atacante.mascotaActiva.atacar(defensor);
             if (dañoMascota > 0) {
                 let msgMascota = `🐾 ${atacante.mascotaActiva.nombre} ataca por <strong>${dañoMascota}</strong> daño.`;
-                if (defensor.pasivas.includes('espinas')) {
-                    atacante.vidaActual -= 3; if (atacante.vidaActual < 0) atacante.vidaActual = 0;
-                    msgMascota += `<br>🌵 ¡Tu mascota se pincha con espinas! (-3 HP a ${atacante.nombre})`;
+                
+                // 🌟 HOOK: Defensa contra mascotas (Ej: Espinas vs Mascota)
+                let logsDefensaMascota = [];
+                defensor.ejecutarHookAccion('alRecibirDañoMascota', dañoMascota, atacante, logsDefensaMascota);
+                if (logsDefensaMascota.length > 0) {
+                    msgMascota += logsDefensaMascota.join("");
                 }
                 registrar(msgMascota, (tipoAtacante === 'jugador' ? 'mascota' : 'enemigo'), 1000);
             }
             else registrar(`💨 ${atacante.mascotaActiva.nombre} ataca, pero falla.`, (tipoAtacante === 'jugador' ? 'mascota' : 'enemigo'), 1000);
+            
             if (defensor.vidaActual <= 0 || atacante.vidaActual <= 0) break;
         }
 

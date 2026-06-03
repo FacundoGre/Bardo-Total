@@ -105,7 +105,14 @@ export function renderizarArmario(jugador) {
         div.innerHTML = "<p style='color:#555; width:100%; text-align:center;'>No tienes nada. Gana oro en la arena.</p>"; return;
     }
     
-    jugador.inventario.forEach((arma) => {
+    // ==========================================
+    // 🗡️ ARMAS
+    // ==========================================
+    jugador.inventario.forEach((armaGuardada) => {
+        // Buscamos la versión OFICIAL del arma en motor.js
+        const arma = Object.values(Arsenal).find(a => a.nombre === armaGuardada.nombre);
+        if (!arma) return; // Si la borraste del juego, ni la muestra
+
         const equipada = jugador.armaEquipada?.nombre === arma.nombre;
         const btn = document.createElement("button");
         btn.className = equipada ? "btn-accion btn-campeon" : "btn-accion";
@@ -114,50 +121,71 @@ export function renderizarArmario(jugador) {
         let textoHover = `<strong style="color:gold;">${arma.nombre}</strong><br>⚔️ Daño: +${arma.bonoDaño}<br>🏃 Agilidad: -${arma.penalidadAgilidad}`;
         if(arma.efecto) textoHover += `<br><span style="color:#ff4757;">✨ Efecto: ${arma.efecto.tipo.toUpperCase()}</span>`;
         
-        // 👇 USAMOS EL NUEVO MOTOR GLOBAL
         btn.setAttribute("data-tooltip", textoHover);
 
         btn.onclick = async () => {
+            // Equipamos la versión OFICIAL (arma), no la desactualizada (armaGuardada)
             jugador.armaEquipada = equipada ? null : arma;
             await guardarProgresoDB(jugador); 
             renderizarMiHub(jugador); 
             renderizarArmario(jugador);
             
-            // 👇 Oculta el tooltip nuevo al hacer click para que no quede flotando
-            const tooltipJuego = document.getElementById("tooltip-juego");
+            const tooltipJuego = document.getElementById("custom-tooltip");
             if(tooltipJuego) tooltipJuego.style.display = "none"; 
         };
         div.appendChild(btn);
     });
     
-    jugador.armaduras.forEach((armadura) => {
+    // ==========================================
+    // 🛡️ ARMADURAS
+    // ==========================================
+    jugador.armaduras.forEach((armaduraGuardada) => {
+        const armadura = Object.values(Armeria).find(a => a.nombre === armaduraGuardada.nombre);
+        if (!armadura) return;
+
         const equipada = jugador.armaduraEquipada?.nombre === armadura.nombre;
         const btn = document.createElement("button");
         btn.className = equipada ? "btn-accion btn-campeon" : "btn-accion";
         btn.innerText = `🛡️ ${armadura.nombre}`;
         
-        asignarTooltipPersonalizado(btn, `<strong style="color:gold;">${armadura.nombre}</strong><br>🛡️ Defensa: ${armadura.mitigacion*100}% absorción<br>🏃 Agilidad: -${armadura.penalidadAgilidad}`);
+        let textoHover = `<strong style="color:gold;">${armadura.nombre}</strong><br>🛡️ Defensa: ${armadura.mitigacion*100}% absorción<br>🏃 Agilidad: -${armadura.penalidadAgilidad}`;
+        btn.setAttribute("data-tooltip", textoHover);
         
         btn.onclick = async () => {
             jugador.armaduraEquipada = equipada ? null : armadura;
-            await guardarProgresoDB(jugador); renderizarMiHub(jugador); renderizarArmario(jugador);
-            document.getElementById("custom-tooltip").style.display = "none";
+            await guardarProgresoDB(jugador); 
+            renderizarMiHub(jugador); 
+            renderizarArmario(jugador);
+            
+            const tooltipJuego = document.getElementById("custom-tooltip");
+            if(tooltipJuego) tooltipJuego.style.display = "none";
         };
         div.appendChild(btn);
     });
 
-    jugador.mascotas.forEach((mascota) => {
+    // ==========================================
+    // 🐺 MASCOTAS
+    // ==========================================
+    jugador.mascotas.forEach((mascotaGuardada) => {
+        const mascota = Object.values(Bestiario).find(m => m.nombre === mascotaGuardada.nombre);
+        if (!mascota) return;
+
         const equipada = jugador.mascotaActiva?.nombre === mascota.nombre;
         const btn = document.createElement("button");
         btn.className = equipada ? "btn-accion btn-campeon" : "btn-accion";
         btn.innerText = `🐺 ${mascota.nombre}`;
         
-        asignarTooltipPersonalizado(btn, `<strong style="color:gold;">${mascota.nombre}</strong><br>🐾 Daño Base: ${mascota.fuerza}<br>⚡ Agilidad de ataque: ${mascota.agilidad}`);
+        let textoHover = `<strong style="color:gold;">${mascota.nombre}</strong><br>🐾 Daño Base: ${mascota.fuerza}<br>⚡ Agilidad de ataque: ${mascota.agilidad}`;
+        btn.setAttribute("data-tooltip", textoHover);
         
         btn.onclick = async () => {
             jugador.mascotaActiva = equipada ? null : mascota;
-            await guardarProgresoDB(jugador); renderizarMiHub(jugador); renderizarArmario(jugador);
-            document.getElementById("custom-tooltip").style.display = "none";
+            await guardarProgresoDB(jugador); 
+            renderizarMiHub(jugador); 
+            renderizarArmario(jugador);
+            
+            const tooltipJuego = document.getElementById("custom-tooltip");
+            if(tooltipJuego) tooltipJuego.style.display = "none";
         };
         div.appendChild(btn);
     });

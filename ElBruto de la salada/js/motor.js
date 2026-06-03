@@ -42,10 +42,10 @@ export const Bestiario = {
     halcon: new Mascota("Halcón Peregrino", 3, 30, 600),
     chancho: new Mascota("Chancho Encerado", 1, 45, 500),
     tigre: new Mascota("Tigre Dientes de Sable", 14, 10, 1500),
-    diablo: new Mascota("Diablito de Avellaneda", 15, 25, 2000),
+    diablo: new Mascota("Diablo Viejo", 15, 25, 2000),
     carnotaurus: new Mascota("Carnotaurus", 18, 20, 2200),
     patagotitan: new Mascota("Cría de Patagotitan", 22, 2, 2500),
-    zorro: new Mascota("Zorro de Udaondo", 8, 18, 900)
+    zorro: new Mascota("Zorro de Udaondo", 8, 18, 900),
 };
 
 export const Armeria = {
@@ -58,38 +58,160 @@ export const Armeria = {
     aerodinamico: new Armadura("Alerón de Fibra de Carbono", 0.30, -5, 2500),
     juggernaut: new Armadura("Armadura Juggernaut", 0.65, 15, 3000),
     burbuja: new Armadura("Escudo de Burbujas Y2K", 0.50, 4, 1800),
-    corazaAmarga: new Armadura("Coraza de Amargasaurus", 0.35, 2, 1400)
+    corazaAmarga: new Armadura("Coraza de Amargasaurus", 0.35, 2, 1400),
 };
 
 export const Arsenal = {
     daga: new Arma("Daga Oculta", 4, 0, null, 150),
     espada: new Arma("Espada Corta", 8, 2, null, 300),
     mazo: new Arma("Mazo de Hierro", 15, 6, null, 600),
-    lanza: new Arma("Lanza de Caballería", 12, 4, null, 800),
+    
+    // 🌟 ARMA CON HOOK: Lanza + Cualquier mascota
+    lanza: Object.assign(new Arma("Lanza de Caballería", 12, 4, null, 800), {
+        modificarDañoBruto: (luchador, dañoBase, logs) => {
+            if (luchador.mascotaActiva) {
+                logs.push(` <span style="color:#aaa;">¡Carga de Caballería! (+6 dmg)</span>`);
+                return dañoBase + 6;
+            }
+            return dañoBase;
+        }
+    }),
+
     garra: new Arma("Garra Jurásica", 11, 3, null, 900),
     hacha: new Arma("Hacha de Verdugo", 20, 10, null, 1200),
     sierra: new Arma("Sierra Dentada", 7, 3, { tipo: 'sangrado', dañoTurno: 3, turnos: 5 }, 1800),
     cable: new Arma("Cable MIDI de 5 Patitas", 5, 0, { tipo: 'locura', dañoTurno: 5, turnos: 3 }, 800),
     criptex: new Arma("Criptex de Da Vinci", 8, 2, null, 1000),
-    teclado: new Arma("Yamaha PSR-E323", 18, 8, null, 1500),
+    
+    // 🌟 ARMA CON HOOK: Teclado (50% chance de meter un acorde letal)
+    teclado: Object.assign(new Arma("Yamaha PSR-E323", 18, 8, null, 1500), {
+        modificarDañoBruto: (luchador, dañoBase, logs) => {
+            if (Math.random() > 0.5) {
+                logs.push(` <span style="color:#00e5ff;">¡Acorde Perfecto! (+5 dmg)</span>`);
+                return dañoBase + 5;
+            }
+            return dañoBase;
+        }
+    }),
+
     latigo: new Arma("Látigo Ígneo", 6, 1, { tipo: 'quemadura', dañoTurno: 4, turnos: 3 }, 1500),
     cuchillo: new Arma("Cuchillo Ponzoñoso", 5, 0, { tipo: 'veneno', dañoTurno: 5, turnos: 4 }, 1500),
-    caliz: new Arma("Cáliz del Primer Monarca", 10, 4, null, 1967),
+    
+    // 🌟 ARMA CON HOOK: Cáliz + Carnotaurus (Chau Independiente, hola dinosaurios)
+    caliz: Object.assign(new Arma("Cáliz del Primer Monarca", 10, 4, null, 1967), {
+        modificarDañoBruto: (luchador, dañoBase, logs) => {
+            if (luchador.mascotaActiva && luchador.mascotaActiva.nombre === "Carnotaurus") {
+                luchador.vidaActual = Math.max(0, luchador.vidaActual - 2);
+                logs.push(` <span style="color:#ff3333;">🩸 Sacrificio de sangre... (-2 HP, +10 Daño)</span>`);
+                return dañoBase + 10;
+            }
+            return dañoBase;
+        }
+    }),
+
     codice: new Arma("Códice Críptico", 2, 1, { tipo: 'locura', dañoTurno: 8, turnos: 2 }, 2500),
-    rama: new Arma("Tronco de Parque Leloir", 14, 5, null, 400),
+    
+    // 🌟 ARMA CON HOOK: Tronco + Zorro
+    rama: Object.assign(new Arma("Tronco de Parque Leloir", 14, 5, null, 400), {
+        modificarDañoBruto: (luchador, dañoBase, logs) => {
+            if (luchador.mascotaActiva && luchador.mascotaActiva.nombre === "Zorro de Udaondo") {
+                logs.push(` <span style="color:#2ecc71;">🍃 ¡Sinergia del Bosque! (+5 dmg)</span>`);
+                return dañoBase + 5;
+            }
+            return dañoBase;
+        }
+    }),
+
     orbe: new Arma("Orbe Frutiger Aero", 7, 0, null, 1100),
-    figura: new Arma("Figura de Porcelana", 9, 1, { tipo: 'maldicion', dañoTurno: 2, turnos: 10 }, 1600)
+    figura: new Arma("Figura de Porcelana", 9, 1, { tipo: 'maldicion', dañoTurno: 2, turnos: 10 }, 1600),
+
 };
 
 export const PasivasDisponibles = {
-    vampirismo: { id: "vampirismo", nombre: "Vampirismo", desc: "Cura un 30% del daño infligido" },
-    contraataque: { id: "contraataque", nombre: "Contraataque", desc: "25% de devolver el golpe al ser atacado" },
-    furia: { id: "furia", nombre: "Furia Berserker", desc: "Aumenta el daño a medida que baja la salud" },
-    evasion: { id: "evasion", nombre: "Paso Fantasma", desc: "+15% permanente a la evasión" },
-    aireSucio: { id: "aireSucio", nombre: "Estela de Aire Sucio", desc: "Genera turbulencia. Corta la aerodinámica del rival" },
-    correo: { id: "correo", nombre: "Correo Líquido", desc: "Te vuelves tan escurridizo como un mail temporal" },
-    efectoSuelo: { id: "efectoSuelo", nombre: "Efecto Suelo", desc: "Tu armadura pesada te da agarre en lugar de frenarte" },
-    sync: { id: "firebase", nombre: "Sync Realtime", desc: "La nube te regenera 2 HP al final de cada turno" }
+    vampirismo: { 
+        id: "vampirismo", nombre: "Vampirismo", desc: "Cura un 30% del daño infligido",
+        alHacerDaño: (luchador, dañoFinal, defensor, logs) => {
+            if (dañoFinal > 0 && luchador.vidaActual > 0) {
+                let cura = Math.max(1, Math.floor(dañoFinal * 0.3)); 
+                luchador.vidaActual = Math.min(luchador.vidaMaxima, luchador.vidaActual + cura);
+                logs.push(`<br>🧛‍♂️ Absorbe ${cura} HP!`);
+            }
+        }
+    },
+    contraataque: { 
+        id: "contraataque", nombre: "Contraataque", desc: "25% de devolver el golpe al ser atacado",
+        despuesDeSerAtacado: (luchador, atacante, logs) => {
+            if (luchador.vidaActual > 0 && Math.random() <= 0.25) {
+                let dañoContra = Math.max(1, Math.floor(luchador.fuerza * 0.8)); 
+                atacante.vidaActual -= dañoContra; 
+                if (atacante.vidaActual < 0) atacante.vidaActual = 0;
+                logs.push(`💢 ¡CONTRAATAQUE de ${luchador.nombre} por ${dañoContra} daño!`);
+            }
+        }
+    },
+    berserker: { 
+        id: "berserker", nombre: "Furia Berserker", desc: "Aumenta el daño un 50% si tu salud baja a 25 HP o menos",
+        modificarDañoBruto: (luchador, dañoBruto, logs) => {
+            if (luchador.vidaActual <= 25) {
+                logs.push(`<span style="color:#ff3333; font-weight:bold;">😡 ¡MODO BERSERKER!</span><br>`);
+                return Math.floor(dañoBruto * 1.5);
+            }
+            return dañoBruto;
+        }
+    },
+    evasion: { 
+        id: "evasion", nombre: "Paso Fantasma", desc: "+15% permanente a la evasión",
+        modificarChanceEvasion: (luchador, chanceRival) => chanceRival - 15 // Le resta 15% a la chance de impacto del rival
+    },
+    aireSucio: { 
+        id: "aireSucio", nombre: "Estela de Aire Sucio", desc: "Corta la aerodinámica del rival",
+        modificarAgilidadRival: (luchador, agiRival) => {
+            let reduccion = (luchador.armaduraEquipada && luchador.armaduraEquipada.nombre === "Alerón de Fibra de Carbono") ? 0.75 : 0.9;
+            return Math.floor(agiRival * reduccion);
+        }
+    },
+    correo: { 
+        id: "correo", nombre: "Correo Líquido", desc: "Te vuelves tan escurridizo como un mail temporal",
+        modificarVelocidad: (luchador, vel) => vel + 5,
+        modificarAgilidad: (luchador, agi) => agi + 3
+    },
+    efectoSuelo: { 
+        id: "efectoSuelo", nombre: "Efecto Suelo", desc: "Tu armadura pesada te da agarre en lugar de frenarte",
+        modificarAgilidad: (luchador, agi) => {
+            if (luchador.armaduraEquipada && luchador.armaduraEquipada.penalidadAgilidad > 0) {
+                // Sumamos la penalidad para anularla, y le sumamos un 50% extra de bonus
+                return agi + luchador.armaduraEquipada.penalidadAgilidad + Math.floor(luchador.armaduraEquipada.penalidadAgilidad / 2);
+            }
+            return agi;
+        }
+    },
+    firebase: { 
+        id: "firebase", nombre: "Sync Realtime", desc: "La nube te regenera 2 HP al principio de tu turno",
+        alInicioTurno: (luchador, logs) => {
+            luchador.vidaActual = Math.min(luchador.vidaMaxima, luchador.vidaActual + 2);
+        }
+    },
+    espinas: { 
+        id: "espinas", nombre: "Piel de Espinas", desc: "Devuelve 3 de daño al atacante cada vez que te golpean",
+        alRecibirDaño: (luchador, dañoFinal, atacante, logs) => {
+            if (dañoFinal > 0) {
+                atacante.vidaActual -= 3; 
+                if (atacante.vidaActual < 0) atacante.vidaActual = 0;
+                logs.push(`<br>🌵 ¡${atacante.nombre} se pincha con espinas por 3 dmg!`);
+            }
+        },
+        alRecibirDañoMascota: (luchador, dañoFinal, atacante, logs) => {
+            if (dañoFinal > 0) {
+                atacante.vidaActual -= 3; 
+                if (atacante.vidaActual < 0) atacante.vidaActual = 0;
+                logs.push(`<br>🌵 ¡Tu mascota se pincha con espinas! (-3 HP a ${atacante.nombre})`);
+            }
+        }
+    },
+    sangre_fria: { 
+        id: "sangre_fria", nombre: "Sangre Fría", desc: "Inmunidad total a los efectos de estado",
+        esInmuneEstados: (luchador, inmune) => true
+    }
 };
 
 // ==========================================
@@ -186,7 +308,7 @@ export class Luchador {
         this.buffPartidas = buffPartidas;
         this.intentosJefe = intentosJefe;
         this.fechaUltimoIntento = fechaUltimoIntento;
-        // 1. En tu constructor (dejalo en 0):
+        
         this.eloAnterior = null;
         this.divisionAnterior = null;
         this.timestampUltimaPelea = 0;
@@ -204,9 +326,61 @@ export class Luchador {
 
     static random(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
+    // ==========================================
+    // 🎯 MOTOR DE HOOKS (Eventos Data-Driven)
+    // ==========================================
+    ejecutarHookRetorno(nombreHook, valorInicial, ...args) {
+        let resultado = valorInicial;
+        
+        // 1. Revisar pasivas
+        this.pasivas.forEach(pId => {
+            let pasiva = PasivasDisponibles[pId];
+            if (pasiva && pasiva[nombreHook]) resultado = pasiva[nombreHook](this, resultado, ...args);
+        });
+
+        // 2. Revisar Equipamiento Activo
+        let arma = this.obtenerArmaOficial();
+        if (arma && arma[nombreHook]) resultado = arma[nombreHook](this, resultado, ...args);
+
+        let armadura = this.obtenerArmaduraOficial();
+        if (armadura && armadura[nombreHook]) resultado = armadura[nombreHook](this, resultado, ...args);
+
+        return resultado;
+    }
+
+    ejecutarHookAccion(nombreHook, ...args) {
+        this.pasivas.forEach(pId => {
+            let pasiva = PasivasDisponibles[pId];
+            if (pasiva && pasiva[nombreHook]) pasiva[nombreHook](this, ...args);
+        });
+
+        let arma = this.obtenerArmaOficial();
+        if (arma && arma[nombreHook]) arma[nombreHook](this, ...args);
+    }
+
+    // ==========================================
+    // 🔍 BUSCADORES DE STATS OFICIALES
+    // ==========================================
+    obtenerArmaOficial() {
+        if (!this.armaEquipada) return null;
+        return Object.values(Arsenal).find(a => a.nombre === this.armaEquipada.nombre) || null;
+    }
+
+    obtenerArmaduraOficial() {
+        if (!this.armaduraEquipada) return null;
+        return Object.values(Armeria).find(a => a.nombre === this.armaduraEquipada.nombre) || null;
+    }
+
+    obtenerMascotaOficial() {
+        if (!this.mascotaActiva) return null;
+        return Object.values(Bestiario).find(m => m.nombre === this.mascotaActiva.nombre) || null;
+    }
+
+    // ==========================================
+    // MÉTODO DE COMBATE (Con Hooks integrados)
+    // ==========================================
     calcularIniciativa() {
-        let velReal = this.velocidad;
-        if (this.pasivas.includes('correo')) velReal += 5;
+        let velReal = this.ejecutarHookRetorno('modificarVelocidad', this.velocidad);
         return velReal + Luchador.random(1, 20);
     }
 
@@ -220,28 +394,25 @@ export class Luchador {
 
     obtenerAgilidadActual() {
         let agilidadReal = this.agilidadBase;
+        
+        let armaOficial = this.obtenerArmaOficial();
+        let armaduraOficial = this.obtenerArmaduraOficial();
 
-        if (this.armaEquipada) agilidadReal -= this.armaEquipada.penalidadAgilidad;
+        if (armaOficial) agilidadReal -= armaOficial.penalidadAgilidad;
+        if (armaduraOficial) agilidadReal -= armaduraOficial.penalidadAgilidad; 
 
-        if (this.armaduraEquipada) {
-            if (this.pasivas.includes('efectoSuelo') && this.armaduraEquipada.penalidadAgilidad > 0) {
-                agilidadReal += Math.floor(this.armaduraEquipada.penalidadAgilidad / 2);
-            } else {
-                agilidadReal -= this.armaduraEquipada.penalidadAgilidad;
-            }
-        }
-
-        if (this.armaEquipada && this.armaEquipada.nombre === "Daga Oculta" &&
-            this.armaduraEquipada && this.armaduraEquipada.nombre === "Túnica de Sombras") {
+        // 👉 TUS COMBOS DE ITEMS (Ahora validando que existan oficialmente)
+        if (armaOficial && armaOficial.nombre === "Daga Oculta" &&
+            armaduraOficial && armaduraOficial.nombre === "Túnica de Sombras") {
             agilidadReal += 8;
         }
-
-        if (this.armaEquipada && this.armaEquipada.nombre === "Orbe Frutiger Aero" &&
-            this.armaduraEquipada && this.armaduraEquipada.nombre === "Escudo de Burbujas Y2K") {
+        if (armaOficial && armaOficial.nombre === "Orbe Frutiger Aero" &&
+            armaduraOficial && armaduraOficial.nombre === "Escudo de Burbujas Y2K") {
             agilidadReal += 12;
         }
 
-        if (this.pasivas.includes('correo')) agilidadReal += 3;
+        // 🌟 HOOK: Modificar Agilidad
+        agilidadReal = this.ejecutarHookRetorno('modificarAgilidad', agilidadReal);
 
         return Math.max(1, agilidadReal);
     }
@@ -249,21 +420,25 @@ export class Luchador {
     golpea(defensor) {
         let agilidadRival = defensor.obtenerAgilidadActual();
 
-        if (this.pasivas.includes('aireSucio')) {
-            let reduccion = 0.9;
-            if (this.armaduraEquipada && this.armaduraEquipada.nombre === "Alerón de Fibra de Carbono") {
-                reduccion = 0.75;
-            }
-            agilidadRival = Math.floor(agilidadRival * reduccion);
-        }
+        // 🌟 HOOK: El atacante modifica la agilidad del rival
+        agilidadRival = this.ejecutarHookRetorno('modificarAgilidadRival', agilidadRival);
 
         let chance = (this.obtenerAgilidadActual() / (this.obtenerAgilidadActual() + agilidadRival)) * 100;
-        return Luchador.random(1, 100) <= Math.max(20, Math.min(90, chance));
+        chance = Math.max(20, Math.min(90, chance));
+
+        // 🌟 HOOK: El defensor modifica su chance de ser evadido
+        chance = defensor.ejecutarHookRetorno('modificarChanceEvasion', chance);
+
+        return Luchador.random(1, 100) <= chance;
     }
 
     esCritico() {
-        if (this.armaduraEquipada && this.armaduraEquipada.nombre === "Sábana de Medjed" &&
-            this.armaEquipada && this.armaEquipada.nombre === "Códice Críptico") {
+        let armaOficial = this.obtenerArmaOficial();
+        let armaduraOficial = this.obtenerArmaduraOficial();
+
+        // 👉 TUS COMBOS
+        if (armaduraOficial && armaduraOficial.nombre === "Sábana de Medjed" &&
+            armaOficial && armaOficial.nombre === "Códice Críptico") {
             return Luchador.random(1, 100) <= 80;
         }
 
@@ -273,29 +448,12 @@ export class Luchador {
 
     calcularDaño() {
         let daño = this.fuerza + Luchador.random(1, 5);
-        if (this.armaEquipada) {
-            daño += this.armaEquipada.bonoDaño;
+        let armaOficial = this.obtenerArmaOficial();
 
-            if (this.armaEquipada.nombre === "Lanza de Caballería" && this.mascotaActiva) {
-                daño += 6;
-            }
-
-            if (this.armaEquipada.nombre === "Tronco de Parque Leloir" &&
-                this.mascotaActiva && this.mascotaActiva.nombre === "Zorro de Udaondo") {
-                daño += 5;
-            }
-
-            if (this.armaEquipada.nombre === "Yamaha PSR-E323") {
-                if (Luchador.random(1, 100) > 50) daño += 5;
-            }
-
-            if (this.armaEquipada.nombre === "Cáliz del Primer Monarca" &&
-                this.mascotaActiva && this.mascotaActiva.nombre === "Diablito de Avellaneda") {
-                daño += 10;
-                this.vidaActual -= 2;
-                if (this.vidaActual < 0) this.vidaActual = 0;
-            }
+        if (armaOficial) {
+            daño += armaOficial.bonoDaño;
         }
+        
         return daño;
     }
 
@@ -314,9 +472,8 @@ export class Luchador {
     procesarEstados() {
         let logs = [];
 
-        if (this.pasivas.includes('firebase')) {
-            this.vidaActual = Math.min(this.vidaMaxima, this.vidaActual + 2);
-        }
+        // 🌟 HOOK: Efectos que pasan al inicio del turno
+        this.ejecutarHookAccion('alInicioTurno', logs);
 
         for (let i = this.estados.length - 1; i >= 0; i--) {
             let estado = this.estados[i];
@@ -333,23 +490,44 @@ export class Luchador {
         } return logs;
     }
 
-    // 2. Reemplazá TODA la función paraGuardar() por esta:
     paraGuardar() {
         return {
             nombre: this.nombre, vidaMaxima: this.vidaMaxima, fuerza: this.fuerza, agilidad: this.agilidadBase, velocidad: this.velocidad,
-            inventario: this.inventario.map(a => ({ nombre: a.nombre, bonoDaño: a.bonoDaño, penalidadAgilidad: a.penalidadAgilidad, efecto: a.efecto ? { ...a.efecto } : null, precio: a.precio })),
-            armaduras: this.armaduras.map(a => ({ nombre: a.nombre, mitigacion: a.mitigacion, penalidadAgilidad: a.penalidadAgilidad, precio: a.precio })),
-            mascotas: this.mascotas.map(m => ({ nombre: m.nombre, fuerza: m.fuerza, agilidad: m.agilidad, precio: m.precio })),
-            armaduraEquipada: this.armaduraEquipada ? { nombre: this.armaduraEquipada.nombre, mitigacion: this.armaduraEquipada.mitigacion, penalidadAgilidad: this.armaduraEquipada.penalidadAgilidad, precio: this.armaduraEquipada.precio } : null,
-            armaEquipada: this.armaEquipada ? { nombre: this.armaEquipada.nombre, bonoDaño: this.armaEquipada.bonoDaño, penalidadAgilidad: this.armaEquipada.penalidadAgilidad, efecto: this.armaEquipada.efecto ? { ...this.armaEquipada.efecto } : null, precio: this.armaEquipada.precio } : null,
-            mascotaActiva: this.mascotaActiva ? { nombre: this.mascotaActiva.nombre, fuerza: this.mascotaActiva.fuerza, agilidad: this.mascotaActiva.agilidad, precio: this.mascotaActiva.precio } : null,
+            
+            // 🧹 LIMPIEZA AUTOMÁTICA Y SINCRONIZACIÓN DE ARMAS
+            inventario: this.inventario
+                .filter(a => Object.values(Arsenal).some(oficial => oficial.nombre === a.nombre)) // Filtra las borradas (Chau Orto Intenso)
+                .map(a => {
+                    let oficial = Object.values(Arsenal).find(o => o.nombre === a.nombre);
+                    return { nombre: oficial.nombre, bonoDaño: oficial.bonoDaño, penalidadAgilidad: oficial.penalidadAgilidad, efecto: oficial.efecto ? { ...oficial.efecto } : null, precio: oficial.precio };
+                }), // 👈 Guarda con las stats actualizadas de motor.js
+                
+            // 🧹 LIMPIEZA AUTOMÁTICA Y SINCRONIZACIÓN DE ARMADURAS
+            armaduras: this.armaduras
+                .filter(a => Object.values(Armeria).some(oficial => oficial.nombre === a.nombre))
+                .map(a => {
+                    let oficial = Object.values(Armeria).find(o => o.nombre === a.nombre);
+                    return { nombre: oficial.nombre, mitigacion: oficial.mitigacion, penalidadAgilidad: oficial.penalidadAgilidad, precio: oficial.precio };
+                }),
+                
+            // 🧹 LIMPIEZA AUTOMÁTICA Y SINCRONIZACIÓN DE MASCOTAS
+            mascotas: this.mascotas
+                .filter(m => Object.values(Bestiario).some(oficial => oficial.nombre === m.nombre))
+                .map(m => {
+                    let oficial = Object.values(Bestiario).find(o => o.nombre === m.nombre);
+                    return { nombre: oficial.nombre, fuerza: oficial.fuerza, agilidad: oficial.agilidad, precio: oficial.precio };
+                }),
+                
+            // Equipamiento actual validado por los buscadores oficiales
+            armaduraEquipada: this.obtenerArmaduraOficial() ? { nombre: this.obtenerArmaduraOficial().nombre, mitigacion: this.obtenerArmaduraOficial().mitigacion, penalidadAgilidad: this.obtenerArmaduraOficial().penalidadAgilidad, precio: this.obtenerArmaduraOficial().precio } : null,
+            armaEquipada: this.obtenerArmaOficial() ? { nombre: this.obtenerArmaOficial().nombre, bonoDaño: this.obtenerArmaOficial().bonoDaño, penalidadAgilidad: this.obtenerArmaOficial().penalidadAgilidad, efecto: this.obtenerArmaOficial().efecto ? { ...this.obtenerArmaOficial().efecto } : null, precio: this.obtenerArmaOficial().precio } : null,
+            mascotaActiva: this.obtenerMascotaOficial() ? { nombre: this.obtenerMascotaOficial().nombre, fuerza: this.obtenerMascotaOficial().fuerza, agilidad: this.obtenerMascotaOficial().agilidad, precio: this.obtenerMascotaOficial().precio } : null,
+            
             pasivas: [...this.pasivas],
 
-            // 👇 Estadísticas completas
             estadisticas: { victorias: this.victorias, derrotas: this.derrotas, elo: this.elo, division: this.division, rachaActual: this.rachaActual, eloAnterior: this.eloAnterior, divisionAnterior: this.divisionAnterior },
             timestampUltimaPelea: this.timestampUltimaPelea,
 
-            // 👇 Recuperamos el Oro y XP que se habían perdido en el limbo
             oro: this.oro, xp: this.xp, nivel: this.nivel, puntosStat: this.puntosStat, buffPartidas: this.buffPartidas,
             intentosJefe: this.intentosJefe, fechaUltimoIntento: this.fechaUltimoIntento, cosmeticos: this.cosmeticos, logros: this.logros,
             avatar: this.avatar, fechaCreacion: new Date().toISOString()

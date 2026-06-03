@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>⚒️ BardoTotal Engine 3.0 - Dev Tool</title>
+    <style>
+        body { background: #080808; color: #ddd; font-family: 'Segoe UI', Tahoma, sans-serif; padding: 20px; margin: 0; }
+        .header { text-align: center; color: #ff3333; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase; }
+        
+        .dashboard { display: flex; gap: 20px; max-width: 1300px; margin: 0 auto; align-items: flex-start; }
+        .col-izq { flex: 1.3; background: #111; border: 1px solid #333; border-radius: 8px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .col-der { flex: 1; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; }
+
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .tab { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 15px; cursor: pointer; border-radius: 4px 4px 0 0; font-weight: bold; flex: 1; text-align: center; transition: 0.2s; }
+        .tab:hover { background: #222; color: #fff; }
+        .tab.active { background: #ff3333; color: #fff; border-color: #ff3333; }
+
+        label { display: block; margin-top: 15px; color: #aaa; font-size: 0.85em; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+        input, select { background: #050505; color: #fff; border: 1px solid #444; padding: 10px; width: 100%; margin-top: 5px; box-sizing: border-box; font-family: monospace; font-size: 1.1em; border-radius: 4px; transition: 0.2s; }
+        input:focus, select:focus { outline: none; border-color: #ff3333; background: #111; }
+        
+        .seccion { display: none; background: #151515; padding: 15px; border-radius: 6px; border: 1px solid #222; }
+        .visible { display: block; }
+        .sub-panel { background: #0a0a0a; padding: 15px; border-left: 3px solid #ffaa00; margin-top: 10px; border-radius: 0 4px 4px 0; }
+        .sub-panel-custom { border-left-color: #00e5ff; }
+
+        .caja-preview { background: #111; border: 1px solid #333; border-top: 4px solid #ffaa00; border-radius: 8px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .caja-preview h3 { margin-top: 0; color: #aaa; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+        
+        #tooltip-in-game { background: rgba(10, 10, 10, 0.95); border: 1px solid #444; padding: 15px; border-radius: 6px; font-family: sans-serif; font-size: 1.1em; line-height: 1.5; color: #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.5); min-height: 80px; }
+        
+        textarea { width: 100%; height: 350px; background: #050505; color: #00e5ff; border: 1px solid #333; padding: 15px; box-sizing: border-box; font-family: monospace; font-size: 0.95em; resize: none; border-radius: 4px; line-height: 1.4; }
+        
+        button.btn-copiar { background: linear-gradient(180deg, #aa0000 0%, #660000 100%); color: #fff; border: 1px solid #ff3333; padding: 15px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; font-size: 1.1em; border-radius: 4px; transition: 0.2s; }
+        button.btn-copiar:hover { background: linear-gradient(180deg, #cc0000 0%, #880000 100%); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <h1 class="header">⚒️ BardoTotal Engine 3.0</h1>
+
+    <div class="dashboard">
+        
+        <div class="col-izq">
+            
+            <div class="tabs">
+                <button class="tab active" onclick="setTipo('arma', this)">⚔️ Arma</button>
+                <button class="tab" onclick="setTipo('armadura', this)">🛡️ Armadura</button>
+                <button class="tab" onclick="setTipo('mascota', this)">🐺 Mascota</button>
+                <button class="tab" onclick="setTipo('pasiva', this)">✨ Pasiva</button>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                <div style="flex: 1;"><label>ID Interno</label><input type="text" id="itemID" placeholder="ej: guadaña_almas"></div>
+                <div style="flex: 1;"><label>Nombre Público</label><input type="text" id="itemNombre" placeholder="ej: Guadaña de las Almas"></div>
+            </div>
+
+            <!-- SECCIÓN ARMAS -->
+            <div id="sec-arma" class="seccion visible">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;"><label>Fuerza (+)</label><input type="number" id="armaDano" value="10"></div>
+                    <div style="flex: 1;"><label>Agilidad (-)</label><input type="number" id="armaAgi" value="4"></div>
+                    <div style="flex: 1;"><label>Precio 💰</label><input type="number" id="armaPrecio" value="500"></div>
+                </div>
+                
+                <label>Efecto de Estado Mágico</label>
+                <select id="armaEfecto" onchange="toggleEfectos()">
+                    <option value="ninguno">Ninguno</option>
+                    <option value="sangrado">🩸 Sangrado</option>
+                    <option value="veneno">☠️ Veneno</option>
+                    <option value="quemadura">🔥 Quemadura</option>
+                    <option value="locura">🌀 Locura</option>
+                    <option value="maldicion">👻 Maldición</option>
+                    <option value="custom">✨ CREAR NUEVO EFECTO...</option>
+                </select>
+
+                <!-- Parámetros del Efecto -->
+                <div id="arma-efecto-params" class="sub-panel" style="display: none;">
+                    <div id="arma-efecto-custom-panel" style="display: none; margin-bottom: 15px;">
+                        <label>ID del Nuevo Efecto (ej: congelado, ceguera)</label>
+                        <input type="text" id="efectoCustomID" placeholder="congelado">
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 1;"><label>Daño por Turno</label><input type="number" id="efectoDano" value="3"></div>
+                        <div style="flex: 1;"><label>Duración (Turnos)</label><input type="number" id="efectoTurnos" value="3"></div>
+                    </div>
+                </div>
+
+                <!-- Constructor de Sinergias Visual -->
+                <label style="margin-top: 25px;">Sinergia del Arma (Hook)</label>
+                <select id="armaSinergiaModo" onchange="toggleSinergia()">
+                    <option value="ninguna">Sin Sinergia</option>
+                    <option value="esqueleto">🛠️ Código Libre (Esqueleto)</option>
+                    <option value="visual">🧩 Constructor Visual de Sinergia</option>
+                </select>
+
+                <div id="arma-sinergia-visual" class="sub-panel sub-panel-custom" style="display:none;">
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1.5;"><label>Condición requerida</label>
+                            <select id="aVisCond">
+                                <option value="mascotaCualquiera">Cualquier Mascota Activa</option>
+                                <option value="mascotaEspecifica">Mascota Específica...</option>
+                                <option value="armaduraEspecifica">Armadura Específica...</option>
+                                <option value="vida25">Salud del Jugador <= 25 HP</option>
+                                <option value="chance50">50% Probabilidad al Atacar</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;" id="aVisTargetContainer"><label>Nombre Exacto (Target)</label>
+                            <input type="text" id="aVisTarget" placeholder="ej: Carnotaurus">
+                        </div>
+                        <div style="flex: 1;"><label>Bono de Daño</label>
+                            <input type="number" id="aVisBono" value="5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN ARMADURAS -->
+            <div id="sec-armadura" class="seccion">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;"><label>Mitigación (0.20 = 20%)</label><input type="number" step="0.05" id="armaduraMit" value="0.25"></div>
+                    <div style="flex: 1;"><label>Agilidad (-)</label><input type="number" id="armaduraAgi" value="5"></div>
+                    <div style="flex: 1;"><label>Precio 💰</label><input type="number" id="armaduraPrecio" value="800"></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN MASCOTAS -->
+            <div id="sec-mascota" class="seccion">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;"><label>Fuerza Base</label><input type="number" id="mascotaFuerza" value="12"></div>
+                    <div style="flex: 1;"><label>Agilidad Base</label><input type="number" id="mascotaAgi" value="10"></div>
+                    <div style="flex: 1;"><label>Precio 💰</label><input type="number" id="mascotaPrecio" value="1000"></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN PASIVAS -->
+            <div id="sec-pasiva" class="seccion">
+                <label>Descripción Visible</label>
+                <input type="text" id="pasivaDesc" placeholder="ej: Ignora la armadura del enemigo al atacar">
+                
+                <label>Constructor de Lógica</label>
+                <select id="pasivaModo" onchange="togglePasiva()">
+                    <option value="esqueleto">🛠️ Libre (Generar sólo esqueleto)</option>
+                    <option value="visual">🧩 Constructor Visual Avanzado</option>
+                </select>
+
+                <div id="pasiva-visual" class="sub-panel" style="display:none;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;"><label>Momento (Hook)</label>
+                            <select id="pVisHook">
+                                <optgroup label="Modificadores (Retornan Valor)">
+                                    <option value="modificarDañoBruto">Modificar Daño Bruto</option>
+                                    <option value="modificarChanceEvasion">Modificar Evasión</option>
+                                    <option value="modificarAgilidad">Modificar Agilidad Propia</option>
+                                    <option value="modificarAgilidadRival">Modificar Agilidad Rival</option>
+                                    <option value="modificarVelocidad">Modificar Iniciativa</option>
+                                    <option value="esInmuneEstados">Inmunidad a Estados (Devuelve true/false)</option>
+                                </optgroup>
+                                <optgroup label="Reacciones (Acciones directas)">
+                                    <option value="alHacerDaño">Al Hacer Daño al rival</option>
+                                    <option value="alRecibirDaño">Al Recibir Daño (Espinas)</option>
+                                    <option value="despuesDeSerAtacado">Al ser Atacado (Contraataque)</option>
+                                    <option value="alInicioTurno">Al Inicio del Turno (Regeneración)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;"><label>Condición</label>
+                            <select id="pVisCond">
+                                <option value="siempre">Siempre Activo</option>
+                                <option value="vida25">Salud <= 25 HP</option>
+                                <option value="vida50">Salud <= Mitad</option>
+                                <option value="chance20">20% Probabilidad</option>
+                                <option value="chance50">50% Probabilidad</option>
+                                <option value="conMascota">Si tiene Mascota Activa</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;"><label>Efecto</label>
+                            <select id="pVisEfecto">
+                                <optgroup label="Matemáticos (Para Modificadores)">
+                                    <option value="suma">+ Sumar Valor</option>
+                                    <option value="resta">- Restar Valor</option>
+                                    <option value="multiplica">* Multiplicar por</option>
+                                    <option value="inmunidad">❄️ Dar Inmunidad Absoluta</option>
+                                </optgroup>
+                                <optgroup label="Acciones (Para Reacciones)">
+                                    <option value="curar">💖 Curar HP Propio</option>
+                                    <option value="danoRival">🌵 Daño Directo al Rival</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div style="flex: 0.5; min-width: 80px;"><label>Valor Numérico</label>
+                            <input type="number" step="0.1" id="pVisValor" value="1.5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-der">
+            <div class="caja-preview">
+                <h3>👀 Vista Previa en el Juego (Tooltip)</h3>
+                <div id="tooltip-in-game"><span style="color:#777; font-style:italic;">Escribí algo para ver la magia...</span></div>
+            </div>
+
+            <div class="caja-preview" style="border-top-color: #00e5ff;">
+                <h3>💻 Código Generado (motor.js)</h3>
+                <textarea id="resultado" readonly></textarea>
+                <button class="btn-copiar" onclick="copiarCodigo()">📋 COPIAR AL PORTAPAPELES</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let tipoActual = 'arma';
+
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', generarTodoEnVivo);
+            el.addEventListener('change', generarTodoEnVivo);
+        });
+
+        function setTipo(tipo, btn) {
+            tipoActual = tipo;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('.seccion').forEach(el => el.classList.remove('visible'));
+            document.getElementById('sec-' + tipo).classList.add('visible');
+            generarTodoEnVivo();
+        }
+
+        function toggleEfectos() {
+            const ef = document.getElementById('armaEfecto').value;
+            document.getElementById('arma-efecto-params').style.display = ef === 'ninguno' ? 'none' : 'block';
+            document.getElementById('arma-efecto-custom-panel').style.display = ef === 'custom' ? 'block' : 'none';
+            generarTodoEnVivo();
+        }
+
+        function toggleSinergia() {
+            const modo = document.getElementById('armaSinergiaModo').value;
+            document.getElementById('arma-sinergia-visual').style.display = modo === 'visual' ? 'block' : 'none';
+            generarTodoEnVivo();
+        }
+
+        function togglePasiva() {
+            const modo = document.getElementById('pasivaModo').value;
+            document.getElementById('pasiva-visual').style.display = modo === 'visual' ? 'block' : 'none';
+            generarTodoEnVivo();
+        }
+
+        function generarTodoEnVivo() {
+            const id = document.getElementById("itemID").value.trim() || "id_pendiente";
+            const nombre = document.getElementById("itemNombre").value.trim() || "Item Sin Nombre";
+            
+            let cod = "";
+            let htmlTooltip = `<strong style="color:gold; font-size:1.2em; text-shadow:1px 1px 2px #000;">${nombre}</strong><br>`;
+
+            if (tipoActual === "arma") {
+                const dano = document.getElementById("armaDano").value || 0;
+                const agi = document.getElementById("armaAgi").value || 0;
+                const precio = document.getElementById("armaPrecio").value || 0;
+                let efecto = document.getElementById("armaEfecto").value;
+                const sinergiaModo = document.getElementById("armaSinergiaModo").value;
+                
+                htmlTooltip += `⚔️ Daño: <span style="color:#4cd137;">+${dano}</span><br>🏃 Agilidad: <span style="color:#e84118;">-${agi}</span>`;
+
+                let efectoStr = "null";
+                if (efecto !== "ninguno") {
+                    if (efecto === "custom") efecto = document.getElementById("efectoCustomID").value.trim() || "desconocido";
+                    const eDano = document.getElementById("efectoDano").value;
+                    const eTurnos = document.getElementById("efectoTurnos").value;
+                    efectoStr = `{ tipo: '${efecto}', dañoTurno: ${eDano}, turnos: ${eTurnos} }`;
+                    htmlTooltip += `<br><span style="color:#ff4757;">✨ Efecto: ${efecto.toUpperCase()} (${eDano} dmg / ${eTurnos} turnos)</span>`;
+                }
+
+                if (sinergiaModo === "ninguna") {
+                    cod = `    ${id}: new Arma("${nombre}", ${dano}, ${agi}, ${efectoStr}, ${precio}),`;
+                } else if (sinergiaModo === "esqueleto") {
+                    cod = `    ${id}: Object.assign(new Arma("${nombre}", ${dano}, ${agi}, ${efectoStr}, ${precio}), {\n        modificarDañoBruto: (luchador, dañoBase, logs) => {\n            // Tu código libre acá\n            return dañoBase;\n        }\n    }),`;
+                    htmlTooltip += `<br><span style="color:#ffaa00; font-size:0.9em;">⚙️ Posee Sinergia Oculta</span>`;
+                } else {
+                    // Sinergia Visual
+                    const cond = document.getElementById("aVisCond").value;
+                    const target = document.getElementById("aVisTarget").value.trim();
+                    const bono = document.getElementById("aVisBono").value;
+                    
+                    let condStr = "";
+                    if (cond === "mascotaCualquiera") condStr = `if (luchador.mascotaActiva) `;
+                    if (cond === "mascotaEspecifica") condStr = `if (luchador.mascotaActiva && luchador.mascotaActiva.nombre === "${target}") `;
+                    if (cond === "armaduraEspecifica") condStr = `if (luchador.armaduraEquipada && luchador.armaduraEquipada.nombre === "${target}") `;
+                    if (cond === "vida25") condStr = `if (luchador.vidaActual <= 25) `;
+                    if (cond === "chance50") condStr = `if (Math.random() <= 0.50) `;
+
+                    cod = `    ${id}: Object.assign(new Arma("${nombre}", ${dano}, ${agi}, ${efectoStr}, ${precio}), {\n        modificarDañoBruto: (luchador, dañoBase, logs) => {\n            ${condStr}{\n                logs.push("<span style='color:#ffaa00;'>¡Sinergia Activada! (+${bono} dmg)</span><br>");\n                return dañoBase + ${bono};\n            }\n            return dañoBase;\n        }\n    }),`;
+                    htmlTooltip += `<br><span style="color:#ffaa00; font-size:0.9em;">⚙️ Posee Sinergia Oculta</span>`;
+                }
+            } 
+            else if (tipoActual === "armadura") {
+                // ... (armaduras y mascotas igual que antes)
+                const mit = document.getElementById("armaduraMit").value || 0;
+                const agi = document.getElementById("armaduraAgi").value || 0;
+                const precio = document.getElementById("armaduraPrecio").value || 0;
+                htmlTooltip += `🛡️ Defensa: <span style="color:#00a8ff;">${Math.round(mit*100)}% absorción</span><br>🏃 Agilidad: <span style="color:#e84118;">-${agi}</span>`;
+                cod = `    ${id}: new Armadura("${nombre}", ${mit}, ${agi}, ${precio}),`;
+            }
+            else if (tipoActual === "mascota") {
+                const fue = document.getElementById("mascotaFuerza").value || 0;
+                const agi = document.getElementById("mascotaAgi").value || 0;
+                const precio = document.getElementById("mascotaPrecio").value || 0;
+                htmlTooltip += `🐾 Daño Base: <span style="color:#4cd137;">${fue}</span><br>⚡ Velocidad de ataque: <span style="color:#00a8ff;">${agi}</span>`;
+                cod = `    ${id}: new Mascota("${nombre}", ${fue}, ${agi}, ${precio}),`;
+            }
+            else if (tipoActual === "pasiva") {
+                const desc = document.getElementById("pasivaDesc").value || "...";
+                const modo = document.getElementById("pasivaModo").value;
+                htmlTooltip += `<span style="color:#ccc; font-style:italic;">"${desc}"</span>`;
+
+                if (modo === "esqueleto") {
+                    cod = `    ${id}: { \n        id: "${id}", \n        nombre: "${nombre}", \n        desc: "${desc}",\n        modificarDañoBruto: (luchador, dañoBruto, logs) => {\n            return dañoBruto;\n        }\n    },`;
+                } else {
+                    const hook = document.getElementById("pVisHook").value;
+                    const cond = document.getElementById("pVisCond").value;
+                    const efectoMod = document.getElementById("pVisEfecto").value;
+                    const valor = document.getElementById("pVisValor").value;
+
+                    let condStr = "";
+                    if (cond === "vida25") condStr = `if (luchador.vidaActual <= 25) `;
+                    if (cond === "vida50") condStr = `if (luchador.vidaActual <= (luchador.vidaMaxima / 2)) `;
+                    if (cond === "chance20") condStr = `if (Math.random() <= 0.20) `;
+                    if (cond === "chance50") condStr = `if (Math.random() <= 0.50) `;
+                    if (cond === "conMascota") condStr = `if (luchador.mascotaActiva) `;
+
+                    let cuerpo = "";
+                    
+                    // Manejo de Retornos vs Acciones
+                    if (efectoMod === "suma") cuerpo = `return valorBase + ${valor};`;
+                    else if (efectoMod === "resta") cuerpo = `return valorBase - ${valor};`;
+                    else if (efectoMod === "multiplica") cuerpo = `return Math.floor(valorBase * ${valor});`;
+                    else if (efectoMod === "inmunidad") cuerpo = `return true;`;
+                    else if (efectoMod === "curar") cuerpo = `let cura = ${valor};\n                luchador.vidaActual = Math.min(luchador.vidaMaxima, luchador.vidaActual + cura);`;
+                    else if (efectoMod === "danoRival") cuerpo = `// Requiere que el hook exponga al defensor/atacante\n                atacante.vidaActual -= ${valor};\n                if(atacante.vidaActual < 0) atacante.vidaActual = 0;`;
+
+                    // Armado final de la función según si es hook de retorno o de acción
+                    const paramCentral = ["modificarDañoBruto", "modificarChanceEvasion", "modificarAgilidad", "modificarAgilidadRival", "modificarVelocidad", "esInmuneEstados"].includes(hook) ? "valorBase" : "dañoFinal, rival";
+                    
+                    const retornoPorDefecto = paramCentral === "valorBase" ? "return valorBase;" : "";
+
+                    cod = `    ${id}: { \n        id: "${id}", \n        nombre: "${nombre}", \n        desc: "${desc}",\n        ${hook}: (luchador, ${paramCentral}, logs) => {\n            ${condStr}{\n                logs.push("<span style='color:#ffaa00;'>✨ [${nombre}] activada!</span><br>");\n                ${cuerpo}\n            }\n            ${retornoPorDefecto}\n        }\n    },`;
+                }
+            }
+
+            document.getElementById("resultado").value = cod;
+            document.getElementById("tooltip-in-game").innerHTML = htmlTooltip;
+        }
+
+        function copiarCodigo() {
+            const caja = document.getElementById("resultado");
+            caja.select();
+            document.execCommand('copy');
+            const btn = document.querySelector('.btn-copiar');
+            btn.innerText = "✅ ¡COPIADO!";
+            btn.style.background = "#4cd137";
+            setTimeout(() => {
+                btn.innerText = "📋 COPIAR AL PORTAPAPELES";
+                btn.style.background = "linear-gradient(180deg, #aa0000 0%, #660000 100%)";
+            }, 1500);
+        }
+
+        generarTodoEnVivo();
+    </script>
+</body>
+</html>
