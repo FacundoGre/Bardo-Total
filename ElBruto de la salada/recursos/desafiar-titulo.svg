@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Rojo Desafío (Compacto) -->
+    <linearGradient id="btnChallenge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d4d" />
+      <stop offset="50%" stop-color="#c62828" />
+      <stop offset="100%" stop-color="#4a0505" />
+    </linearGradient>
+
+    <!-- Gradiente Oro Imperial Botón -->
+    <linearGradient id="btnGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff5bd" />
+      <stop offset="30%" stop-color="#ffd700" />
+      <stop offset="70%" stop-color="#b8860b" />
+      <stop offset="100%" stop-color="#4a3300" />
+    </linearGradient>
+
+    <!-- Gradiente Acero Hacha -->
+    <linearGradient id="btnSteel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+
+    <!-- Sombra para la interactividad del botón -->
+    <filter id="btnShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .action-txt { font-size: 55px; letter-spacing: 3px; }
+    .target-txt { font-size: 85px; letter-spacing: 5px; }
+    .out-heavy { stroke: #0a0402; stroke-width: 22px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #1f0a02; stroke-width: 12px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR PRINCIPAL CON SOMBRA -->
+  <g filter="url(#btnShadow)">
+    
+    <!-- ARTE DE FONDO COMPACTO (Detrás del texto) -->
+    <g transform="translate(450, 110)">
+      <!-- Pequeña Corona de Campeón de Fondo (Izquierda) -->
+      <g transform="translate(-320, -5) scale(0.65) rotate(-15)" stroke="#111" stroke-width="6" stroke-linejoin="round" fill="url(#btnGold)">
+        <path d="M -50,20 L -70,-30 L -30,-10 L 0,-40 L 30,-10 L 70,-30 L 50,20 Z" />
+        <circle cx="0" cy="-40" r="4" fill="#ff0000" />
+      </g>
+
+      <!-- Hacha Cruzada Central (Actúa como fondo e impacto divisor) -->
+      <g transform="translate(260, -10) scale(0.7) rotate(55)">
+        <rect x="-4" y="-80" width="8" height="160" rx="2" fill="#422816" stroke="#111" stroke-width="4" />
+        <path d="M 4,-40 C 25,-40 45,-55 60,-30 C 70,-10 55,10 60,30 C 45,55 25,40 4,40 Z" fill="url(#btnSteel)" stroke="#111" stroke-width="5" stroke-linejoin="round" />
+      </g>
+
+      <!-- Líneas de impacto veloces alrededor del hacha -->
+      <path d="M 280,-40 L 310,-60 M 290,10 L 320,20" stroke="#ffd700" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+    </g>
+
+    <!-- TEXTO LÍNEA 1: "DESAFIAR AL" -->
+    <g transform="translate(450, 75)">
+      <text y="0" class="font-brute action-txt out-heavy" fill="#000">DESAFIAR AL</text>
+      <text y="0" class="font-brute action-txt out-mid" fill="#000">DESAFIAR AL</text>
+      <text y="0" class="font-brute action-txt" fill="url(#btnChallenge)">DESAFIAR AL</text>
+    </g>
+
+    <!-- TEXTO LÍNEA 2: "#1 GLOBAL" -->
+    <g transform="translate(455, 170)">
+      <!-- Un pelín movido a la derecha por el itálica -->
+      <text y="0" class="font-brute target-txt out-heavy" fill="#000">#1 GLOBAL</text>
+      <text y="0" class="font-brute target-txt out-mid" fill="#000">#1 GLOBAL</text>
+      <text y="0" class="font-brute target-txt" fill="url(#btnGold)">#1 GLOBAL</text>
+    </g>
+
+  </g>
+</svg>

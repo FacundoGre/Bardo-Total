@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Oro de Campeones -->
+    <linearGradient id="topGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="25%" stop-color="#fcd34d" />
+      <stop offset="70%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+
+    <!-- Gradiente de Bronce para los Laureles -->
+    <linearGradient id="laurelBronze" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f7fee7" />
+      <stop offset="50%" stop-color="#a3e635" />
+      <stop offset="100%" stop-color="#3f6212" />
+    </linearGradient>
+
+    <!-- Sombra proyectada para despegar del fondo -->
+    <filter id="topShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .top-txt { font-size: 95px; letter-spacing: 4px; }
+    .out-heavy { stroke: #0a0400; stroke-width: 22px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #451a03; stroke-width: 10px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR CON SOMBRA -->
+  <g filter="url(#topShadow)">
+    
+    <!-- ARTE DE FONDO: COPA Y LAURELES DE LA VICTORIA -->
+    <g transform="translate(450, 75)">
+      
+      <!-- Corona de Laureles (Hojas de victoria a la izquierda y derecha) -->
+      <g stroke="#000" stroke-width="3" fill="#a3e635" opacity="0.45">
+        <!-- Lado Izquierdo -->
+        <path d="M -50,20 C -90,10 -120,-20 -110,-60" fill="none" stroke="url(#topGold)" stroke-width="6" stroke-linecap="round" />
+        <path d="M -60,15 Q -80,5 -75,-10 Q -60,0 -60,15 Z" />
+        <path d="M -85,0 Q -105,-15 -95,-28 Q -80,-15 -85,0 Z" />
+        <path d="M -105,-20 Q -125,-40 -110,-50 Q -95,-35 -105,-20 Z" />
+        <!-- Lado Derecho -->
+        <path d="M 50,20 C 90,10 120,-20 110,-60" fill="none" stroke="url(#topGold)" stroke-width="6" stroke-linecap="round" />
+        <path d="M 60,15 Q 80,5 75,-10 Q 60,0 60,15 Z" />
+        <path d="M 85,0 Q 105,-15 95,-28 Q 80,-15 85,0 Z" />
+        <path d="M 105,-20 Q 125,-40 110,-50 Q 95,-35 105,-20 Z" />
+      </g>
+
+      <!-- La Gran Copa Dorada (Central, asomando arriba del texto) -->
+      <g transform="translate(0, -35) scale(0.75)" stroke="#000" stroke-width="4" stroke-linejoin="round">
+        <!-- Asas de la copa -->
+        <path d="M -35,-25 C -65,-25 -65,10 -30,15" fill="none" stroke="url(#topGold)" stroke-width="10" />
+        <path d="M 35,-25 C 65,-25 65,10 30,15" fill="none" stroke="url(#topGold)" stroke-width="10" />
+        <!-- Cuerpo principal -->
+        <path d="M -35,-30 L 35,-30 L 30,15 C 20,40 0,45 0,45 C 0,45 -20,40 -30,15 Z" fill="url(#topGold)" />
+        <!-- Tallo y Base -->
+        <path d="M -10,43 L 10,43 L 15,65 L -15,65 Z" fill="url(#topGold)" />
+        <ellipse cx="0" cy="65" rx="25" ry="8" fill="url(#topGold)" />
+        <!-- Brillo interno de la copa -->
+        <path d="M -25,-25 L -20,10 C -15,25 -5,30 -5,30" fill="none" stroke="#fff" stroke-width="4" opacity="0.6" stroke-linecap="round" />
+      </g>
+      
+      <!-- Destellos de estrellas competitivas -->
+      <path d="M -140,-40 L -140,-20 M -150,-30 L -130,-30" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.7" />
+      <path d="M 140,-40 L 140,-20 M 150,-30 L 130,-30" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.7" />
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "TOP 10 GLOBAL" -->
+    <g transform="translate(454, 155)">
+      <!-- Ajustado milimétricamente por la inclinación de la fuente -->
+      <text y="0" class="font-brute top-txt out-heavy" fill="#000">TOP 10 GLOBAL</text>
+      <text y="0" class="font-brute top-txt out-mid" fill="#000">TOP 10 GLOBAL</text>
+      <text y="0" class="font-brute top-txt" fill="url(#topGold)">TOP 10 GLOBAL</text>
+    </g>
+
+  </g>
+</svg>

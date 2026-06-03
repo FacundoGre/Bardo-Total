@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 260" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Gris/Hierro Oscuro (Para "ENFRENTAR A LA") -->
+    <linearGradient id="ironGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e2e8f0" />
+      <stop offset="25%" stop-color="#94a3b8" />
+      <stop offset="75%" stop-color="#475569" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <!-- Gradiente Rojo Bestia/Furia (Para "BESTIA") -->
+    <linearGradient id="beastGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d4d" />
+      <stop offset="30%" stop-color="#cc0000" />
+      <stop offset="70%" stop-color="#7a0000" />
+      <stop offset="100%" stop-color="#3a0000" />
+    </linearGradient>
+
+    <!-- Filtro de Sombra Pesada para Botón Interactivo -->
+    <filter id="beastShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="5" flood-color="#000000" flood-opacity="0.95" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .enfrentar-txt { font-size: 60px; letter-spacing: 4px; }
+    .bestia-txt { font-size: 110px; letter-spacing: 8px; }
+    .out-heavy { stroke: #090505; stroke-width: 24px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #210d0d; stroke-width: 12px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- GRUPO PRINCIPAL CON SOMBRA -->
+  <g filter="url(#beastShadow)">
+    
+    <!-- ELEMENTOS DE FONDO (Garras y Cadenas Rotas) -->
+    <g transform="translate(475, 130)">
+      
+      <!-- Rasguños de Garra Gigante en Rojo Sangre Oscuro -->
+      <g fill="#5e0000" opacity="0.6">
+        <!-- Garra 1 -->
+        <path d="M -320,-80 Q -240,-10 -180,80 Q -220,10 -320,-40 Z" />
+        <!-- Garra 2 -->
+        <path d="M -260,-90 Q -190,-20 -130,70 Q -170,0 -260,-50 Z" />
+        <!-- Garra 3 (Derecha) -->
+        <path d="M 220,-80 Q 270,-10 320,60 Q 280,-10 220,-50 Z" />
+        <!-- Garra 4 (Derecha) -->
+        <path d="M 270,-60 Q 310,0 350,70 Q 320,10 270,-30 Z" />
+      </g>
+
+      <!-- Cadenas de Hierro Rotas (El monstruo se liberó) -->
+      <g stroke="#374151" stroke-width="6" fill="none" stroke-linejoin="round">
+        <!-- Eslabón Izquierdo 1 -->
+        <rect x="-350" y="-30" width="40" height="20" rx="10" transform="rotate(-15, -330, -20)" />
+        <!-- Eslabón Izquierdo 2 (Roto) -->
+        <path d="M -305,-25 C -290,-35 -270,-20 -275,-5" />
+        
+        <!-- Eslabón Derecho 1 -->
+        <rect x="310" y="10" width="40" height="20" rx="10" transform="rotate(25, 330, 20)" />
+        <!-- Eslabón Derecho 2 (Roto) -->
+        <path d="M 295,5 C 280,-5 260,10 265,25" />
+      </g>
+      
+    </g>
+
+    <!-- TEXTO: "ENFRENTAR A LA" -->
+    <g transform="translate(475, 90)">
+      <text y="0" class="font-brute enfrentar-txt out-heavy" fill="#000">ENFRENTAR A LA</text>
+      <text y="0" class="font-brute enfrentar-txt out-mid" fill="#000">ENFRENTAR A LA</text>
+      <text y="0" class="font-brute enfrentar-txt" fill="url(#ironGrad)">ENFRENTAR A LA</text>
+    </g>
+
+    <!-- TEXTO: "BESTIA" -->
+    <g transform="translate(480, 200)">
+      <!-- Desplazado 5px para balancear la inclinación -->
+      <text y="0" class="font-brute bestia-txt out-heavy" fill="#000">BESTIA</text>
+      <text y="0" class="font-brute bestia-txt out-mid" fill="#000">BESTIA</text>
+      <text y="0" class="font-brute bestia-txt" fill="url(#beastGrad)">BESTIA</text>
+    </g>
+    
+    <!-- DETALLES SOBRE EL TEXTO (Brillo de sangre / Salpicaduras) -->
+    <g transform="translate(475, 130)" fill="#ff0000" opacity="0.4">
+      <!-- Gotas de sangre salpicando las letras inferiores -->
+      <circle cx="-180" cy="50" r="4" />
+      <circle cx="-190" cy="65" r="2.5" />
+      <circle cx="150" cy="45" r="5" />
+      <circle cx="165" cy="60" r="3" />
+    </g>
+
+  </g>
+</svg>

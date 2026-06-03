@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Amarillo/Oro para el Estandarte de Fondo del Botón -->
+    <linearGradient id="campYellowBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="30%" stop-color="#fcd34d" />
+      <stop offset="75%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#542b00" />
+    </linearGradient>
+
+    <!-- Gradiente COZY para el Texto (Crema Cálido a Avellana) -->
+    <linearGradient id="cozyTextGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="40%" stop-color="#fef3c7" />
+      <stop offset="80%" stop-color="#b45309" />
+      <stop offset="100%" stop-color="#78350f" />
+    </linearGradient>
+
+    <!-- Gradiente para las Estacas de Madera -->
+    <linearGradient id="darkWoodStake" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451a03" />
+      <stop offset="100%" stop-color="#180800" />
+    </linearGradient>
+
+    <!-- Sombra proyectada para el botón -->
+    <filter id="campShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .camp-txt { font-size: 76px; letter-spacing: 2px; }
+    .out-heavy { stroke: #0a0400; stroke-width: 22px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #451a03; stroke-width: 10px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR PRINCIPAL CON SOMBRA -->
+  <g filter="url(#campShadow)">
+    
+    <!-- ESTRUCTURA DEL CAMPAMENTO (Estacas detrás del botón) -->
+    <g transform="translate(450, 110)">
+      <!-- Estaca de Madera Izquierda -->
+      <path d="M -390,-40 L -370,-55 L -350,-40 L -365,50 L -385,45 Z" fill="url(#darkWoodStake)" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+      <!-- Estaca de Madera Derecha -->
+      <path d="M 350,-45 L 370,-55 L 390,-40 L 380,45 L 360,50 Z" fill="url(#darkWoodStake)" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+      
+      <!-- Cuerdas de amarre -->
+      <path d="M -385,-10 Q -360,-15 -350,-5 M 350,-15 Q 365,-20 380,-10" stroke="#7c2d12" stroke-width="4" fill="none" opacity="0.8" />
+    </g>
+
+    <!-- EL BOTÓN CENTRAL: ESTANDARTE AMARILLO ENERGÉTICO -->
+    <g transform="translate(450, 110)">
+      <!-- Rectángulo rústico amarillo -->
+      <path d="M -360,-50 L -330,-65 L 330,-65 L 360,-50 L 340,40 L 310,55 L -310,55 L -340,40 Z" fill="url(#campYellowBg)" stroke="#201002" stroke-width="6" stroke-linejoin="round" />
+      
+      <!-- Costura interna -->
+      <path d="M -342,-50 L -320,-58 L 320,-58 L 342,-50 L 325,35 L 302,46 L -302,46 L -325,35 Z" fill="none" stroke="#451a03" stroke-width="3" stroke-dasharray="10,8" opacity="0.5" />
+      
+      <!-- Raspones de batalla -->
+      <path d="M -280,-40 L -265,-25 M 240,20 L 260,35 M -150,40 L -135,45" stroke="#451a03" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "VOLVER AL CAMPAMENTO" -->
+    <g transform="translate(454, 136)">
+      <!-- Capas de texto con la nueva paleta acogedora -->
+      <text y="0" class="font-brute camp-txt out-heavy" fill="#000">VOLVER AL CAMPAMENTO</text>
+      <text y="0" class="font-brute camp-txt out-mid" fill="#000">VOLVER AL CAMPAMENTO</text>
+      <text y="0" class="font-brute camp-txt" fill="url(#cozyTextGrad)">VOLVER AL CAMPAMENTO</text>
+    </g>
+
+  </g>
+</svg>

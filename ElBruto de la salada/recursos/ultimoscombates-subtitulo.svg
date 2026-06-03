@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente para el texto "ÚLTIMOS COMBATES" (Cuero Viejo / Hueso Gastado) -->
+    <linearGradient id="historyTextGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="35%" stop-color="#e2b97a" />
+      <stop offset="75%" stop-color="#8a531a" />
+      <stop offset="100%" stop-color="#3b1d00" />
+    </linearGradient>
+
+    <!-- Gradiente para el Pergamino de Fondo -->
+    <linearGradient id="scrollPaperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#784b24" />
+      <stop offset="50%" stop-color="#4d2c12" />
+      <stop offset="100%" stop-color="#261202" />
+    </linearGradient>
+
+    <!-- Sombra proyectada suave para subtítulos -->
+    <filter id="historyShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .history-txt { font-size: 88px; letter-spacing: 3px; }
+    .out-heavy { stroke: #0a0400; stroke-width: 22px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #2d1602; stroke-width: 10px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR CON SOMBRA -->
+  <g filter="url(#historyShadow)">
+    
+    <!-- ARTE DE FONDO: PERGAMINO CRÓNICO Y PLUMA -->
+    <g transform="translate(450, 75)" opacity="0.45">
+      
+      <!-- El Pergamino Enrollado (Silueta horizontal sutil) -->
+      <g stroke="#000" stroke-width="4" stroke-linejoin="round">
+        <!-- Cuerpo del papiro desplegado -->
+        <path d="M -160,-25 Q -80,-35 80,-35 Q 160,-25 150,15 Q 70,5 -70,5 Q -150,15 Z" fill="url(#scrollPaperGrad)" />
+        <!-- Rollo Izquierdo -->
+        <path d="M -160,-25 C -175,-25 -175,10 -150,15 C -145,15 -145,-5 -155,-5" fill="#3b1d00" />
+        <!-- Rollo Derecho -->
+        <path d="M 160,-25 C 175,-25 175,10 150,15 C 145,15 145,-5 155,-5" fill="#3b1d00" />
+      </g>
+
+      <!-- Pluma de Escribano Cruzada (Detrás del texto) -->
+      <g transform="translate(40, -15) rotate(-35) scale(0.85)">
+        <!-- Silueta de la pluma -->
+        <path d="M 0,-60 C -12,-30 -15,20 0,50 C 10,20 8,-30 0,-60" fill="#cbd5e1" stroke="#000" stroke-width="3" />
+        <!-- Tallo central de la pluma -->
+        <path d="M 0,-70 L 2,65" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round" />
+        <!-- Cortes rústicos en la pluma de ganso -->
+        <path d="M -7,-20 L 0,-15 M -10,10 L -2,12 M 8,-5 L 1,-2" stroke="#000" stroke-width="2" />
+      </g>
+
+      <!-- Pequeñas manchas de tinta/sangre salpicadas -->
+      <circle cx="-110" cy="-15" r="4" fill="#000" />
+      <circle cx="-95" cy="-22" r="2.5" fill="#000" />
+      <circle cx="110" cy="5" r="3.5" fill="#2d1602" />
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "ÚLTIMOS COMBATES" -->
+    <g transform="translate(454, 155)">
+      <!-- Ajustado para contrarrestar la deformación itálica de la fuente -->
+      <text y="0" class="font-brute history-txt out-heavy" fill="#000">ÚLTIMOS COMBATES</text>
+      <text y="0" class="font-brute history-txt out-mid" fill="#000">ÚLTIMOS COMBATES</text>
+      <text y="0" class="font-brute history-txt" fill="url(#historyTextGrad)">ÚLTIMOS COMBATES</text>
+    </g>
+
+  </g>
+</svg>

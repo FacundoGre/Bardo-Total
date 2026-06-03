@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Metal para "PELEA" (Hierro/Acero) -->
+    <linearGradient id="ironGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="25%" stop-color="#bdc3c7" />
+      <stop offset="75%" stop-color="#697684" />
+      <stop offset="100%" stop-color="#2c3e50" />
+    </linearGradient>
+
+    <!-- Gradiente de Energía/Acción para "RÁPIDA" (Ámbar/Rayos) -->
+    <linearGradient id="fastGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff6cc" />
+      <stop offset="30%" stop-color="#ffcc00" />
+      <stop offset="70%" stop-color="#ff6600" />
+      <stop offset="100%" stop-color="#cc0000" />
+    </linearGradient>
+
+    <!-- Filtro de Sombra Proyectada para la interfaz de la web -->
+    <filter id="interfaceShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="6" flood-color="#000000" flood-opacity="0.95" />
+    </filter>
+
+    <!-- Filtro de brillo para el impacto de los puños -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brutal { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .pelea-text { font-size: 100px; letter-spacing: 6px; }
+    .rapida-text { font-size: 110px; letter-spacing: 4px; }
+    .stroke-heavy { stroke: #080503; stroke-width: 26px; stroke-linejoin: round; stroke-linecap: round; }
+    .stroke-sub { stroke: #1a1512; stroke-width: 14px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR CON SOMBRA (Fondo transparente) -->
+  <g filter="url(#interfaceShadow)">
+    
+    <!-- EFECTO DE CHOQUE / MATCHMAKING (Detrás del texto) -->
+    <g transform="translate(500, 140)">
+      <!-- Chispas y destellos del choque instantáneo -->
+      <path d="M -80,-50 L -150,-90 M -40,-80 L -60,-140 M 0,-90 L 0,-150 M 40,-80 L 60,-140 M 80,-50 L 150,-90" stroke="#ffaa00" stroke-width="6" stroke-linecap="round" filter="url(#glow)" />
+      <path d="M -50,40 L -100,80 M 50,40 L 100,80" stroke="#ff3300" stroke-width="5" stroke-linecap="round" />
+      
+      <!-- Aura de energía central -->
+      <circle cx="0" cy="-20" r="70" fill="#ffcc00" opacity="0.15" filter="url(#glow)"/>
+      
+      <!-- Puño Izquierdo (Guante de cuero de bruto) -->
+      <g transform="translate(-55, -20) scale(0.9)">
+        <path d="M -110,-10 L -40,-25 C -20,-25 -10,-15 -10,0 C -10,15 -20,25 -40,25 L -110,15 Z" fill="#784315" stroke="#000" stroke-width="8" stroke-linejoin="round"/>
+        <!-- Dedos / Nudillos -->
+        <path d="M -25,-22 C -10,-22 -5,-15 -10,-5 C -5,-5 0,2 -5,12 C 0,12 0,22 -15,22" fill="none" stroke="#000" stroke-width="8" stroke-linecap="round"/>
+        <!-- Tachas metálicas en los nudillos -->
+        <circle cx="-22" cy="-12" r="5" fill="#ddd" stroke="#000" stroke-width="3"/>
+        <circle cx="-16" cy="1" r="5" fill="#ddd" stroke="#000" stroke-width="3"/>
+        <circle cx="-22" cy="13" r="5" fill="#ddd" stroke="#000" stroke-width="3"/>
+      </g>
+
+      <!-- Puño Derecho (Guante reflejado) -->
+      <g transform="translate(55, -20) scale(-0.9, 0.9)">
+        <path d="M -110,-10 L -40,-25 C -20,-25 -10,-15 -10,0 C -10,15 -20,25 -40,25 L -110,15 Z" fill="#525b66" stroke="#000" stroke-width="8" stroke-linejoin="round"/>
+        <path d="M -25,-22 C -10,-22 -5,-15 -10,-5 C -5,-5 0,2 -5,12 C 0,12 0,22 -15,22" fill="none" stroke="#000" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="-22" cy="-12" r="5" fill="#fff" stroke="#000" stroke-width="3"/>
+        <circle cx="-16" cy="1" r="5" fill="#fff" stroke="#000" stroke-width="3"/>
+        <circle cx="-22" cy="13" r="5" fill="#fff" stroke="#000" stroke-width="3"/>
+      </g>
+    </g>
+
+    <!-- PALABRA: "PELEA" (Izquierda / Arriba) -->
+    <g transform="translate(320, 115)">
+      <text y="0" class="font-brutal pelea-text stroke-heavy" fill="#000">PELEA</text>
+      <text y="0" class="font-brutal pelea-text stroke-sub" fill="#000">PELEA</text>
+      <text y="0" class="font-brutal pelea-text" fill="url(#ironGrad)">PELEA</text>
+    </g>
+
+    <!-- PALABRA: "RÁPIDA" (Derecha / Abajo) -->
+    <g transform="translate(660, 215)">
+      <text y="0" class="font-brutal rapida-text stroke-heavy" fill="#000">RÁPIDA</text>
+      <text y="0" class="font-brutal rapida-text stroke-sub" fill="#000">RÁPIDA</text>
+      <text y="0" class="font-brutal rapida-text" fill="url(#fastGrad)">RÁPIDA</text>
+    </g>
+
+    <!-- DETALLES DE AGRESIÓN (Grietas de impacto en los textos) -->
+    <g stroke="#080503" stroke-width="4" stroke-linecap="round" fill="none">
+      <!-- Grieta en PELEA -->
+      <path d="M 220,65 L 230,80 L 225,95" />
+      <path d="M 390,90 L 405,100" />
+      <!-- Grieta en RÁPIDA -->
+      <path d="M 580,165 L 590,185" />
+      <path d="M 720,180 L 715,200 L 725,215" />
+    </g>
+
+  </g>
+</svg>

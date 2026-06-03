@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Oro de Campeones para el Texto -->
+    <linearGradient id="saveGoldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="25%" stop-color="#fcd34d" />
+      <stop offset="70%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+
+    <!-- Gradiente Violeta Imperial para el Fondo del Botón -->
+    <linearGradient id="tailorPurpleBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="40%" stop-color="#6d28d9" />
+      <stop offset="85%" stop-color="#4c1d95" />
+      <stop offset="100%" stop-color="#2e1065" />
+    </linearGradient>
+
+    <!-- Gradiente de Hierro para el Disquete Estilizado -->
+    <linearGradient id="diskIron" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1" />
+      <stop offset="50%" stop-color="#64748b" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+
+    <!-- Sombra proyectada para la acción de click -->
+    <filter id="saveShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; font-style: italic; }
+    .save-txt { font-size: 72px; letter-spacing: 2px; text-anchor: start; }
+    .out-heavy { stroke: #090214; stroke-width: 22px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #2e1065; stroke-width: 10px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR PRINCIPAL CON SOMBRA -->
+  <g filter="url(#saveShadow)">
+    
+    <!-- EL BOTÓN CENTRAL: ESTANDARTE VIOLETA SAS_TRE -->
+    <g transform="translate(450, 110)">
+      <!-- Parche de tela rústica violeta con puntas desgastadas -->
+      <path d="M -370,-50 L -340,-65 L 340,-65 L 370,-50 L 350,45 L 320,55 L -320,55 L -350,40 Z" fill="url(#tailorPurpleBg)" stroke="#1e0b36" stroke-width="6" stroke-linejoin="round" />
+      
+      <!-- Línea de costura interna (Detalle de sastre en oro viejo) -->
+      <path d="M -352,-50 L -328,-58 L 328,-58 L 352,-50 L 336,38 L 310,46 L -310,46 L -336,38 Z" fill="none" stroke="#fcd34d" stroke-width="2.5" stroke-dasharray="10,8" opacity="0.4" />
+      
+      <!-- Alfileres/Broches cruzados sutiles en la esquina superior derecha -->
+      <path d="M 320,-55 L 340,-35 M 330,-55 L 310,-35" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" opacity="0.5" />
+    </g>
+
+    <!-- COMPOSICIÓN DEL EMOJI 💾 ESTILIZADO (Lado Izquierdo) -->
+    <g transform="translate(130, 110) rotate(-5) scale(1.1)" stroke="#000" stroke-width="4" stroke-linejoin="round">
+      <!-- Cuerpo principal del disquete de hierro (con el corte en la esquina superior derecha) -->
+      <path d="M -30,-30 L 18,-30 L 30,-18 L 30,30 L -30,30 Z" fill="url(#diskIron)" />
+      
+      <!-- Etiqueta de sastre frontal (Papel pergamino/crema) -->
+      <rect x="-20" y="-5" width="40" height="30" fill="#fef3c7" stroke="#000" stroke-width="3" />
+      <!-- Líneas de la etiqueta (Simulando datos guardados) -->
+      <line x1="-12" y1="6" x2="12" y2="6" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="-12" y1="15" x2="4" y2="15" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" />
+      
+      <!-- Corredera metálica superior -->
+      <rect x="-12" y="-28" width="22" height="16" fill="#cbd5e1" stroke="#000" stroke-width="3" />
+      <rect x="-6" y="-24" width="6" height="10" fill="#1e293b" />
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "GUARDAR APARIENCIA" -->
+    <!-- Se desplaza en el eje X para dejarle el lugar limpio al emoji del disquete -->
+    <g transform="translate(205, 134)">
+      <text y="0" class="font-brute save-txt out-heavy" fill="#000">GUARDAR APARIENCIA</text>
+      <text y="0" class="font-brute save-txt out-mid" fill="#000">GUARDAR APARIENCIA</text>
+      <text y="0" class="font-brute save-txt" fill="url(#saveGoldGrad)">GUARDAR APARIENCIA</text>
+    </g>
+
+  </g>
+</svg>

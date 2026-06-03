@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 240" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Rojo Desafío (Sangre/Fuego) -->
+    <linearGradient id="btnChallenge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff5252" />
+      <stop offset="40%" stop-color="#cc1111" />
+      <stop offset="100%" stop-color="#540000" />
+    </linearGradient>
+
+    <!-- Gradiente Oro Imperial (Para el #1 y Espadas) -->
+    <linearGradient id="btnGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="30%" stop-color="#fbbf24" />
+      <stop offset="70%" stop-color="#b45309" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+
+    <!-- Filtro de Sombra para Botón Seleccionable -->
+    <filter id="btnShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="5" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .desafiar-btn-txt { font-size: 55px; letter-spacing: 4px; }
+    .top1-btn-txt { font-size: 95px; letter-spacing: 6px; }
+    .stroke-heavy { stroke: #090402; stroke-width: 24px; stroke-linejoin: round; stroke-linecap: round; }
+    .stroke-mid { stroke: #200d04; stroke-width: 12px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR CON SOMBRA (Ideal para clicks) -->
+  <g filter="url(#btnShadow)">
+    
+    <!-- ELEMENTOS DE FONDO COMPACTOS (Espadas Cruzadas de Oro) -->
+    <g transform="translate(475, 120)">
+      
+      <!-- Espada Izquierda Cruzada -->
+      <g transform="rotate(-50) scale(0.75)">
+        <path d="M -10,-160 L 0,-185 L 10,-160 L 12,60 L -12,60 Z" fill="url(#btnGold)" stroke="#111" stroke-width="6"/>
+        <rect x="-30" y="60" width="60" height="12" rx="3" fill="#331b07" stroke="#111" stroke-width="4"/>
+        <rect x="-6" y="72" width="12" height="30" fill="#200d04" stroke="#111" stroke-width="4"/>
+      </g>
+
+      <!-- Espada Derecha Cruzada -->
+      <g transform="rotate(50) scale(0.75)">
+        <path d="M -10,-160 L 0,-185 L 10,-160 L 12,60 L -12,60 Z" fill="url(#btnGold)" stroke="#111" stroke-width="6"/>
+        <rect x="-30" y="60" width="60" height="12" rx="3" fill="#331b07" stroke="#111" stroke-width="4"/>
+        <rect x="-6" y="72" width="12" height="30" fill="#200d04" stroke="#111" stroke-width="4"/>
+      </g>
+      
+      <!-- Destello Central de Combate -->
+      <circle cx="0" cy="-10" r="30" fill="#fbbf24" opacity="0.25" filter="blur(4px)" />
+    </g>
+
+    <!-- TEXTO SUPERIOR: "DESAFIAR AL" -->
+    <g transform="translate(475, 85)">
+      <text y="0" class="font-brute desafiar-btn-txt stroke-heavy" fill="#000">DESAFIAR AL</text>
+      <text y="0" class="font-brute desafiar-btn-txt stroke-mid" fill="#000">DESAFIAR AL</text>
+      <text y="0" class="font-brute desafiar-btn-txt" fill="url(#btnChallenge)">DESAFIAR AL</text>
+    </g>
+
+    <!-- TEXTO INFERIOR: "#1 GLOBAL" -->
+    <g transform="translate(480, 190)">
+      <!-- Un pelín corrido por la itálica -->
+      <text y="0" class="font-brute top1-btn-txt stroke-heavy" fill="#000">#1 GLOBAL</text>
+      <text y="0" class="font-brute top1-btn-txt stroke-mid" fill="#000">#1 GLOBAL</text>
+      <text y="0" class="font-brute top1-btn-txt" fill="url(#btnGold)">#1 GLOBAL</text>
+    </g>
+    
+    <!-- DETALLES DE SANGRE/CHISPAS EN EL BOTÓN -->
+    <g transform="translate(475, 120)" fill="#ff0000" opacity="0.5">
+      <circle cx="-160" cy="40" r="4" />
+      <circle cx="170" cy="-30" r="4.5" />
+    </g>
+
+  </g>
+</svg>

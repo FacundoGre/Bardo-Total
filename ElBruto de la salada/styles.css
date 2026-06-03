@@ -1,0 +1,1136 @@
+/* ==========================================
+   BARDO TOTAL - ESTILO CRUDO Y RÚSTICO
+========================================== */
+
+/* ========================================== */
+/* FUENTES LOCALES                            */
+/* ========================================== */
+
+@font-face {
+    font-family: 'Cinzel';
+    src: url('./recursos/fonts/Cinzel-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cinzel';
+    src: url('./recursos/fonts/Cinzel-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+body {
+    /*font-family: 'Courier New', Courier, monospace;*/
+    font-family: 'Cinzel', serif;
+    background-color: #121212;
+    background-image: radial-gradient(#2b1010 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #d4d4d4;
+    padding: 20px;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Controles con estilo hierro y sangre */
+.controles {
+    background: #1a1a1a;
+    border: 3px solid #660000;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    max-width: 1000px;
+    margin: 0 auto 20px auto;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.8);
+}
+
+.controles input {
+    padding: 10px;
+    background: #0a0a0a;
+    border: 2px solid #4a0000;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 15px;
+    width: 60%;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.controles input:focus {
+    border-color: #ff0000;
+}
+
+.creador-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 15px;
+    background: #0f0f0f;
+    padding: 15px;
+    border: 2px dashed #4a0000;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-box p {
+    margin: 5px 0;
+    font-weight: bold;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.stat-btn {
+    width: 35px;
+    height: 35px;
+    font-weight: bold;
+    font-size: 1.2em;
+    background: #222;
+    color: #ff3333;
+    border: 1px solid #660000;
+    cursor: pointer;
+    transition: all 0.1s;
+    font-family: inherit;
+}
+
+.stat-btn:hover {
+    background: #4a0000;
+    color: #fff;
+}
+
+.botones-accion {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-accion {
+    padding: 12px 24px;
+    font-size: 16px;
+    background: #2a2a2a;
+    color: #ddd;
+    border: 2px solid #555;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0px #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-accion:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000;
+    background: #333;
+}
+
+.btn-peligro {
+    background: #660000;
+    border-color: #990000;
+    color: #fff;
+}
+
+.btn-peligro:hover {
+    background: #880000;
+}
+
+.btn-campeon {
+    background: #b8860b;
+    border-color: #daa520;
+    color: #000;
+}
+
+.btn-campeon:hover {
+    background: #daa520;
+}
+
+.btn-accion:disabled {
+    background: #222;
+    border-color: #333;
+    color: #555;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.layout-principal {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+/* Cartas de Gladiador en la Arena */
+.arena {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 15px;
+}
+
+.panel-luchador {
+    background: #1a1a1a;
+    border: 3px solid #4a0000;
+    padding: 20px 15px;
+    width: 45%;
+    text-align: center;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 6px 6px 0px #000;
+    position: relative;
+}
+
+.avatar-gladiador {
+    font-size: 3.5em;
+    margin-bottom: 10px;
+    display: block;
+    filter: grayscale(20%) contrast(120%);
+}
+
+.nombre-luchador {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.4em;
+    color: #eee;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.titulo-stats {
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* FIX DEL BUG: Contenedor con altura mínima fija para evitar saltos */
+.record-stats {
+    font-size: 0.85em;
+    color: #888;
+    display: block;
+    margin-bottom: 15px;
+    background: #0a0a0a;
+    padding: 8px;
+    border: 1px solid #333;
+    min-height: 2.5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.4;
+}
+
+/* Barra de vida ensangrentada */
+.barra-vida-fondo {
+    background: #000;
+    width: 100%;
+    height: 20px;
+    border: 2px solid #333;
+    margin-top: 10px;
+    position: relative;
+}
+
+.barra-vida-relleno {
+    background: #8b0000;
+    height: 100%;
+    width: 100%;
+    transition: width 0.2s linear;
+}
+
+.bitacora {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    padding: 20px;
+    width: 100%;
+    height: 400px;
+    overflow-y: auto;
+    font-size: 14px;
+    margin-top: 15px;
+    box-shadow: inset 0 0 10px #000;
+    box-sizing: border-box;
+}
+
+.turno {
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #333;
+    padding-bottom: 8px;
+    line-height: 1.5;
+    color: #bbb;
+}
+
+.turno strong {
+    color: #fff;
+}
+
+.panel-lateral {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 15px;
+    width: 25%;
+    height: 460px;
+    overflow-y: auto;
+    box-shadow: 4px 4px 0px #000;
+}
+
+.panel-lateral h3 {
+    margin-top: 0;
+    text-align: center;
+    border-bottom: 2px solid #4a0000;
+    padding-bottom: 10px;
+    font-size: 1.1em;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.lista-datos {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.lista-datos li {
+    background: #0a0a0a;
+    border: 1px solid #222;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid #4a0000;
+    transition: border-color 0.2s;
+}
+
+.lista-datos li:hover {
+    border-left-color: #ff0000;
+}
+
+.ganancia-elo {
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.puesto-ranking {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-right: 8px;
+    color: #555;
+}
+
+.nombre-clickeable {
+    cursor: pointer;
+    color: #aaa;
+    font-weight: bold;
+    transition: color 0.2s;
+    text-decoration: none;
+    border-bottom: 1px dashed #555;
+}
+
+.nombre-clickeable:hover {
+    color: #ff3333;
+    border-bottom-color: #ff3333;
+}
+
+/* Colores de Divisiones crudos */
+.div-hierro {
+    color: #555;
+    font-weight: bold;
+}
+
+.div-bronce {
+    color: #8c5226;
+    font-weight: bold;
+}
+
+.div-plata {
+    color: #999;
+    font-weight: bold;
+}
+
+.div-oro {
+    color: #b8860b;
+    font-weight: bold;
+}
+
+.div-platino {
+    color: #008080;
+    font-weight: bold;
+}
+
+.div-diamante {
+    color: #4682b4;
+    font-weight: bold;
+}
+
+.div-leyenda {
+    color: #800080;
+    font-weight: bold;
+    text-shadow: 0 0 2px #fff;
+}
+
+/* Modal del Perfil (Pergamino Oscuro) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-contenido {
+    background: #111;
+    border: 4px solid #660000;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    box-shadow: 10px 10px 0px #000;
+    color: #ddd;
+}
+
+.btn-cerrar-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #660000;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-cerrar-modal:hover {
+    color: #ff0000;
+}
+
+.modal-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    border-top: 2px dashed #333;
+    border-bottom: 2px dashed #333;
+    padding: 20px 0;
+    margin: 20px 0;
+}
+
+.modal-columna {
+    width: 48%;
+}
+
+.modal-columna h4 {
+    margin-top: 0;
+    color: #888;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.modal-columna p {
+    margin: 8px 0;
+    font-size: 0.95em;
+    color: #aaa;
+}
+
+.modal-atributos {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #eee;
+    background: #0a0a0a;
+    padding: 10px;
+    border: 1px solid #333;
+}
+
+/* Admin Panel */
+.admin-stat-box {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    padding: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.admin-stat-valor {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ff3333;
+    display: block;
+}
+
+.admin-titulo {
+    font-size: 0.85em;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 1px;
+}
+
+/* Agregados para Creador SVG */
+.draggable {
+    cursor: grab;
+}
+
+.draggable:active {
+    cursor: grabbing;
+}
+
+.draggable:hover {
+    filter: drop-shadow(0px 0px 3px rgba(255, 0, 0, 0.8));
+}
+
+.color-picker-rustico {
+    -webkit-appearance: none;
+    border: 2px solid #555 !important;
+    background: #0a0a0a !important;
+    width: 40px !important;
+    height: 38px;
+    padding: 2px !important;
+    cursor: crosshair;
+    box-shadow: 4px 4px 0px #000;
+    margin-bottom: 0 !important;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.color-picker-rustico:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000;
+}
+
+.color-picker-rustico::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker-rustico::-webkit-color-swatch {
+    border: 1px solid #111;
+}
+
+/* Tooltip personalizado */
+#custom-tooltip {
+    position: absolute;
+    background: #000;
+    border: 2px solid #660000;
+    padding: 10px;
+    color: #fff;
+    font-size: 0.8em;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+    display: none;
+}
+
+/* EFECTOS DE LA GUARIDA DEL JEFE */
+.guarida-fondo {
+    background: radial-gradient(circle at center, #2a0000 0%, #000 80%);
+    border: 4px solid #ff3333;
+    box-shadow: inset 0 0 50px #000, 0 0 20px #ff000044;
+}
+
+.bestia-latido {
+    font-size: 8em;
+    filter: drop-shadow(0 0 30px #ff3333);
+    animation: latir 2s infinite ease-in-out;
+    margin: 20px 0;
+}
+
+@keyframes latir {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px #ff3333);
+    }
+
+    50% {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 30px #ff0000);
+    }
+
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px #ff3333);
+    }
+}
+
+.cartel-buff {
+    background: #3a0000;
+    border: 2px dashed #ff3333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 15px;
+    animation: pulsar-borde 1.5s infinite;
+}
+
+@keyframes pulsar-borde {
+    0% {
+        border-color: #ff3333;
+    }
+
+    50% {
+        border-color: gold;
+    }
+
+    100% {
+        border-color: #ff3333;
+    }
+}
+
+/* ESTILOS DE BITÁCORA MEJORADOS (QoL) */
+.log-msg {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    font-family: inherit;
+    line-height: 1.4;
+    text-shadow: 1px 1px 1px #000;
+}
+
+.log-jugador {
+    border-left: 4px solid #4a90e2;
+    background: rgba(74, 144, 226, 0.15);
+    text-align: left;
+    width: 85%;
+    margin-right: auto;
+}
+
+.log-mascota {
+    border-left: 4px solid #b10dc9;
+    background: rgba(177, 13, 201, 0.15);
+    text-align: left;
+    margin-left: 30px;
+    width: 80%;
+    font-style: italic;
+}
+
+.log-enemigo {
+    border-right: 4px solid #ff3333;
+    background: rgba(255, 51, 51, 0.15);
+    text-align: right;
+    width: 85%;
+    margin-left: auto;
+}
+
+.log-sistema {
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+    border-top: 1px dashed #555;
+    border-bottom: 1px dashed #555;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ESTILOS DEL OJO DE DIOS (MÉTRICAS) */
+.admin-metricas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.admin-box {
+    background: #0a0a0a;
+    border: 1px solid #222;
+    padding: 15px;
+    flex: 1;
+    text-align: center;
+    box-shadow: inset 0 0 10px #000;
+}
+
+.admin-titulo {
+    display: block;
+    color: #555;
+    font-size: 0.8em;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.admin-valor {
+    display: block;
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+.admin-subvalor {
+    display: block;
+    color: #888;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.liga-hierro {
+    color: #888;
+}
+
+.liga-bronce {
+    color: #cd7f32;
+}
+
+.liga-plata {
+    color: #c0c0c0;
+}
+
+.liga-oro {
+    color: #ffd700;
+}
+
+.liga-platino {
+    color: #00ced1;
+}
+
+.liga-diamante {
+    color: #1e90ff;
+}
+
+.liga-leyenda {
+    color: #ff00ff;
+    text-shadow: 0 0 5px #ff00ff;
+}
+
+.poblacion-ligas {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.poblacion-item {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.admin-input {
+    width: 90%;
+    padding: 8px;
+    background: #000;
+    color: #fff;
+    border: 1px solid #440000;
+    font-family: inherit;
+    margin-top: 5px;
+}
+
+.admin-result-item {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    color: #ccc;
+    text-align: left;
+}
+
+.admin-result-item:hover {
+    background: #330000;
+    color: #fff;
+}
+
+/* EFECTOS DE DRAG & DROP PARA SASTRERÍA Y FORJA */
+.draggable,
+.sas-draggable {
+    cursor: grab;
+}
+
+.draggable:active,
+.sas-draggable:active {
+    cursor: grabbing;
+}
+
+.is-dragging {
+    filter: drop-shadow(0 0 8px gold) brightness(1.3);
+    cursor: grabbing !important;
+}
+
+/* Brillo al pasar el mouse por encima de objetos agarrables */
+.draggable:hover,
+.sas-draggable:hover {
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8)) brightness(1.2);
+}
+
+/* ========================================== */
+/* ESTILOS PARA RECURSOS SVG PROPIOS          */
+/* ========================================== */
+
+.img-titulo {
+    max-width: 90%;
+    height: auto;
+    margin: 0 auto 20px auto;
+    display: block;
+    /* Opcional: Le da un brillo leve por detrás para que resalte del fondo oscuro */
+    filter: drop-shadow(0 0 10px rgba(255, 51, 51, 0.3));
+}
+
+.btn-invisible {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    /* CAMBIO AQUÍ: Máximo 400px, pero si la pantalla es más chica, se adaptan */
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+
+    transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1), filter 0.1s ease;
+    --color-sombra: rgba(255, 255, 255, 0.5);
+}
+
+.btn-invisible img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    /* Evita que el mouse interfiera con la imagen */
+}
+
+/* --- EFECTOS AL PASAR EL CURSOR (HOVER) --- */
+
+/* --- EFECTOS AL PASAR EL CURSOR (HOVER) --- */
+
+.btn-invisible:hover {
+    transform: scale(0.97);
+    /* Ahora usa la variable mágica */
+    filter: brightness(1.1) drop-shadow(0 0 12px var(--color-sombra));
+}
+
+.btn-invisible:active {
+    transform: scale(0.94);
+    /* Mantiene la variable pero achica el resplandor al hacer click */
+    filter: brightness(0.85) drop-shadow(0 0 5px var(--color-sombra));
+}
+
+
+/* ==========================================================================
+   VERSIONES DE RESPALDO DE SCROLLBAR (DESACTIVADAS)
+   Para usar cualquiera de estas versiones:
+   1. Asegúrate de comentar primero tu barra de scroll actual.
+   2. Borra el "/*" inicial y el "*/
+   
+
+
+/* ==========================================================================
+   [OPCIÓN A] RESPALDO: VERSIÓN MÁXIMA VIOLENCIA / GLADIADOR REFORZADO
+   ========================================================================== */
+/*
+::-webkit-scrollbar {
+    width: 14px;  
+    height: 14px; 
+}
+
+::-webkit-scrollbar-track {
+    background-color: #0a0505;
+    background-image: linear-gradient(45deg, #140808 25%, transparent 25%, transparent 75%, #140808 75%, #140808),  
+                      linear-gradient(45deg, #140808 25%, transparent 25%, transparent 75%, #140808 75%, #140808);
+    background-size: 8px 8px;
+    background-position: 0 0, 4px 4px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+    border-left: 2px solid #1a0c0c; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #5a0c0c; 
+    border-radius: 0px !important; 
+    border: 3px solid #0a0505; 
+    box-shadow: inset 2px 2px 0px rgba(255, 0, 0, 0.2), 
+                inset -2px -2px 0px rgba(0, 0, 0, 0.7);
+    transition: all 0.1s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #990000;
+    border: 2px solid #0a0505;
+    filter: drop-shadow(0 0 4px #ff0000);
+    box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.4);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #ff0000;
+    filter: drop-shadow(0 0 8px #ff3333);
+}
+*/
+
+
+/* ==========================================================================
+   [OPCIÓN B] RESPALDO: VERSIÓN INTERFAZ DE VIDEOJUEGO (RPG / GEMA RÚNICA)
+   ========================================================================== */
+/*
+::-webkit-scrollbar {
+    width: 14px;  
+    height: 14px; 
+}
+
+::-webkit-scrollbar-track {
+    background-color: #0d0909;
+    background-image: radial-gradient(rgba(40, 20, 20, 0.4) 1px, transparent 0);
+    background-size: 4px 4px;
+    border-left: 2px solid #3a2214; 
+    border-right: 1px solid #1a0f0a;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.9);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #800c0c 0%, #b31414 40%, #540505 60%, #300202 100%);
+    border-radius: 0px !important; 
+    border: 2px solid #5c3a21; 
+    box-shadow: 
+        inset 1px 1px 1px rgba(255, 255, 255, 0.3), 
+        inset -1px -1px 2px rgba(0, 0, 0, 0.9),      
+        0 0 4px rgba(0, 0, 0, 0.6);                  
+    transition: all 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #a31212 0%, #e61c1c 30%, #800c0c 70%, #4a0505 100%);
+    border-color: #8c5833;
+    filter: drop-shadow(0 0 6px rgba(230, 28, 28, 0.8));
+    cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(135deg, #e61c1c 0%, #ff4d4d 20%, #b31414 70%, #610505 100%);
+    border-color: #b37446;
+    filter: drop-shadow(0 0 12px rgba(255, 77, 77, 1));
+}
+*/
+
+
+/* ==========================================================================
+   BARRA DE SCROLL: MODO BOSS FIGHT / INTERFAZ ÉPICA (NIVEL EXTREMO)
+   ========================================================================== */
+
+/* Ancho pesado de juego RPG clásico */
+::-webkit-scrollbar {
+    width: 16px;  
+    height: 16px; 
+}
+
+/* LA PISTA: Una ranura de piedra oscura tallada con runas/grietas de energía */
+::-webkit-scrollbar-track {
+    background-color: #080303;
+    
+    /* Patrón de líneas diagonales cruzadas que simulan rejas de mazmorra o cadenas */
+    background-image: 
+        linear-gradient(45deg, #170707 25%, transparent 25%, transparent 75%, #170707 75%),
+        linear-gradient(45deg, #170707 25%, transparent 25%, transparent 75%, #170707 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
+    
+    /* Bordes de hierro oscuro que contienen la energía */
+    border-left: 3px solid #1c0e0e;
+    border-right: 1px solid #000000;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.95);
+}
+
+/* EL TIRADOR: La Hoja del Ejecutor (Hierro Negro con núcleo de lava/sangre) */
+::-webkit-scrollbar-thumb {
+    /* Gradiente de 5 capas: Crea un "filo" brillante justo en el medio, como una espada */
+    background: linear-gradient(90deg, 
+        #2b0404 0%, 
+        #6e0909 30%, 
+        #cf1313 50%, /* El filo incandescente en el centro */
+        #6e0909 70%, 
+        #2b0404 100%
+    );
+    
+    border-radius: 0px !important; 
+    
+    /* Marco de acero gótico envejecido */
+    border: 3px solid #1f1414; 
+    
+    /* El truco final: Sombras internas triples. 
+       Simulan los remaches y el relieve de una pieza de armadura pesada */
+    box-shadow: 
+        inset 0 4px 0 #4a0d0d,  /* Remache superior simula tope */
+        inset 0 -4px 0 #120202, /* Sombra inferior pesada */
+        inset 1px 0 2px rgba(255, 255, 255, 0.2), 
+        0 4px 6px rgba(0, 0, 0, 0.8);
+        
+    transition: filter 0.1s ease-in-out, background 0.1s ease;
+}
+
+/* HOVER: Despertás el poder del arma (Efecto Runa Activa) */
+::-webkit-scrollbar-thumb:hover {
+    /* El núcleo de la espada se vuelve naranja/fuego de fundición */
+    background: linear-gradient(90deg, 
+        #4a0505 0%, 
+        #a60d0d 25%, 
+        #ff4500 50%, /* Centro de fuego puro */
+        #a60d0d 75%, 
+        #4a0505 100%
+    );
+    
+    /* El marco de acero se ilumina por el calor */
+    border-color: #3b2020;
+    
+    /* Un resplandor (Glow) rojo/anaranjado violento que mancha el fondo de piedra */
+    filter: drop-shadow(0 0 8px #ff1a1a);
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ff0000" d="M12 2l-1 4H7l3 3-2 5 4-3 4 3-2-5 3-3h-4z"/></svg>'), pointer; /* Opcional: Si querés, hasta te cambia el cursor a una mini espada rúnica en hover */
+}
+
+/* ACTIVE: Furia de Berserker (Punto crítico de daño) */
+::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(90deg, 
+        #800000 0%, 
+        #ff0000 20%, 
+        #ffffff 50%, /* El metal está tan caliente que se ve blanco en el centro */
+        #ff0000 80%, 
+        #800000 100%
+    );
+    filter: drop-shadow(0 0 15px #ff3333);
+}
+
+/* CLASE PARA TEXTOS ÉPICOS (Reemplaza a los SVGs) */
+.texto-dorado-3d {
+    font-family: 'Cinzel', Impact, sans-serif; /* Mejor si es una fuente gruesa */
+    font-weight: 900;
+    
+    /* El degradado metálico/glossy */
+    background: linear-gradient(180deg, #ffdd00 0%, #ff8800 50%, #cc4400 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Borde grueso y sombra */
+    -webkit-text-stroke: 1.5px #111;
+    filter: drop-shadow(3px 3px 0px #000) drop-shadow(0px 0px 8px rgba(255, 100, 0, 0.6));
+    
+    /* Ajustes generales */
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0;
+}
+
+/* ==========================================
+   🏆 ESTILOS DEL RANKING ÉPICO
+   ========================================== */
+/* Gemas de las esquinas */
+.gema-esquina {
+    position: absolute; width: 25px; height: 25px; background: #cc0000;
+    border: 2px solid #ff6666; box-shadow: inset 0 0 10px #660000, 0 0 10px #ff0000;
+    transform: rotate(45deg); z-index: 5;
+}
+.gema-esquina.top-left { top: -12px; left: -12px; }
+.gema-esquina.top-right { top: -12px; right: -12px; }
+.gema-esquina.bot-left { bottom: -12px; left: -12px; }
+.gema-esquina.bot-right { bottom: -12px; right: -12px; }
+
+/* El Podium (Top 3) REPARADO */
+.podium-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    width: 32%; text-align: center; position: relative;
+    transition: 0.2s; cursor: pointer;
+}
+.podium-item:hover { filter: brightness(1.2); transform: translateY(-5px); }
+.podium-1 { order: 2; z-index: 3; }
+.podium-2 { order: 1; z-index: 2; }
+.podium-3 { order: 3; z-index: 1; }
+
+.podium-caja {
+    width: 100%; font-size: 1.5em; font-weight: bold; color: #111;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+    display: flex; justify-content: center; align-items: center;
+    border-radius: 8px 8px 0 0; border: 2px solid; border-bottom: none;
+    margin-top: 10px;
+}
+/* Altura y colores aplicados SOLO al pilar, no al texto */
+.podium-1 .podium-caja { background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%); border-color: #ffe066; height: 80px; box-shadow: 0 -5px 20px rgba(255,215,0,0.3); }
+.podium-2 .podium-caja { background: linear-gradient(180deg, #e0e0e0 0%, #808080 100%); border-color: #fff; height: 50px; }
+.podium-3 .podium-caja { background: linear-gradient(180deg, #e49b5d 0%, #8b4513 100%); border-color: #ffb380; height: 35px; }
+
+/* Lista del 4 al 100 (AHORA CON GRILLA INQUEBRANTABLE) */
+.fila-ranking {
+    display: grid;
+    /* 4 columnas fijas: Puesto, Nombre, Elo, Winrate */
+    grid-template-columns: 50px 2fr 1fr 1fr; 
+    align-items: center;
+    background: #1a1a1b; 
+    border: 1px solid #333; 
+    margin-bottom: 12px; /* Más separación entre gladiadores */
+    padding: 12px 15px; 
+    border-radius: 12px; /* Esquinas suaves */
+    transition: all 0.2s ease; 
+    cursor: pointer;
+}
+.fila-ranking:hover { 
+    background: #222; 
+    border-color: #555; 
+    transform: translateX(5px); /* Efecto facherito al pasar el mouse */
+}
+
+/* El Brillo Eléctrico para el Jugador (Suavizado y redondeado) */
+.fila-mia {
+    border: 2px solid rgba(255, 170, 0, 0.8) !important;
+    background: linear-gradient(90deg, rgba(255,170,0,0.15) 0%, rgba(255,51,51,0.15) 100%) !important;
+    /* Sombras más difuminadas para que no pinche los ojos */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 15px rgba(255,170,0,0.3), inset 0 0 10px rgba(255,170,0,0.1) !important;
+    border-radius: 12px !important;
+    transform: scale(1.02); /* Lo hace resaltar un poquito hacia adelante */
+    z-index: 2;
+    animation: pulsoElectricoSuave 2.5s infinite alternate;
+}
+@keyframes pulsoElectricoSuave {
+    from { box-shadow: 0 4px 10px rgba(0,0,0,0.5), 0 0 10px rgba(255,170,0,0.2); }
+    to { box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 20px rgba(255,170,0,0.5); }
+}
+
+.badge-mia {
+    background: linear-gradient(180deg, #cc0000 0%, #880000 100%); 
+    color: #fff; font-size: 0.65em; padding: 4px 8px;
+    border-radius: 6px; border: 1px solid #ff8800; 
+    text-transform: uppercase; font-weight: bold; letter-spacing: 1px;
+    white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* ==========================================
+   PULIDO PROFESIONAL DARK FANTASY
+   ========================================== */
+   
+/* Aura infernal para el podio */
+#podium-top3 {
+    position: relative;
+}
+#podium-top3::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%; height: 110%;
+    background: radial-gradient(ellipse at center, rgba(200, 50, 0, 0.15) 0%, rgba(0,0,0,0) 70%);
+    z-index: 0;
+    pointer-events: none;
+    animation: respirarAura 3s infinite alternate ease-in-out;
+}
+@keyframes respirarAura {
+    from { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* Efecto de Destello Metálico en la lista (Hover) */
+.fila-ranking {
+    position: relative;
+    overflow: hidden; /* Para que el destello no se salga de la caja */
+}
+/* El rayo de luz que cruza */
+.fila-ranking::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50px; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    transform: skewX(-25deg);
+    transition: 0s; /* Vuelve instantáneo cuando sacas el mouse */
+}
+.fila-ranking:hover::after {
+    left: 200%;
+    transition: 0.6s ease-in-out; /* Cruza suavemente al poner el mouse */
+}

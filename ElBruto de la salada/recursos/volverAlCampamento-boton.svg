@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Oro de Campeones para el Texto -->
+    <linearGradient id="campGoldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="25%" stop-color="#fcd34d" />
+      <stop offset="70%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+
+    <!-- Gradiente Rojo Sangre para el Estandarte de Fondo del Botón -->
+    <linearGradient id="bloodRedBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#991b1b" />
+      <stop offset="50%" stop-color="#7f1d1d" />
+      <stop offset="100%" stop-color="#450a0a" />
+    </linearGradient>
+
+    <!-- Gradiente para las Estacas de Madera -->
+    <linearGradient id="woodStake" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#2d1502" />
+    </linearGradient>
+
+    <!-- Sombra proyectada para el botón interactivo -->
+    <filter id="campShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .camp-txt { font-size: 76px; letter-spacing: 2px; }
+    .out-heavy { stroke: #050100; stroke-width: 20px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #451a03; stroke-width: 10px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR PRINCIPAL CON SOMBRA -->
+  <g filter="url(#campShadow)">
+    
+    <!-- ESTRUCTURA DEL CAMPAMENTO (Estacas detrás del botón rojo) -->
+    <g transform="translate(450, 110)">
+      <!-- Estaca de Madera Izquierda -->
+      <path d="M -390,-40 L -370,-55 L -350,-40 L -365,50 L -385,45 Z" fill="url(#woodStake)" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+      <!-- Estaca de Madera Derecha -->
+      <path d="M 350,-45 L 370,-55 L 390,-40 L 380,45 L 360,50 Z" fill="url(#woodStake)" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+      
+      <!-- Cuerdas de amarre de las estacas -->
+      <path d="M -385,-10 Q -360,-15 -350,-5 M 350,-15 Q 365,-20 380,-10" stroke="#d97706" stroke-width="4" fill="none" opacity="0.7" />
+    </g>
+
+    <!-- EL BOTÓN CENTRAL: ESTANDARTE ROJO SANGRE -->
+    <g transform="translate(450, 110)">
+      <!-- Rectángulo rústico rojo con extremos rasgados en pico -->
+      <path d="M -360,-50 L -330,-65 L 330,-65 L 360,-50 L 340,40 L 310,55 L -310,55 L -340,40 Z" fill="url(#bloodRedBg)" stroke="#1a0202" stroke-width="6" stroke-linejoin="round" />
+      
+      <!-- Costura interna del estandarte (Línea discontinua oscura) -->
+      <path d="M -342,-50 L -320,-58 L 320,-58 L 342,-50 L 325,35 L 302,46 L -302,46 L -325,35 Z" fill="none" stroke="#000" stroke-width="3" stroke-dasharray="10,8" opacity="0.4" />
+      
+      <!-- Raspones/Marcas de batalla en el botón rojo -->
+      <path d="M -280,-40 L -265,-25 M 240,20 L 260,35 M -150,40 L -135,45" stroke="#000" stroke-width="4" stroke-linecap="round" opacity="0.5" />
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "VOLVER AL CAMPAMENTO" -->
+    <g transform="translate(454, 136)">
+      <!-- Corrección milimétrica de posición por la itálica -->
+      <text y="0" class="font-brute camp-txt out-heavy" fill="#000">VOLVER AL CAMPAMENTO</text>
+      <text y="0" class="font-brute camp-txt out-mid" fill="#000">VOLVER AL CAMPAMENTO</text>
+      <text y="0" class="font-brute camp-txt" fill="url(#campGoldGrad)">VOLVER AL CAMPAMENTO</text>
+    </g>
+
+  </g>
+</svg>

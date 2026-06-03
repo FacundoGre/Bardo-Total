@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Rojo Fuego/Sangre (Para "EL OJO DEL DIOS") -->
+    <linearGradient id="godRedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d4d" />
+      <stop offset="35%" stop-color="#cc0000" />
+      <stop offset="75%" stop-color="#660000" />
+      <stop offset="100%" stop-color="#260000" />
+    </linearGradient>
+
+    <!-- Gradiente Gris Acero/Cromo (Para "MÉTRICAS") -->
+    <linearGradient id="metricsIronGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#94a3b8" />
+      <stop offset="75%" stop-color="#475569" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <!-- Gradiente para el Escudo de Piedra Oscura de Fondo -->
+    <linearGradient id="stonePlate" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#090d16" />
+    </linearGradient>
+
+    <!-- Filtro de Resplandor Maligno (Glow del Ojo) -->
+    <filter id="eyeGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Sombra pesada para la UI del Admin -->
+    <filter id="godShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="14" stdDeviation="6" flood-color="#000000" flood-opacity="0.95" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .ojo-txt { font-size: 85px; letter-spacing: 4px; }
+    .metrics-txt { font-size: 50px; letter-spacing: 12px; }
+    .stroke-blackest { stroke: #050101; stroke-width: 26px; stroke-linejoin: round; stroke-linecap: round; }
+    .stroke-red-dark { stroke: #2b0202; stroke-width: 14px; stroke-linejoin: round; stroke-linecap: round; }
+    .stroke-iron-dark { stroke: #0f172a; stroke-width: 12px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR CON SOMBRA -->
+  <g filter="url(#godShadow)">
+    
+    <!-- PANEL DE PIEDRA Y COMPONENTES VISUALES DE INTERFAZ -->
+    <g transform="translate(500, 175)">
+      <!-- Placa de altar rústico/oscuro -->
+      <path d="M -460,-60 L -400,-100 L 400,-100 L 460,-60 L 420,50 L 220,105 L -220,105 L -420,50 Z" fill="url(#stonePlate)" stroke="#090d16" stroke-width="8" stroke-linejoin="round" />
+      
+      <!-- Relieve interno de runas/líneas de circuito mágico -->
+      <path d="M -440,-58 L -388,-90 L 388,-90 L 440,-58 L 405,42" fill="none" stroke="#64748b" stroke-width="2" opacity="0.3" />
+
+      <!-- METRICAS ESTILIZADAS (Gráficos de barra hechos con picos de energía a la izquierda) -->
+      <g transform="translate(-360, 0)" fill="#b91c1c" opacity="0.4" filter="url(#eyeGlow)">
+        <rect x="-30" y="-40" width="12" height="80" rx="3" />
+        <rect x="-12" y="-10" width="12" height="50" rx="3" />
+        <rect x="6" y="-60" width="12" height="100" rx="3" />
+      </g>
+
+      <!-- METRICAS ESTILIZADAS (Gráficos de barra a la derecha) -->
+      <g transform="translate(360, 0)" fill="#b91c1c" opacity="0.4" filter="url(#eyeGlow)">
+        <rect x="-18" y="-70" width="12" height="110" rx="3" />
+        <rect x="0" y="-30" width="12" height="70" rx="3" />
+        <rect x="18" y="-50" width="12" height="90" rx="3" />
+      </g>
+
+      <!-- EL OJO MÍSTICO CENTRAL (Detrás del texto, asomando imponente) -->
+      <g transform="translate(0, -50) scale(1.1)">
+        <!-- Silueta externa del ojo (Párpados de piedra rota) -->
+        <path d="M -110,0 C -50,-60 50,-60 110,0 C 50,60 -50,60 -110,0 Z" fill="#111827" stroke="#000" stroke-width="6" />
+        <!-- Globo ocular rojo ardiente -->
+        <circle cx="0" cy="0" r="40" fill="#e11d48" filter="url(#eyeGlow)" />
+        <circle cx="0" cy="0" r="28" fill="#f43f5e" />
+        <!-- Pupila reptiliana/demoniaca de Admin (Negra y afilada) -->
+        <path d="M 0,-32 C 8,-10 8,10 0,32 C -8,10 -8,-10 0,-32 Z" fill="#000000" />
+        <!-- Brillo del ojo -->
+        <circle cx="-10" cy="-10" r="5" fill="#ffffff" opacity="0.8" />
+        
+        <!-- Lágrimas/Líneas de poder de sangre saliendo del ojo hacia el panel -->
+        <path d="M -70,25 L -90,50 M 70,25 L 90,50 M 0,40 L 0,75" stroke="#9f1239" stroke-width="4" stroke-linecap="round" />
+      </g>
+
+      <!-- Grietas oscuras en el altar -->
+      <path d="M -260,-90 L -240,-65 M 240,90 L 255,70 M -430,10 L -395,15" stroke="#000" stroke-width="5" fill="none" stroke-linecap="round" />
+    </g>
+
+    <!-- TEXTO SUPERIOR: "EL OJO DEL DIOS" -->
+    <g transform="translate(500, 115)">
+      <text y="0" class="font-brute ojo-txt stroke-blackest" fill="#000">EL OJO DEL DIOS</text>
+      <text y="0" class="font-brute ojo-txt stroke-red-dark" fill="#000">EL OJO DEL DIOS</text>
+      <text y="0" class="font-brute ojo-txt" fill="url(#godRedGrad)" filter="url(#eyeGlow)">EL OJO DEL DIOS</text>
+    </g>
+
+    <!-- TEXTO INFERIOR: "(Métricas)" -->
+    <g transform="translate(504, 235)">
+      <!-- Un pelín corrido a la derecha por la itálica -->
+      <text y="0" class="font-brute metrics-txt stroke-blackest" fill="#000">( MÉTRICAS )</text>
+      <text y="0" class="font-brute metrics-txt stroke-iron-dark" fill="#000">( MÉTRICAS )</text>
+      <text y="0" class="font-brute metrics-txt" fill="url(#metricsIronGrad)">( MÉTRICAS )</text>
+    </g>
+
+  </g>
+</svg>

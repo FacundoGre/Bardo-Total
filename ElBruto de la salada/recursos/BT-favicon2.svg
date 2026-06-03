@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Oro Viejo -->
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff2a3" />
+      <stop offset="50%" stop-color="#ffd043" />
+      <stop offset="100%" stop-color="#945200" />
+    </linearGradient>
+
+    <!-- Gradiente del Escudo de Hierro -->
+    <linearGradient id="favIron" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5a4a42" />
+      <stop offset="100%" stop-color="#1f1610" />
+    </linearGradient>
+  </defs>
+
+  <!-- ESCUDO DE FONDO -->
+  <path d="M 8,10 L 56,10 L 59,26 C 59,42 44,54 32,60 C 20,54 5,42 5,26 Z" 
+        fill="url(#favIron)" stroke="#000000" stroke-width="4" stroke-linejoin="round" />
+
+  <!-- DETALLE: Hacha salvaje cruzada por detrás -->
+  <g transform="translate(32, 28) rotate(45)">
+    <!-- Mango -->
+    <rect x="-1.5" y="-24" width="3" height="44" rx="1" fill="#422816" stroke="#000000" stroke-width="1.5" />
+    <!-- Hoja del hacha -->
+    <path d="M 1.5,-14 C 8,-14 16,-20 20,-12 C 24,-5 18,3 20,10 C 16,18 8,14 1.5,14 Z" 
+          fill="#94a3b8" stroke="#000000" stroke-width="1.5" stroke-linejoin="round" />
+  </g>
+
+  <!-- TEXTO: INICIALES "BT" (Atributos nativos purificados para evitar fallos de renderizado) -->
+  <g transform="translate(32, 43)">
+    <!-- Capa 1: El trazo negro grueso de fondo -->
+    <text font-family="'Impact', 'Arial Black', sans-serif" 
+          font-weight="900" 
+          font-size="28px" 
+          font-style="italic" 
+          text-anchor="middle" 
+          letter-spacing="-2px" 
+          stroke="#000000" 
+          stroke-width="6" 
+          stroke-linejoin="round" 
+          fill="#000000">BT</text>
+          
+    <!-- Capa 2: El relleno de oro viejo al frente -->
+    <text font-family="'Impact', 'Arial Black', sans-serif" 
+          font-weight="900" 
+          font-size="28px" 
+          font-style="italic" 
+          text-anchor="middle" 
+          letter-spacing="-2px" 
+          fill="url(#favGold)">BT</text>
+  </g>
+</svg>

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 340" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Fuego Máximo para HERRERÍA -->
+    <linearGradient id="titleForgeFire" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="15%" stop-color="#fff066" />
+      <stop offset="45%" stop-color="#ff7700" />
+      <stop offset="80%" stop-color="#b30000" />
+      <stop offset="100%" stop-color="#3d0000" />
+    </linearGradient>
+
+    <!-- Gradiente para el Escudo/Placa de Hierro Reforzado -->
+    <linearGradient id="heavyIronPlate" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4b5563" />
+      <stop offset="40%" stop-color="#1f2937" />
+      <stop offset="70%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+
+    <!-- Filtro de Resplandor de Calor (Glow de Fragua) -->
+    <filter id="heatGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Sombra pesada para que despegue del fondo de la sección -->
+    <filter id="forgePanelShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="14" stdDeviation="7" flood-color="#000000" flood-opacity="0.95" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .main-herreria-txt { font-size: 135px; letter-spacing: 6px; }
+    .stroke-iron-dark { stroke: #050201; stroke-width: 26px; stroke-linejoin: round; stroke-linecap: round; }
+    .stroke-fire-dark { stroke: #2a0300; stroke-width: 14px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR PRINCIPAL CON SOMBRA -->
+  <g filter="url(#forgePanelShadow)">
+    
+    <!-- PLACA DE METAL INDUSTRIAL Y BRUTAL (Marco de la página) -->
+    <g transform="translate(500, 165)">
+      <!-- Placa base de hierro forjado -->
+      <path d="M -450,-70 L -400,-105 L 400,-105 L 450,-70 L 410,65 L 280,110 L -280,110 L -410,65 Z" fill="url(#heavyIronPlate)" stroke="#030712" stroke-width="8" stroke-linejoin="round" />
+      
+      <!-- Bisel de acero interno -->
+      <path d="M -435,-72 L -390,-95 L 390,-95 L 435,-72 L 398,55 L 272,98 L -272,98 L -398,55 Z" fill="none" stroke="#9ca3af" stroke-width="3" opacity="0.3" />
+
+      <!-- Resplandor de calor ardiente que sale desde detrás del texto -->
+      <path d="M -300,-50 L 300,-50 L 250,50 L -250,50 Z" fill="#ff4500" opacity="0.25" filter="url(#heatGlow)" />
+
+      <!-- Grandes remaches de hierro en las esquinas -->
+      <circle cx="-395" cy="-80" r="7" fill="#4b5563" stroke="#000" stroke-width="3" />
+      <circle cx="395" cy="-80" r="7" fill="#4b5563" stroke="#000" stroke-width="3" />
+      <circle cx="-395" cy="45" r="7" fill="#4b5563" stroke="#000" stroke-width="3" />
+      <circle cx="395" cy="45" r="7" fill="#4b5563" stroke="#000" stroke-width="3" />
+      <circle cx="-265" cy="88" r="7" fill="#4b5563" stroke="#000" stroke-width="3" />
+      <circle cx="265" cy="88" r="7" fill="#4b5563" stroke="#000" stroke-width="3" />
+
+      <!-- Grietas por tensión mecánica y calor en la placa metálica -->
+      <path d="M -350,-95 L -330,-75 L -340,-60 M 330,80 L 345,100 M 420,-10 L 380,-5" stroke="#000" stroke-width="5" fill="none" stroke-linecap="round" />
+    </g>
+
+    <!-- DETALLES DE CHISPAS VOLANTES (Detrás del texto pero delante de la placa) -->
+    <g transform="translate(500, 165)" stroke="#ff9900" stroke-width="4" stroke-linecap="round" opacity="0.8">
+      <path d="M -220,-80 L -240,-110 M -180,-90 L -190,-120 M 200,-80 L 220,-115 M 240,-60 L 270,-85" />
+      <path d="M -300,20 L -330,40 M 310,30 L 340,50" stroke="#ffeb3b" stroke-width="3" />
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "HERRERÍA" -->
+    <g transform="translate(506, 220)">
+      <!-- Un toque a la derecha por la itálica del Impact -->
+      <text y="0" class="font-brute main-herreria-txt stroke-iron-dark" fill="#000">HERRERÍA</text>
+      <text y="0" class="font-brute main-herreria-txt stroke-fire-dark" fill="#000">HERRERÍA</text>
+      <text y="0" class="font-brute main-herreria-txt" fill="url(#titleForgeFire)" filter="url(#heatGlow)">HERRERÍA</text>
+    </g>
+
+    <!-- CHISPAS AL ROJO VIVO DELANTERAS (Por encima del texto para integrarlo) -->
+    <g transform="translate(500, 165)" fill="#ffaa00" opacity="0.9">
+      <circle cx="-110" cy="40" r="4" />
+      <circle cx="150" cy="25" r="5" />
+      <circle cx="25" cy="50" r="3" />
+      <!-- Un destello de golpe en la letra E -->
+      <path d="M -160,10 L -140,-10 L -150,0 Z" fill="#fff" />
+    </g>
+
+  </g>
+</svg>

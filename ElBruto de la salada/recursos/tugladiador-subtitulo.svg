@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 160" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Bronce/Oro para TU GLADIADOR -->
+    <linearGradient id="gladiatorGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff8db" />
+      <stop offset="30%" stop-color="#e5a93b" />
+      <stop offset="75%" stop-color="#915600" />
+      <stop offset="100%" stop-color="#472400" />
+    </linearGradient>
+
+    <!-- Gradiente para el Acero de las Espadas -->
+    <linearGradient id="bladeSteel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#cbd5e1" />
+      <stop offset="50%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+
+    <!-- Sombra sutil para subtítulo -->
+    <filter id="subTitleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="3" flood-color="#000000" flood-opacity="0.85" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .gladiador-txt { font-size: 85px; letter-spacing: 5px; }
+    .out-heavy { stroke: #0d0700; stroke-width: 20px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #2d1900; stroke-width: 10px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR CON SOMBRA -->
+  <g filter="url(#subTitleShadow)">
+    
+    <!-- DETALLES DE FONDO: ESPADAS Y LAURELES DE GLORIA -->
+    <g transform="translate(400, 80)" opacity="0.4">
+      
+      <!-- Corona de Laureles (Izquierda y Derecha) -->
+      <path d="M -110,25 C -140,20 -160,-10 -150,-40 M -140,-15 C -155,-35 -130,-45 -120,-30" fill="none" stroke="#84cc16" stroke-width="6" stroke-linecap="round" />
+      <path d="M 110,25 C 140,20 160,-10 150,-40 M 140,-15 C 155,-35 130,-45 120,-30" fill="none" stroke="#84cc16" stroke-width="6" stroke-linecap="round" />
+      
+      <!-- Espada Cruzada 1 (Hacia el este) -->
+      <g transform="rotate(25) scale(0.7)">
+        <path d="M -160,0 L 160,-6 L 180,0 L 160,6 Z" fill="url(#bladeSteel)" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+        <rect x="-185" y="-4" width="25" height="8" rx="2" fill="#78350f" stroke="#000" stroke-width="3" />
+        <path d="M -160,-15 L -160,15" stroke="#000" stroke-width="5" stroke-linecap="round" />
+      </g>
+
+      <!-- Espada Cruzada 2 (Hacia el oeste) -->
+      <g transform="rotate(-25) scale(0.7)">
+        <path d="M -160,0 L 160,-6 L 180,0 L 160,6 Z" fill="url(#bladeSteel)" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+        <rect x="-185" y="-4" width="25" height="8" rx="2" fill="#78350f" stroke="#000" stroke-width="3" />
+        <path d="M -160,-15 L -160,15" stroke="#000" stroke-width="5" stroke-linecap="round" />
+      </g>
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "TU GLADIADOR" -->
+    <g transform="translate(404, 110)">
+      <!-- Un toque descentrado a la derecha para emparejar la inclinación de la tipografía -->
+      <text y="0" class="font-brute gladiador-txt out-heavy" fill="#000">TU GLADIADOR</text>
+      <text y="0" class="font-brute gladiador-txt out-mid" fill="#000">TU GLADIADOR</text>
+      <text y="0" class="font-brute gladiador-txt" fill="url(#gladiatorGold)">TU GLADIADOR</text>
+    </g>
+
+  </g>
+</svg>

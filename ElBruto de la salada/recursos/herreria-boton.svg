@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente de Fuego/Fraguar para el Botón -->
+    <linearGradient id="btnForgeFire" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff5cc" />
+      <stop offset="25%" stop-color="#ff9900" />
+      <stop offset="70%" stop-color="#cc2400" />
+      <stop offset="100%" stop-color="#4a0000" />
+    </linearGradient>
+
+    <!-- Gradiente para el Hierro Forjado (Gris Oscuro) -->
+    <linearGradient id="btnForgeIron" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748b" />
+      <stop offset="50%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <!-- Gradiente para el Mango de Madera -->
+    <linearGradient id="btnForgeWood" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a16207" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+
+    <!-- Sombra del botón interactivo -->
+    <filter id="btnForgeShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .herreria-btn-txt { font-size: 110px; letter-spacing: 5px; }
+    .out-heavy { stroke: #0a0301; stroke-width: 24px; stroke-linejoin: round; stroke-linecap: round; }
+    .out-mid { stroke: #260a02; stroke-width: 12px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR CON SOMBRA INTERACTIVA -->
+  <g filter="url(#btnForgeShadow)">
+    
+    <!-- ELEMENTOS DE ICONOGRAFÍA DE INTERFAZ (Enmarcándolo en los costados) -->
+    <g transform="translate(450, 110)">
+      
+      <!-- Mini Yunque de Forja (Izquierda) -->
+      <g transform="translate(-240, 5) scale(0.7)" stroke="#0f172a" stroke-width="5" stroke-linejoin="round">
+        <path d="M -80,-20 L 60,-20 L 95,-40 L 115,-40 L 85,-5 L 70,30 L 90,60 L -90,60 L -70,30 L -100,-5 Z" fill="url(#btnForgeIron)" />
+        <path d="M -65,30 L 65,30 L 85,55 L -85,55 Z" fill="#1e293b" />
+        <!-- Chispitas del yunque -->
+        <path d="M -40,-35 L -55,-50 M 40,-35 L 55,-50 M 0,-45 L 0,-60" stroke="#ff9900" stroke-width="4" stroke-linecap="round" fill="none"/>
+      </g>
+
+      <!-- Mini Martillo de Forja (Derecha) -->
+      <g transform="translate(250, -5) rotate(-30) scale(0.75)" stroke="#000" stroke-width="5" stroke-linejoin="round">
+        <!-- Mango -->
+        <rect x="-5" y="25" width="10" height="90" rx="2" fill="url(#btnForgeWood)" />
+        <!-- Cabeza -->
+        <path d="M -25,-25 L 25,-25 L 30,-5 L 20,25 L -20,25 L -30,-5 Z" fill="url(#btnForgeIron)" />
+        <path d="M -25,-25 L 25,-25 L 20,-12 L -20,-12 Z" fill="#94a3b8" />
+      </g>
+      
+    </g>
+
+    <!-- TEXTO PRINCIPAL: "HERRERÍA" -->
+    <g transform="translate(456, 148)"> 
+      <!-- Desplazado 6px por el efecto Itálica -->
+      <text y="0" class="font-brute herreria-btn-txt out-heavy" fill="#000">HERRERÍA</text>
+      <text y="0" class="font-brute herreria-btn-txt out-mid" fill="#000">HERRERÍA</text>
+      <text y="0" class="font-brute herreria-btn-txt" fill="url(#btnForgeFire)">HERRERÍA</text>
+    </g>
+    
+  </g>
+</svg>

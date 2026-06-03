@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 320" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Violeta Imperial para el texto SASTRE -->
+    <linearGradient id="titleTailorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f3d0ff" />
+      <stop offset="35%" stop-color="#b852ff" />
+      <stop offset="70%" stop-color="#631499" />
+      <stop offset="100%" stop-color="#2c0047" />
+    </linearGradient>
+
+    <!-- Gradiente de Oro para las costuras y broches -->
+    <linearGradient id="titleTailorGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff4b8" />
+      <stop offset="50%" stop-color="#d47a00" />
+      <stop offset="100%" stop-color="#5a2e00" />
+    </linearGradient>
+
+    <!-- Gradiente de Fondo para el Estandarte de Cuero/Tela -->
+    <linearGradient id="clothGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b2314" />
+      <stop offset="50%" stop-color="#24140a" />
+      <stop offset="100%" stop-color="#140a05" />
+    </linearGradient>
+
+    <!-- Gradiente de Metal para las Tijeras de Fondo -->
+    <linearGradient id="scissorsSteel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+
+    <!-- Sombra pesada para despegar del fondo de la sección -->
+    <filter id="tailorPanelShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="6" flood-color="#000000" flood-opacity="0.95" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-brute { font-family: 'Impact', 'Arial Black', sans-serif; font-weight: 900; text-anchor: middle; font-style: italic; }
+    .main-sastre-txt { font-size: 140px; letter-spacing: 10px; }
+    .stroke-blackest { stroke: #08010d; stroke-width: 26px; stroke-linejoin: round; stroke-linecap: round; }
+    .stroke-purple-dark { stroke: #26053b; stroke-width: 14px; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+
+  <!-- CONTENEDOR PRINCIPAL CON SOMBRA -->
+  <g filter="url(#tailorPanelShadow)">
+    
+    <!-- ESTANDARTE / PARCHE DE CUERO DE FONDO -->
+    <g transform="translate(500, 160)">
+      <!-- Retazo de tela/cuero rústico con picos gastados -->
+      <path d="M -420,-70 L -360,-100 L 360,-100 L 420,-70 L 390,50 L 280,95 L -280,95 L -390,50 Z" fill="url(#clothGrad)" stroke="#140a05" stroke-width="8" stroke-linejoin="round" />
+      
+      <!-- Bordes de costura de oro viejo (Línea discontinua) -->
+      <path d="M -400,-68 L -352,-90 L 352,-90 L 400,-68 L 375,42 L 272,83 L -272,83 L -375,42 Z" fill="none" stroke="url(#titleTailorGold)" stroke-width="4" stroke-dasharray="12,10" opacity="0.7" />
+
+      <!-- Broches/Alfileres de Gancho Medievales en las esquinas superiores -->
+      <g transform="translate(-370, -85) rotate(-20) scale(0.7)">
+        <path d="M -10,-30 C 10,-30 20,-10 20,20 C 20,50 0,60 -10,60 L -10,-10" fill="none" stroke="url(#scissorsSteel)" stroke-width="6"/>
+        <circle cx="-10" cy="-20" r="10" fill="url(#titleTailorGold)" stroke="#000" stroke-width="2"/>
+      </g>
+      <g transform="translate(370, -85) rotate(20) scale(0.7)">
+        <path d="M 10,-30 C -10,-30 -20,-10 -20,20 C -20,50 0,60 10,60 L 10,-10" fill="none" stroke="url(#scissorsSteel)" stroke-width="6"/>
+        <circle cx="10" cy="-20" r="10" fill="url(#titleTailorGold)" stroke="#000" stroke-width="2"/>
+      </g>
+    </g>
+
+    <!-- TIJERAS GIGANTES DE DETRÁS DEL TEXTO -->
+    <g transform="translate(500, 155) rotate(-10) scale(0.9)" opacity="0.35">
+      <g stroke="#000" stroke-width="5" stroke-linejoin="round">
+        <path d="M -30,-20 L 220,-40 L 200,-55 L 10,-25 Z" fill="url(#scissorsSteel)" />
+        <path d="M -30,-10 L 230,10 L 220,-10 L 10,-15 Z" fill="url(#scissorsSteel)" />
+        <circle cx="-60" cy="-40" r="30" fill="none" stroke="url(#titleTailorGold)" stroke-width="12" />
+        <circle cx="-60" cy="20" r="30" fill="none" stroke="url(#titleTailorGold)" stroke-width="12" />
+      </g>
+      <circle cx="0" cy="-20" r="8" fill="#475569" stroke="#000" stroke-width="3" />
+    </g>
+
+    <!-- LÍNEAS DE CORTE GUÍA (Efecto diseño de sastre) -->
+    <path d="M 180,60 L 320,60 M 680,245 L 820,245" stroke="#ef4444" stroke-width="4" stroke-dasharray="8,6" stroke-linecap="round" opacity="0.6" />
+
+    <!-- TEXTO PRINCIPAL: "SASTRE" -->
+    <g transform="translate(506, 215)">
+      <!-- Desplazado para compensar la itálica del Impact -->
+      <text y="0" class="font-brute main-sastre-txt stroke-blackest" fill="#000">SASTRE</text>
+      <text y="0" class="font-brute main-sastre-txt stroke-purple-dark" fill="#000">SASTRE</text>
+      <text y="0" class="font-brute main-sastre-txt" fill="url(#titleTailorGrad)">SASTRE</text>
+    </g>
+
+  </g>
+</svg>
