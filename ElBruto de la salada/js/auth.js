@@ -51,7 +51,7 @@ export async function registrarFantasma(nombreGladiador, pass) {
         const fakeEmail = `${nombreGladiador.toLowerCase().replace(/\s+/g, '')}@bardo.local`;
         try {
             await createUserWithEmailAndPassword(auth, fakeEmail, pass);
-            mostrarAlerta(`¡Bienvenido, ${nombreGladiador}! Que tu sangre riegue la arena.`, "AL BATTLEFIELD");
+            mostrarAlerta(`¡Bienvenido, ${nombreGladiador}! Que tu sangre riegue la arena.`, "A LA ARENA");
         } catch (error) { mostrarAlerta("Ese nombre ya está siendo usado por otro gladiador.", "OK"); }
     });
 }

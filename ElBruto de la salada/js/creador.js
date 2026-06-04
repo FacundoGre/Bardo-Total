@@ -1,6 +1,7 @@
 import { Luchador, SVGs } from "./motor.js";
 import { guardarLuchadorEnDB } from "./db.js";
 import { auth } from "./firebase.js";
+import { mostrarAlerta } from "./ui.js";
 
 let creadorStats = { fuerza: 5, agilidad: 5, velocidad: 5 }; 
 let puntosDisponibles = 10;
@@ -94,7 +95,7 @@ export function inicializarCreador() {
         avatarState.items[dragCategory].x = initialTransformX + (e.clientX - startMouseX) * 0.3; avatarState.items[dragCategory].y = initialTransformY + (e.clientY - startMouseY) * 0.3;
         updateVisuals();
     });
-    window.addEventListener('mouseup', () => { activeDragElement = null; dragCategory = null; });
+    window.addEventListener('mouseup', () => { activeDraalertgElement = null; dragCategory = null; });
 
     svgContainer.addEventListener('wheel', (e) => {
         const targetGroup = e.target.closest('.draggable'); if (!targetGroup) return; e.preventDefault();
@@ -108,12 +109,12 @@ export function inicializarCreador() {
 
 export async function crearNuevoLuchador() {
     if (puntosDisponibles > 0) {
-        alert("❌ El Gremio exige tu máximo potencial. ¡Gasta todos tus puntos de estadística antes de alistarte!");
+        mostrarAlerta("❌ El Gremio exige tu máximo potencial. ¡Gasta todos tus puntos de estadística antes de alistarte!");
         return;
     }
     const input = document.getElementById("input-nombre"); let nombre = input.value.trim();
-    if (!nombre) { alert("❌ El nombre no puede estar vacío."); return; }
-    if (!auth.currentUser) { alert("❌ Sesión no válida. Recarga la página."); return; }
+    if (!nombre) { mostrarAlerta("❌ El nombre no puede estar vacío."); return; }
+    if (!auth.currentUser) { mostrarAlerta("❌ Sesión no válida. Recarga la página."); return; }
     
     // Convertimos el estado actual del avatar en JSON puro para la BD
     const avatarData = JSON.parse(JSON.stringify(avatarState));
@@ -122,12 +123,18 @@ export async function crearNuevoLuchador() {
     const nuevoLuchador = new Luchador(nombre, 100, creadorStats.fuerza, creadorStats.agilidad, creadorStats.velocidad, 0, 0, null, 1200, "Plata", 0, avatarData);
     
     const exito = await guardarLuchadorEnDB(nuevoLuchador, auth.currentUser.uid);
-    if (exito) {
-        input.value = ""; creadorStats = { fuerza: 5, agilidad: 5, velocidad: 5 }; puntosDisponibles = 10;
-        actualizarUICreador(); 
-        alert(`¡${nombre} se ha unido a la arena!`);
+if (exito) {
+    input.value = ""; 
+    creadorStats = { fuerza: 5, agilidad: 5, velocidad: 5 }; 
+    puntosDisponibles = 10;
+    actualizarUICreador(); 
+    
+    // 👇 Pasamos la recarga como callback para que espere al click en "OK"
+    mostrarAlerta(`¡${nombre} se ha unido a la arena!`, "OK", () => {
         window.location.reload(); 
-    } else {
-        alert("Hubo un error de conexión al guardar tu guerrero.");
-    }
+    });
+    
+} else {
+    mostrarAlerta("Hubo un error de conexión al guardar tu guerrero.");
+}
 }

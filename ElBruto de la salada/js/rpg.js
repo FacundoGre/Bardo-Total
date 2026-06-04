@@ -1,6 +1,6 @@
 import { guardarProgresoDB } from "./db.js";
 import { Arsenal, Armeria, Bestiario } from "./motor.js";
-import { cambiarVista, renderizarMiHub } from "./ui.js";
+import { cambiarVista, mostrarAlerta, renderizarMiHub } from "./ui.js";
 
 // ==========================================
 // SISTEMA DE TOOLTIP PERSONALIZADO
@@ -83,7 +83,7 @@ export function initMercado(jugador) {
     });
 }
 async function comprarItem(jugador, tipo, item) {
-    if(jugador.oro < item.precio) return alert("¡No tienes suficiente oro para eso, escoria!");
+    if(jugador.oro < item.precio) return mostrarAlerta("¡No tienes suficiente oro para eso, escoria!");
     
     jugador.oro -= item.precio;
     if(tipo === 'arma') jugador.inventario.push(item);
@@ -92,7 +92,7 @@ async function comprarItem(jugador, tipo, item) {
     
     document.getElementById('mercado-oro').innerText = jugador.oro;
     await guardarProgresoDB(jugador);
-    alert(`¡Has adquirido ${item.nombre}!`);
+    mostrarAlerta(`¡Has adquirido ${item.nombre}!`);
 }
 
 // ==========================================

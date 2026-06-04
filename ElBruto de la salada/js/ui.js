@@ -195,17 +195,26 @@ export function bloquearBotones(estado) {
 // ==========================================
 export function mostrarAlerta(mensaje, textoBoton = "OK", callback = null) {
     const modal = document.getElementById("modal-confirmacion");
-    document.getElementById("modal-conf-texto").innerHTML = mensaje; // 👈 innerHTML
+    
+    // Ocultamos el input del prompt por si quedó abierto antes
+    const inputPrompt = document.getElementById("modal-conf-input");
+    if (inputPrompt) inputPrompt.style.display = "none";
+
+    document.getElementById("modal-conf-texto").innerHTML = mensaje; 
+    
     const btnSiViejo = document.getElementById("modal-conf-si");
     const btnNo = document.getElementById("modal-conf-no");
+    
     btnSiViejo.replaceWith(btnSiViejo.cloneNode(true));
     const btnSi = document.getElementById("modal-conf-si");
+    
     btnSi.innerText = textoBoton;
     btnNo.style.display = "none";
     modal.style.display = "flex";
+    
     btnSi.addEventListener("click", () => {
         modal.style.display = "none";
-        btnSi.innerText = "Sí";
+        btnSi.innerText = "Sí"; // Restaura texto original
         btnNo.style.display = "inline-block";
         if (callback) callback();
     });
@@ -213,18 +222,98 @@ export function mostrarAlerta(mensaje, textoBoton = "OK", callback = null) {
 
 export function mostrarConfirmacion(mensaje, callbackAccion) {
     const modal = document.getElementById("modal-confirmacion");
+    
+    // Ocultamos el input del prompt por si quedó abierto antes
+    const inputPrompt = document.getElementById("modal-conf-input");
+    if (inputPrompt) inputPrompt.style.display = "none";
+
     document.getElementById("modal-conf-texto").innerText = mensaje;
+    
     const btnSiViejo = document.getElementById("modal-conf-si");
     const btnNoViejo = document.getElementById("modal-conf-no");
+    
     btnSiViejo.replaceWith(btnSiViejo.cloneNode(true));
     btnNoViejo.replaceWith(btnNoViejo.cloneNode(true));
+    
     const btnSi = document.getElementById("modal-conf-si");
     const btnNo = document.getElementById("modal-conf-no");
+    
     btnSi.innerText = "Sí";
     btnNo.style.display = "inline-block";
     modal.style.display = "flex";
-    btnSi.addEventListener("click", () => { modal.style.display = "none"; callbackAccion(); });
-    btnNo.addEventListener("click", () => { modal.style.display = "none"; });
+    
+    btnSi.addEventListener("click", () => { 
+        modal.style.display = "none"; 
+        callbackAccion(); 
+    });
+    btnNo.addEventListener("click", () => { 
+        modal.style.display = "none"; 
+    });
+}
+
+export function mostrarPrompt(mensaje, placeholder = "") {
+    return new Promise((resolve) => {
+        const modal = document.getElementById("modal-confirmacion");
+        document.getElementById("modal-conf-texto").innerText = mensaje;
+        
+        const inputPrompt = document.getElementById("modal-conf-input");
+        if (inputPrompt) {
+            inputPrompt.value = "";             
+            inputPrompt.placeholder = placeholder;
+            inputPrompt.style.display = "block"; 
+            setTimeout(() => inputPrompt.focus(), 50); 
+        }
+
+        const btnSiViejo = document.getElementById("modal-conf-si");
+        const btnNoViejo = document.getElementById("modal-conf-no");
+        
+        btnSiViejo.replaceWith(btnSiViejo.cloneNode(true));
+        btnNoViejo.replaceWith(btnNoViejo.cloneNode(true));
+        
+        const btnSi = document.getElementById("modal-conf-si");
+        const btnNo = document.getElementById("modal-conf-no");
+        
+        btnSi.innerText = "Aceptar";
+        btnNo.style.display = "inline-block";
+        btnNo.innerText = "Cancelar"; 
+        modal.style.display = "flex";
+
+        // 👇 FUNCIÓN PARA EL ENTER 👇
+        const manejarEnter = (evento) => {
+            if (evento.key === "Enter") {
+                evento.preventDefault(); // Evita comportamientos raros del form
+                btnSi.click(); // Dispara la misma lógica del botón Aceptar
+            }
+        };
+
+        // Escuchamos el Enter mientras el usuario escribe
+        if (inputPrompt) {
+            inputPrompt.addEventListener("keydown", manejarEnter);
+        }
+        
+        btnSi.addEventListener("click", () => {
+            modal.style.display = "none";
+            const valorIngresado = inputPrompt ? inputPrompt.value : "";
+            if (inputPrompt) {
+                inputPrompt.removeEventListener("keydown", manejarEnter); // Limpieza
+                inputPrompt.style.display = "none";
+            }
+            btnSi.innerText = "Sí"; 
+            btnNo.innerText = "No";  
+            resolve(valorIngresado); 
+        });
+        
+        btnNo.addEventListener("click", () => {
+            modal.style.display = "none";
+            if (inputPrompt) {
+                inputPrompt.removeEventListener("keydown", manejarEnter); // Limpieza
+                inputPrompt.style.display = "none";
+            }
+            btnSi.innerText = "Sí"; 
+            btnNo.innerText = "No";  
+            resolve(null); 
+        });
+    });
 }
 
 // 🛠️ FÁBRICA DE MEDALLAS CUSTOM (Glossy y limpias)

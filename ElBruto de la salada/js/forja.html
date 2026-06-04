@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>⚒️ BardoTotal Engine 13.0 - The Architect</title>
+    <style>
+        body { background: #080808; color: #ddd; font-family: 'Segoe UI', Tahoma, sans-serif; padding: 20px; margin: 0; }
+        .header { text-align: center; color: #ff3333; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase; }
+        
+        .dashboard { display: flex; gap: 20px; max-width: 1550px; margin: 0 auto; align-items: flex-start; }
+        .col-izq { flex: 1.8; background: #111; border: 1px solid #333; border-radius: 8px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .col-der { flex: 1; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; }
+
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
+        .tab { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 15px; cursor: pointer; border-radius: 4px 4px 0 0; font-weight: bold; flex: 1; text-align: center; transition: 0.2s; min-width: 100px; }
+        .tab:hover { background: #222; color: #fff; }
+        .tab.active { background: #ff3333; color: #fff; border-color: #ff3333; }
+
+        label { display: block; margin-top: 15px; color: #aaa; font-size: 0.8em; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+        input, select { background: #050505; color: #fff; border: 1px solid #444; padding: 10px; width: 100%; margin-top: 5px; box-sizing: border-box; font-family: monospace; font-size: 0.95em; border-radius: 4px; transition: 0.2s; }
+        input:focus, select:focus { outline: none; border-color: #ff3333; background: #111; }
+        
+        .seccion { display: none; background: #151515; padding: 15px; border-radius: 6px; border: 1px solid #222; }
+        .visible { display: block; }
+        .sub-panel { background: #0a0a0a; padding: 15px; border-left: 3px solid #ffaa00; margin-top: 10px; border-radius: 0 4px 4px 0; }
+        .sub-panel-custom { border-left-color: #00e5ff; }
+
+        .caja-preview { background: #111; border: 1px solid #333; border-top: 4px solid #ffaa00; border-radius: 8px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .caja-preview h3 { margin-top: 0; color: #aaa; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+        
+        #tooltip-in-game { background: rgba(10, 10, 10, 0.95); border: 1px solid #444; padding: 15px; border-radius: 6px; font-family: sans-serif; font-size: 1.1em; line-height: 1.5; color: #eee; min-height: 80px; }
+        textarea { width: 100%; background: #050505; color: #00e5ff; border: 1px solid #333; padding: 15px; box-sizing: border-box; font-family: monospace; font-size: 0.85em; resize: vertical; border-radius: 4px; line-height: 1.4; }
+        
+        button.btn-copiar { background: linear-gradient(180deg, #aa0000 0%, #660000 100%); color: #fff; border: 1px solid #ff3333; padding: 15px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; font-size: 1.1em; border-radius: 4px; transition: 0.2s; }
+        button.btn-copiar:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <datalist id="lista-targets">
+        <option value="Lobo Salvaje"><option value="Oso Pardo"><option value="Gorda"><option value="Halcón Peregrino">
+        <option value="Tigre Dientes de Sable"><option value="Carnotaurus"><option value="Cría de Patagotitan"><option value="Zorro de Udaondo">
+        <option value="Túnica de Sombras"><option value="Peto de Cuero"><option value="Sábana de Medjed"><option value="Alerón de Fibra de Carbono">
+    </datalist>
+
+    <h1 class="header">⚒️ BardoTotal Engine 13.0 <span style="color:#fff; font-size: 0.5em;">(THE ARCHITECT)</span></h1>
+
+    <div class="dashboard">
+        <div class="col-izq">
+            
+            <div class="tabs">
+                <button class="tab active" onclick="setTipo('arma', this)">⚔️ Arma</button>
+                <button class="tab" onclick="setTipo('armadura', this)">🛡️ Armadura</button>
+                <button class="tab" onclick="setTipo('mascota', this)">🐺 Mascota</button>
+                <button class="tab" onclick="setTipo('pasiva', this)">✨ Pasiva</button>
+                <button class="tab" onclick="setTipo('objetivo', this)">🏆 Objetivo</button>
+            </div>
+
+            <div class="sub-panel" style="margin-bottom: 20px; border-left-color: #4cd137; background: #0f1a0f;">
+                <label style="color:#4cd137; margin-top: 0;">📦 Cargar para editar (Lee motor.js y objetivos.js)</label>
+                <select id="selectorExistente" onchange="cargarItemExistente()">
+                    <option value="">-- Crear Nuevo Limpio --</option>
+                </select>
+            </div>
+
+            <!-- VISOR DE CÓDIGO -->
+            <div id="panel-codigo-original" class="sub-panel" style="display:none; margin-bottom: 15px; border-left-color:#ff3333; background:#2a0a0a;">
+                <label style="color:#ff6b81; margin-top:0;">🧠 CÓDIGO/HOOK ORIGINAL DEL ÍTEM</label>
+                <textarea id="codigoOriginalView" readonly style="height: 100px; font-size:0.8em; border-color:#ff3333;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                <div style="flex: 1;"><label>ID Interno (sin espacios)</label><input type="text" id="itemID" placeholder="ej: bota_rapida" oninput="window.generarTodoEnVivo()"></div>
+                <div style="flex: 1;" id="contenedor-nombre"><label>Nombre Público</label><input type="text" id="itemNombre" placeholder="ej: Botas de Hermes" oninput="window.generarTodoEnVivo()"></div>
+            </div>
+
+            <!-- SECCIÓN ARMAS -->
+            <div id="sec-arma" class="seccion visible">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;"><label>Fuerza (+)</label><input type="number" id="armaDano" value="10" oninput="window.generarTodoEnVivo()"></div>
+                    <div style="flex: 1;"><label>Agilidad (-)</label><input type="number" id="armaAgi" value="4" oninput="window.generarTodoEnVivo()"></div>
+                    <div style="flex: 1;"><label>Precio 💰</label><input type="number" id="armaPrecio" value="500" oninput="window.generarTodoEnVivo()"></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN ARMADURAS -->
+            <div id="sec-armadura" class="seccion">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;"><label>Mitigación (0.20 = 20%)</label><input type="number" step="0.05" id="armaduraMit" value="0.25" oninput="window.generarTodoEnVivo()"></div>
+                    <div style="flex: 1;"><label>Agilidad (-)</label><input type="number" id="armaduraAgi" value="5" oninput="window.generarTodoEnVivo()"></div>
+                    <div style="flex: 1;"><label>Precio 💰</label><input type="number" id="armaduraPrecio" value="800" oninput="window.generarTodoEnVivo()"></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN MASCOTAS -->
+            <div id="sec-mascota" class="seccion">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;"><label>Fuerza Base</label><input type="number" id="mascotaFuerza" value="12" oninput="window.generarTodoEnVivo()"></div>
+                    <div style="flex: 1;"><label>Agilidad Base</label><input type="number" id="mascotaAgi" value="10" oninput="window.generarTodoEnVivo()"></div>
+                    <div style="flex: 1;"><label>Precio 💰</label><input type="number" id="mascotaPrecio" value="1000" oninput="window.generarTodoEnVivo()"></div>
+                </div>
+            </div>
+
+            <!-- EFECTOS Y SINERGIAS COMPARTIDAS (Items) -->
+            <div id="panel-efectos-compartido" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;">
+                <label style="color:#00e5ff;">✨ Efecto de Estado Mágico Básico (DoT / Stun)</label>
+                <select id="itemEfecto" onchange="toggleEfectos()">
+                    <option value="ninguno">Ninguno</option>
+                    <optgroup label="Daño Continuo (DoT)">
+                        <option value="sangrado">🩸 Sangrado</option>
+                        <option value="veneno">☠️ Veneno</option>
+                        <option value="quemadura">🔥 Quemadura</option>
+                    </optgroup>
+                    <optgroup label="Control (Inmovilizar)">
+                        <option value="congelado">❄️ Congelación (Impide atacar)</option>
+                        <option value="paralizado">⚡ Parálisis (Chance de no atacar)</option>
+                    </optgroup>
+                </select>
+
+                <div id="item-efecto-params" class="sub-panel" style="display: none;">
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 1;">
+                            <label id="lblEfectoPrincipal">Daño por Turno</label>
+                            <input type="number" id="efectoParam1" value="3" step="0.01" oninput="window.generarTodoEnVivo()">
+                        </div>
+                        <div style="flex: 1;"><label>Duración (Turnos)</label><input type="number" id="efectoTurnos" value="3" oninput="window.generarTodoEnVivo()"></div>
+                    </div>
+                </div>
+
+                <label style="margin-top: 25px; color:#ffaa00;">⚙️ PASIVA / SINERGIA INTEGRADA AL ÍTEM</label>
+                <select id="itemSinergiaModo" onchange="toggleSinergia()">
+                    <option value="ninguna">Sin Pasiva Extra</option>
+                    <option value="sinergia">🧩 Sinergia Básica (Condición de Equipo)</option>
+                    <option value="avanzada">🛠️ Constructor de Pasiva Avanzada</option>
+                    <option value="existente">🔗 Vincular Pasiva Existente</option>
+                </select>
+
+                <!-- 🧩 1. SINERGIA BÁSICA -->
+                <div id="item-sinergia-basica" class="sub-panel sub-panel-custom" style="display:none;">
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1.5;"><label>Condición para activarse</label>
+                            <select id="aVisCond" onchange="window.generarTodoEnVivo()">
+                                <option value="mascotaCualquiera">Si hay Cualquier Mascota Activa</option>
+                                <option value="mascotaEspecifica">Si tiene Mascota Específica...</option>
+                                <option value="armaduraEspecifica">Si tiene Armadura Específica...</option>
+                                <option value="armaEspecifica">Si tiene Arma Específica...</option>
+                                <option value="vida25">Si HP del Jugador <= 25%</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;"><label>Nombre Exacto (Target)</label>
+                            <input type="text" id="aVisTarget" list="lista-targets" placeholder="ej: Zorro de Udaondo" oninput="window.generarTodoEnVivo()">
+                        </div>
+                        <div style="flex: 1;"><label>Daño Extra que suma</label>
+                            <input type="number" id="aVisBono" value="5" oninput="window.generarTodoEnVivo()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🛠️ 2. CONSTRUCTOR AVANZADO -->
+                <div id="item-sinergia-avanzada" class="sub-panel sub-panel-custom" style="display:none;">
+                    <label style="color:#00e5ff">1. ¿CUÁNDO SE ACTIVA? (Hook)</label>
+                    <select id="iVisHook" onchange="window.generarTodoEnVivo()">
+                        <optgroup label="Al Calcular Estadísticas">
+                            <option value="modificarDañoBruto">Al calcular el Daño que voy a hacer</option>
+                            <option value="modificarChanceEvasion">Al calcular mi Evasión</option>
+                            <option value="modificarAgilidad">Al calcular mi Agilidad</option>
+                            <option value="modificarAgilidadRival">Al calcular Agilidad del Rival</option>
+                        </optgroup>
+                        <optgroup label="Eventos de Combate">
+                            <option value="alHacerDaño">Justo después de golpear al rival</option>
+                            <option value="alRecibirDaño">Justo después de que el rival me golpea</option>
+                            <option value="alInicioTurno">Al empezar mi turno</option>
+                            <option value="despuesDeSerAtacado">Después de ser Atacado (Contraataque)</option>
+                            <option value="alRecibirDañoMascota">Al Recibir daño de Mascota</option>
+                        </optgroup>
+                    </select>
+
+                    <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                        <label style="color:#ffaa00; margin-bottom: 10px;">2. MATRIZ DE CONDICIONES</label>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;"><select id="iVisCond1" class="cond-select" onchange="window.generarTodoEnVivo()"></select></div>
+                            <div style="width: 70px;">
+                                <select id="iVisOp1" onchange="window.gestionarBloquesCondiciones('i')">
+                                    <option value="ninguno">---</option><option value="&&">Y</option><option value="||">O</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;"><select id="iVisCond2" class="cond-select" onchange="window.generarTodoEnVivo()" disabled></select></div>
+                            <div style="width: 70px;">
+                                <select id="iVisOp2" onchange="window.gestionarBloquesCondiciones('i')" disabled>
+                                    <option value="ninguno">---</option><option value="&&">Y</option><option value="||">O</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;"><select id="iVisCond3" class="cond-select" onchange="window.generarTodoEnVivo()" disabled></select></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                        <label style="color:#4cd137; margin-bottom: 10px;">3. CONSTRUCTOR DE EFECTO MODULAR</label>
+                        <div style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 120px;"><label>Acción</label>
+                                <select id="iVisAccion" onchange="window.generarTodoEnVivo()">
+                                    <option value="modificar">Modificar Stat</option><option value="curar">Curar HP</option><option value="danar">Dañar HP</option><option value="inmunidad">Dar Inmunidad</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 100px;"><label>Objetivo</label>
+                                <select id="iVisObjetivo" onchange="window.generarTodoEnVivo()"><option value="yo">A Mí (Yo)</option><option value="rival">Al Rival</option></select>
+                            </div>
+                            <div style="flex: 1.5; min-width: 160px;"><label>Base Matemática</label>
+                                <select id="iVisBase" onchange="window.generarTodoEnVivo()">
+                                    <option value="fijo">Valor Fijo</option><option value="valorBase">Valor Modificado (Hook)</option><option value="miHpMax">Mi HP Máxima</option><option value="miHpActual">Mi HP Actual</option><option value="miHpFaltante">Mi HP Faltante</option><option value="rivalHpMax">HP Máxima Rival</option><option value="rivalHpActual">HP Actual Rival</option><option value="rivalHpFaltante">HP Faltante Rival</option><option value="danoFinal">Daño del Golpe</option><option value="miFuerza">Mi Fuerza</option><option value="miAgilidad">Mi Agilidad</option>
+                                </select>
+                            </div>
+                            <div style="width: 70px;"><label>Op.</label>
+                                <select id="iVisOperacion" onchange="window.generarTodoEnVivo()"><option value="*">Mult (x)</option><option value="+">Sumar (+)</option><option value="-">Restar (-)</option><option value="/">Div (/)</option></select>
+                            </div>
+                            <div style="flex: 0.8; min-width: 80px;"><label>Magnitud</label><input type="number" step="0.01" id="iVisValor" value="0.2" oninput="window.generarTodoEnVivo()"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                        <label style="color:#ff6b81;">4. LOG PERSONALIZADO (Opcional)</label>
+                        <input type="text" id="iVisLogCustom" placeholder="ej: 🐺 ¡La mascota muerde! (+{v} Daño)" oninput="window.generarTodoEnVivo()">
+                    </div>
+                </div>
+
+                <!-- 🔗 3. VINCULAR PASIVA EXISTENTE -->
+                <div id="item-sinergia-existente" class="sub-panel sub-panel-custom" style="display:none;">
+                    <label style="color:#4cd137;">Seleccionar Pasiva del motor.js</label>
+                    <select id="itemPasivaExistente" onchange="window.generarTodoEnVivo()"></select>
+                </div>
+            </div>
+
+            <!-- SECCIÓN PASIVAS (Independientes) -->
+            <div id="sec-pasiva" class="seccion">
+                <label>Descripción Visible en el Juego</label>
+                <input type="text" id="pasivaDesc" placeholder="ej: Te curas un % de tu vida máxima si tienes mascota." oninput="window.generarTodoEnVivo()">
+                
+                <div id="pasiva-visual" class="sub-panel" style="margin-top: 15px;">
+                    <label style="color:#00e5ff">1. ¿CUÁNDO SE ACTIVA? (Hook)</label>
+                    <select id="pVisHook" onchange="window.generarTodoEnVivo()">
+                        <optgroup label="Al Calcular Estadísticas (Retornan Valor Modificado)">
+                            <option value="modificarDañoBruto">Al calcular el Daño que voy a hacer</option>
+                            <option value="modificarChanceEvasion">Al calcular mi Evasión</option>
+                            <option value="modificarAgilidad">Al calcular mi Agilidad</option>
+                            <option value="modificarAgilidadRival">Al calcular Agilidad del Rival</option>
+                        </optgroup>
+                        <optgroup label="Eventos de Combate (Ejecutan una Acción Directa)">
+                            <option value="alHacerDaño">Justo después de golpear al rival</option>
+                            <option value="alRecibirDaño">Justo después de que el rival me golpea</option>
+                            <option value="alInicioTurno">Al empezar mi turno</option>
+                            <option value="despuesDeSerAtacado">Después de ser Atacado (Contraataque)</option>
+                            <option value="alRecibirDañoMascota">Al Recibir daño de Mascota</option>
+                        </optgroup>
+                    </select>
+
+                    <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                        <label style="color:#ffaa00; margin-bottom: 10px;">2. MATRIZ DE CONDICIONES (Hasta 3 combinaciones)</label>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;"><select id="pVisCond1" class="cond-select" onchange="window.generarTodoEnVivo()"></select></div>
+                            <div style="width: 70px;">
+                                <select id="pVisOp1" onchange="window.gestionarBloquesCondiciones('p')">
+                                    <option value="ninguno">---</option><option value="&&">Y</option><option value="||">O</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;"><select id="pVisCond2" class="cond-select" onchange="window.generarTodoEnVivo()" disabled></select></div>
+                            <div style="width: 70px;">
+                                <select id="pVisOp2" onchange="window.gestionarBloquesCondiciones('p')" disabled>
+                                    <option value="ninguno">---</option><option value="&&">Y</option><option value="||">O</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;"><select id="pVisCond3" class="cond-select" onchange="window.generarTodoEnVivo()" disabled></select></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                        <label style="color:#4cd137; margin-bottom: 10px;">3. CONSTRUCTOR DE EFECTO MODULAR</label>
+                        <div style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 120px;"><label>Acción</label>
+                                <select id="pVisAccion" onchange="window.generarTodoEnVivo()">
+                                    <option value="modificar">Modificar Stat</option><option value="curar">Curar HP</option><option value="danar">Dañar HP</option><option value="inmunidad">Dar Inmunidad</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 100px;"><label>Objetivo</label>
+                                <select id="pVisObjetivo" onchange="window.generarTodoEnVivo()"><option value="yo">A Mí (Yo)</option><option value="rival">Al Rival</option></select>
+                            </div>
+                            <div style="flex: 1.5; min-width: 160px;"><label>Base Matemática</label>
+                                <select id="pVisBase" onchange="window.generarTodoEnVivo()">
+                                    <option value="fijo">Valor Fijo</option><option value="valorBase">Valor Modificado (Hook)</option><option value="miHpMax">Mi HP Máxima</option><option value="miHpActual">Mi HP Actual</option><option value="miHpFaltante">Mi HP Faltante</option><option value="rivalHpMax">HP Máxima Rival</option><option value="rivalHpActual">HP Actual Rival</option><option value="rivalHpFaltante">HP Faltante Rival</option><option value="danoFinal">Daño del Golpe</option><option value="miFuerza">Mi Fuerza</option><option value="miAgilidad">Mi Agilidad</option>
+                                </select>
+                            </div>
+                            <div style="width: 70px;"><label>Op.</label>
+                                <select id="pVisOperacion" onchange="window.generarTodoEnVivo()"><option value="*">Mult (x)</option><option value="+">Sumar (+)</option><option value="-">Restar (-)</option><option value="/">Div (/)</option></select>
+                            </div>
+                            <div style="flex: 0.8; min-width: 80px;"><label>Magnitud</label><input type="number" step="0.01" id="pVisValor" value="0.2" oninput="window.generarTodoEnVivo()"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                        <label style="color:#ff6b81;">4. LOG PERSONALIZADO (Opcional)</label>
+                        <input type="text" id="pVisLogCustom" placeholder="ej: 😡 ¡MODO BERSERKER! (+{v} Daño)" oninput="window.generarTodoEnVivo()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN OBJETIVOS / LOGROS -->
+            <div id="sec-objetivo" class="seccion">
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div style="flex: 1.2;"><label>Tipo de Métrica</label>
+                        <select id="objTipoM" onchange="window.toggleObjMetrica()">
+                            <option value="jugador">Perfil Básico (Nivel, Elo, etc.)</option>
+                            <option value="extra">Telemetría Avanzada (estadisticasExtra)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="flex: 1;" id="col-objClaveBasica">
+                        <label>Dato a medir</label>
+                        <select id="objClaveB" onchange="window.generarTodoEnVivo()">
+                            <option value="nivel">Nivel del Jugador</option><option value="victorias">Victorias Totales</option><option value="derrotas">Derrotas Totales</option><option value="rachaActual">Racha de Victorias</option><option value="elo">Puntos de Liga (Elo)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="flex: 1.5; display:none;" id="col-objClaveExtra">
+                        <label>Condición Especial a Medir</label>
+                        <select id="objClaveExtraSelect" onchange="window.actualizarTargetTelemetria()">
+                            <optgroup label="Generales">
+                                <option value="partidasConMascota">Partidas jugadas con Cualquier Mascota</option>
+                                <option value="victoriasCualquierArma">Victorias usando Cualquier Arma</option>
+                                <option value="victoriasCualquierArmadura">Victorias usando Cualquier Armadura</option>
+                                <option value="rachaDerrotas">Racha de Derrotas Consecutivas</option>
+                            </optgroup>
+                            <optgroup label="Victorias Específicas">
+                                <option value="victoriasArma">Victorias usando Arma Específica...</option><option value="victoriasArmadura">Victorias usando Armadura Específica...</option><option value="victoriasMascota">Victorias usando Mascota Específica...</option>
+                            </optgroup>
+                            <optgroup label="Derrotas Específicas">
+                                <option value="derrotasArma">Derrotas usando Arma Específica...</option><option value="derrotasArmadura">Derrotas usando Armadura Específica...</option><option value="derrotasMascota">Derrotas usando Mascota Específica...</option>
+                            </optgroup>
+                            <optgroup label="Eventos y Mundos">
+                                <option value="jefesAsesinados">Cantidad de Jefes Derrotados</option><option value="eventosParticipados">Participación en Eventos</option>
+                            </optgroup>
+                            <option value="manual" style="color:#ffaa00;">-- Escribir Clave Manual --</option>
+                        </select>
+                        <select id="objClaveExtraTarget" style="display:none; margin-top:5px; border-color:#00e5ff;" onchange="window.generarTodoEnVivo()"></select>
+                        <input type="text" id="objClaveE" placeholder="ej: jefesAsesinados_dragon" style="display:none; margin-top:5px;" oninput="window.generarTodoEnVivo()">
+                    </div>
+                    <div style="flex: 0.5;"><label>Meta (Nro)</label><input type="number" id="objValor" value="10" oninput="window.generarTodoEnVivo()"></div>
+                </div>
+                
+                <div class="sub-panel">
+                    <label style="color:#00e5ff; margin-top:0;">🎁 RECOMPENSA DEL LOGRO</label>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <div style="flex: 1;"><label>Tipo de Premio</label>
+                            <select id="objPremioTipo" onchange="window.actualizarListaRecompensas()">
+                                <option value="pasiva">✨ Pasiva</option><option value="arma">⚔️ Arma</option><option value="armadura">🛡️ Armadura</option><option value="mascota">🐺 Mascota</option><option value="cosmetico">👕 Cosmético</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1.5;"><label>ID Exacto del Ítem</label>
+                            <select id="objPremioIdSelect" onchange="window.toggleRecompensaManual()"></select>
+                            <input type="text" id="objPremioIdManual" placeholder="ej: item_nuevo_id" style="display:none; margin-top:5px;" oninput="window.generarTodoEnVivo()">
+                        </div>
+                    </div>
+                    <label>Cartel / Mensaje de Felicitación</label>
+                    <input type="text" id="objMsg" placeholder="ej: 🧛‍♂️ PASIVA DESBLOQUEADA: Vampirismo" oninput="window.generarTodoEnVivo()">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-der">
+            <div class="caja-preview">
+                <h3>👀 Vista Previa (Tooltip)</h3>
+                <div id="tooltip-in-game"></div>
+            </div>
+            <div class="caja-preview" style="border-top-color: #00e5ff;">
+                <h3>💻 Código Generado</h3>
+                <textarea id="resultado" readonly style="height: 520px;"></textarea>
+                <button class="btn-copiar" onclick="copiarCodigo()">📋 COPIAR AL PORTAPAPELES</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Arsenal, Armeria, Bestiario, PasivasDisponibles } from './motor.js';
+        import { ListaObjetivos } from './objetivos.js'; 
+
+        window.tipoActual = 'arma';
+        window.diccionariosJS = { arma: Arsenal, armadura: Armeria, mascota: Bestiario, pasiva: PasivasDisponibles };
+
+        const opcionesCondiciones = `
+            <option value="siempre">Siempre (Sin condición)</option>
+            <optgroup label="Salud del Jugador">
+                <option value="vida10">Mi HP <= 10%</option><option value="vida25">Mi HP <= 25%</option><option value="vida50">Mi HP <= 50%</option><option value="vida75">Mi HP <= 75%</option>
+            </optgroup>
+            <optgroup label="Salud del Rival">
+                <option value="vidaRival25">HP del Rival <= 25%</option><option value="vidaRival50">HP del Rival <= 50%</option>
+            </optgroup>
+            <optgroup label="Probabilidades">
+                <option value="chance10">10% de Probabilidad</option><option value="chance20">20% de Probabilidad</option><option value="chance30">30% de Probabilidad</option><option value="chance50">50% de Probabilidad</option><option value="chance75">75% de Probabilidad</option>
+            </optgroup>
+            <optgroup label="Equipamiento y Mascotas">
+                <option value="conMascota">Tengo Mascota Activa</option><option value="sinMascota">NO tengo Mascota</option><option value="tengoArmadura">Tengo Armadura Equipada</option><option value="rivalConMascota">El Rival tiene Mascota</option><option value="rivalSinArmadura">El Rival NO tiene Armadura</option>
+            </optgroup>
+        `;
+
+        document.querySelectorAll('.cond-select').forEach(sel => sel.innerHTML = opcionesCondiciones);
+
+        window.actualizarListaExistentes = function() {
+            const selector = document.getElementById("selectorExistente");
+            selector.innerHTML = '<option value="">-- Crear Nuevo Limpio --</option>';
+            
+            let diccionario = window.diccionariosJS[window.tipoActual];
+            if(window.tipoActual === 'objetivo') {
+                diccionario = {};
+                if(ListaObjetivos) {
+                    ListaObjetivos.forEach(obj => {
+                        diccionario[obj.id] = { nombre: `[Meta: ${obj.valorRequerido}] ${obj.recompensa.id}`, ...obj };
+                    });
+                }
+            }
+
+            for (const key in diccionario) {
+                const opt = document.createElement("option");
+                opt.value = key;
+                let txtVisual = window.tipoActual === 'objetivo' ? diccionario[key].nombre : diccionario[key].nombre;
+                opt.innerText = `[${key}] - ${txtVisual}`;
+                selector.appendChild(opt);
+            }
+
+            // Poblamos también la lista de Pasivas Existentes
+            const selPasivas = document.getElementById("itemPasivaExistente");
+            if(selPasivas) {
+                selPasivas.innerHTML = '';
+                for (const key in PasivasDisponibles) {
+                    selPasivas.innerHTML += `<option value="${key}">${PasivasDisponibles[key].nombre}</option>`;
+                }
+            }
+        };
+
+        window.cargarItemExistente = function() {
+            const key = document.getElementById("selectorExistente").value;
+            document.getElementById("panel-codigo-original").style.display = "none";
+
+            if(!key) {
+                document.getElementById("itemID").value = "";
+                document.getElementById("itemNombre").value = "";
+                window.generarTodoEnVivo();
+                return;
+            }
+            
+            document.getElementById("itemID").value = key;
+
+            if (window.tipoActual === 'objetivo') {
+                const item = ListaObjetivos.find(o => o.id === key);
+                document.getElementById("itemNombre").value = ""; 
+                document.getElementById("objTipoM").value = item.tipo === 'extra' ? 'extra' : 'jugador';
+                window.toggleObjMetrica();
+                
+                if(item.tipo === 'extra') {
+                    let asignado = false;
+                    if(item.clave.startsWith('victoriasArma_')) { document.getElementById("objClaveExtraSelect").value = 'victoriasArma'; asignado = true; }
+                    else if(item.clave.startsWith('victoriasArmadura_')) { document.getElementById("objClaveExtraSelect").value = 'victoriasArmadura'; asignado = true; }
+                    else if(item.clave.startsWith('victoriasMascota_')) { document.getElementById("objClaveExtraSelect").value = 'victoriasMascota'; asignado = true; }
+                    else if(item.clave.startsWith('derrotasArma_')) { document.getElementById("objClaveExtraSelect").value = 'derrotasArma'; asignado = true; }
+                    else if(item.clave.startsWith('derrotasArmadura_')) { document.getElementById("objClaveExtraSelect").value = 'derrotasArmadura'; asignado = true; }
+                    else if(item.clave.startsWith('derrotasMascota_')) { document.getElementById("objClaveExtraSelect").value = 'derrotasMascota'; asignado = true; }
+                    else if(['partidasConMascota', 'victoriasCualquierArma', 'victoriasCualquierArmadura', 'rachaDerrotas', 'jefesAsesinados', 'eventosParticipados'].includes(item.clave)) { document.getElementById("objClaveExtraSelect").value = item.clave; asignado = true; }
+                    
+                    if(!asignado) {
+                        document.getElementById("objClaveExtraSelect").value = 'manual';
+                        document.getElementById("objClaveE").value = item.clave;
+                    }
+                    window.actualizarTargetTelemetria();
+                } else {
+                    document.getElementById("objClaveB").value = item.clave;
+                }
+                
+                document.getElementById("objValor").value = item.valorRequerido;
+                document.getElementById("objPremioTipo").value = item.recompensa.tipo;
+                window.actualizarListaRecompensas(); 
+                
+                let selPremios = document.getElementById("objPremioIdSelect");
+                let opcionesIds = Array.from(selPremios.options).map(o => o.value);
+                if (opcionesIds.includes(item.recompensa.id)) { selPremios.value = item.recompensa.id; } 
+                else { selPremios.value = 'manual'; document.getElementById("objPremioIdManual").value = item.recompensa.id; }
+                window.toggleRecompensaManual();
+                document.getElementById("objMsg").value = item.recompensa.msg;
+            }
+            else {
+                let item = window.diccionariosJS[window.tipoActual][key];
+                document.getElementById("itemNombre").value = item.nombre;
+                
+                if (window.tipoActual !== 'pasiva') {
+                    if(window.tipoActual === 'arma') {
+                        document.getElementById("armaDano").value = item.bonoDaño;
+                        document.getElementById("armaAgi").value = item.penalidadAgilidad;
+                    } else if(window.tipoActual === 'armadura') {
+                        document.getElementById("armaduraMit").value = item.mitigacion;
+                        document.getElementById("armaduraAgi").value = item.penalidadAgilidad;
+                    } else if(window.tipoActual === 'mascota') {
+                        document.getElementById("mascotaFuerza").value = item.fuerza;
+                        document.getElementById("mascotaAgi").value = item.agilidad;
+                    }
+                    document.getElementById(window.tipoActual + "Precio").value = item.precio;
+                    
+                    if(item.efecto) {
+                        document.getElementById("itemEfecto").value = item.efecto.tipo;
+                        document.getElementById("efectoParam1").value = item.efecto.dañoTurno || item.efecto.chanceStun || 3;
+                        document.getElementById("efectoTurnos").value = item.efecto.turnos;
+                    } else {
+                        document.getElementById("itemEfecto").value = 'ninguno';
+                    }
+                    document.getElementById("itemSinergiaModo").value = "ninguna";
+                    window.toggleEfectos();
+                } else {
+                    document.getElementById("pasivaDesc").value = item.desc;
+                }
+
+                let rawCode = "";
+                for (let k in item) {
+                    if (typeof item[k] === 'function') {
+                        rawCode += `// Hook Encontrado: ${k}\n${k}: ${item[k].toString()}\n\n`;
+                    }
+                }
+                if (rawCode) {
+                    document.getElementById("codigoOriginalView").value = rawCode;
+                    document.getElementById("panel-codigo-original").style.display = "block";
+                }
+            }
+            window.generarTodoEnVivo();
+        };
+
+        window.setTipo = function(tipo, btn) {
+            window.tipoActual = tipo;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.seccion').forEach(el => el.classList.remove('visible'));
+            document.getElementById('sec-' + tipo).classList.add('visible');
+            
+            document.getElementById('panel-efectos-compartido').style.display = (tipo === 'pasiva' || tipo === 'objetivo') ? 'none' : 'block';
+            document.getElementById('contenedor-nombre').style.display = tipo === 'objetivo' ? 'none' : 'block';
+
+            if (tipo === 'objetivo') window.actualizarListaRecompensas();
+
+            window.actualizarListaExistentes();
+            window.generarTodoEnVivo();
+        }
+
+        window.toggleObjMetrica = function() {
+            const t = document.getElementById("objTipoM").value;
+            document.getElementById("col-objClaveBasica").style.display = t === 'jugador' ? 'block' : 'none';
+            document.getElementById("col-objClaveExtra").style.display = t === 'extra' ? 'block' : 'none';
+            window.generarTodoEnVivo();
+        }
+
+        window.actualizarTargetTelemetria = function() {
+            const tipo = document.getElementById("objClaveExtraSelect").value;
+            const select = document.getElementById("objClaveExtraTarget");
+            select.innerHTML = '';
+            
+            let dict = null;
+            if(tipo === 'victoriasArma' || tipo === 'derrotasArma') dict = Arsenal;
+            if(tipo === 'victoriasArmadura' || tipo === 'derrotasArmadura') dict = Armeria;
+            if(tipo === 'victoriasMascota' || tipo === 'derrotasMascota') dict = Bestiario;
+            
+            if (dict) {
+                select.style.display = 'block';
+                for(let key in dict) {
+                    select.innerHTML += `<option value="${dict[key].nombre.replace(/\\s+/g, '_').toLowerCase()}">${dict[key].nombre}</option>`;
+                }
+            } else {
+                select.style.display = 'none';
+            }
+            
+            document.getElementById("objClaveE").style.display = tipo === 'manual' ? 'block' : 'none';
+            window.generarTodoEnVivo();
+        }
+
+        window.actualizarListaRecompensas = function() {
+            const tipo = document.getElementById("objPremioTipo").value;
+            const select = document.getElementById("objPremioIdSelect");
+            select.innerHTML = '<option value="manual">-- Escribir ID manual --</option>';
+            
+            let dict = window.diccionariosJS[tipo]; 
+            if (dict) {
+                for(let key in dict) {
+                    select.innerHTML += `<option value="${key}">${dict[key].nombre}</option>`;
+                }
+                if(Object.keys(dict).length > 0) select.value = Object.keys(dict)[0];
+            }
+            window.toggleRecompensaManual();
+        }
+
+        window.toggleRecompensaManual = function() {
+            const val = document.getElementById("objPremioIdSelect").value;
+            document.getElementById("objPremioIdManual").style.display = val === 'manual' ? 'block' : 'none';
+            window.generarTodoEnVivo();
+        }
+
+        window.toggleEfectos = function() {
+            const ef = document.getElementById('itemEfecto').value;
+            document.getElementById('item-efecto-params').style.display = ef === 'ninguno' ? 'none' : 'block';
+            if (ef === 'congelado' || ef === 'paralizado') {
+                document.getElementById('lblEfectoPrincipal').innerHTML = "Probabilidad de Stun (ej: 0.35)";
+                document.getElementById('efectoParam1').value = ef === 'congelado' ? 1.0 : 0.35; 
+            } else {
+                document.getElementById('lblEfectoPrincipal').innerHTML = "Daño por Turno";
+            }
+            window.generarTodoEnVivo();
+        }
+
+        window.toggleSinergia = function() {
+            const modo = document.getElementById('itemSinergiaModo').value;
+            document.getElementById('item-sinergia-basica').style.display = modo === 'sinergia' ? 'block' : 'none';
+            document.getElementById('item-sinergia-avanzada').style.display = modo === 'avanzada' ? 'block' : 'none';
+            document.getElementById('item-sinergia-existente').style.display = modo === 'existente' ? 'block' : 'none';
+            window.generarTodoEnVivo();
+        }
+
+        window.gestionarBloquesCondiciones = function(prefix) {
+            const op1 = document.getElementById(prefix+'VisOp1').value;
+            const op2 = document.getElementById(prefix+'VisOp2').value;
+            document.getElementById(prefix+'VisCond2').disabled = (op1 === 'ninguno');
+            document.getElementById(prefix+'VisOp2').disabled = (op1 === 'ninguno');
+            document.getElementById(prefix+'VisCond3').disabled = (op1 === 'ninguno' || op2 === 'ninguno');
+            window.generarTodoEnVivo();
+        }
+
+        function traducirCondicionVisualACodigo(visualId) {
+            switch(visualId) {
+                case "vida10": return `luchador.vidaActual <= (luchador.vidaMaxima * 0.1)`;
+                case "vida25": return `luchador.vidaActual <= (luchador.vidaMaxima * 0.25)`;
+                case "vida50": return `luchador.vidaActual <= (luchador.vidaMaxima * 0.5)`;
+                case "vida75": return `luchador.vidaActual <= (luchador.vidaMaxima * 0.75)`;
+                case "vidaRival25": return `(typeof rival !== 'undefined' && rival.vidaActual <= (rival.vidaMaxima * 0.25))`;
+                case "vidaRival50": return `(typeof rival !== 'undefined' && rival.vidaActual <= (rival.vidaMaxima * 0.5))`;
+                case "chance10": return `Math.random() <= 0.10`;
+                case "chance20": return `Math.random() <= 0.20`;
+                case "chance30": return `Math.random() <= 0.30`;
+                case "chance50": return `Math.random() <= 0.50`;
+                case "chance75": return `Math.random() <= 0.75`;
+                case "conMascota": return `luchador.mascotaActiva`;
+                case "sinMascota": return `!luchador.mascotaActiva`;
+                case "tengoArmadura": return `luchador.armaduraEquipada`;
+                case "rivalConMascota": return `(typeof rival !== 'undefined' && rival.mascotaActiva)`;
+                case "rivalSinArmadura": return `(typeof rival !== 'undefined' && !rival.armaduraEquipada)`;
+                default: return "true";
+            }
+        }
+
+        function armarHookText(prefijoUI, nombreItem) {
+            const hook = document.getElementById(prefijoUI+"Hook").value;
+            const cond1 = document.getElementById(prefijoUI+"Cond1").value;
+            const op1 = document.getElementById(prefijoUI+"Op1").value;
+            const cond2 = document.getElementById(prefijoUI+"Cond2").value;
+            const op2 = document.getElementById(prefijoUI+"Op2").value;
+            const cond3 = document.getElementById(prefijoUI+"Cond3").value;
+            const accion = document.getElementById(prefijoUI+"Accion").value;
+            const objetivo = document.getElementById(prefijoUI+"Objetivo").value;
+            const baseElegida = document.getElementById(prefijoUI+"Base").value;
+            const op = document.getElementById(prefijoUI+"Operacion").value;
+            const magnitud = document.getElementById(prefijoUI+"Valor").value;
+
+            let ifStatement = traducirCondicionVisualACodigo(cond1);
+            if (ifStatement === "true") ifStatement = ""; 
+            if (op1 !== "ninguno" && cond2 !== "siempre") {
+                let c2Str = traducirCondicionVisualACodigo(cond2);
+                ifStatement = `(${ifStatement || "true"}) ${op1} (${c2Str})`;
+                if (op2 !== "ninguno" && cond3 !== "siempre") {
+                    let c3Str = traducirCondicionVisualACodigo(cond3);
+                    ifStatement = `(${ifStatement}) ${op2} (${c3Str})`;
+                }
+            }
+            if (ifStatement !== "") ifStatement = `if (${ifStatement}) `;
+
+            const getBaseStr = (b) => {
+                const map = { fijo: "1", valorBase: "valorBase", miHpMax: "luchador.vidaMaxima", miHpActual: "luchador.vidaActual", miHpFaltante: "(luchador.vidaMaxima - luchador.vidaActual)", rivalHpMax: "rival.vidaMaxima", rivalHpActual: "rival.vidaActual", rivalHpFaltante: "(rival.vidaMaxima - rival.vidaActual)", danoFinal: "dañoFinal", miFuerza: "luchador.fuerza", miAgilidad: "luchador.agilidadBase" };
+                return map[b];
+            };
+
+            let requiereRival = baseElegida.includes('rival') || objetivo === 'rival';
+            let requiereDano = baseElegida === 'danoFinal';
+            let safeCheck = "";
+            if (requiereRival && requiereDano) safeCheck = "if (typeof rival !== 'undefined' && typeof dañoFinal !== 'undefined') {";
+            else if (requiereRival) safeCheck = "if (typeof rival !== 'undefined') {";
+            else if (requiereDano) safeCheck = "if (typeof dañoFinal !== 'undefined') {";
+
+            let calc = "";
+            if (baseElegida === 'fijo') calc = `let cantidad = ${magnitud};`;
+            else calc = `let cantidad = Math.floor(${getBaseStr(baseElegida)} ${op} ${magnitud});`;
+
+            let ejecucion = "";
+            if (accion === 'inmunidad') { ejecucion = "return true;"; calc = ""; } 
+            else if (accion === 'modificar') {
+                if (baseElegida === 'valorBase' && (op === '*' || op === '/')) ejecucion = `return cantidad;`; 
+                else {
+                    let sig = (op === '-' && baseElegida === 'fijo') ? '-' : '+';
+                    if (baseElegida === 'fijo' && op === '*') ejecucion = `return valorBase * cantidad;`;
+                    else ejecucion = `return valorBase ${sig} cantidad;`;
+                }
+            } 
+            else if (accion === 'curar') {
+                let tgt = objetivo === 'yo' ? 'luchador' : 'rival';
+                ejecucion = `${tgt}.vidaActual = Math.min(${tgt}.vidaMaxima, ${tgt}.vidaActual + cantidad);`;
+            } 
+            else if (accion === 'danar') {
+                let tgt = objetivo === 'yo' ? 'luchador' : 'rival';
+                ejecucion = `${tgt}.vidaActual = Math.max(0, ${tgt}.vidaActual - cantidad);`;
+            }
+
+            let customLog = document.getElementById(prefijoUI+"LogCustom").value.trim();
+            let logLine = "";
+            if (customLog) {
+                logLine = customLog.replace(/{v}/g, "${cantidad}");
+            } else {
+                if (accion === 'inmunidad') logLine = "✨ [" + nombreItem + "] activada!";
+                else {
+                    let iconoLog = accion === 'curar' ? '💖' : (accion === 'danar' ? '💥' : '⚙️');
+                    logLine = "✨ [" + nombreItem + "] activada! (" + iconoLog + " ${cantidad})";
+                }
+            }
+            
+            let pushLog = `logs.push(\`<span style='color:#ffaa00;'>${logLine}</span><br>\`);`;
+            let cuerpoInterno = accion === 'inmunidad' ? `${pushLog}\n                ${ejecucion}` : `${calc}\n                ${pushLog}\n                ${ejecucion}`;
+            let cuerpo = safeCheck ? `${safeCheck}\n                    ${cuerpoInterno.replace(/\\n                /g, "\\n                    ")}\n                }` : cuerpoInterno;
+
+            const usaValorBase = ["modificarDañoBruto", "modificarChanceEvasion", "modificarAgilidad", "modificarAgilidadRival"].includes(hook);
+            const paramCentral = usaValorBase ? "valorBase" : "dañoFinal, rival";
+            const retornoFin = usaValorBase ? "return valorBase;" : "";
+
+            return `\n        ${hook}: (luchador, ${paramCentral}, logs) => {\n            ${ifStatement}{\n                ${cuerpo}\n            }\n            ${retornoFin}\n        }`;
+        }
+
+        window.generarTodoEnVivo = function() {
+            const id = document.getElementById("itemID").value.trim() || "id_pendiente";
+            const nombre = document.getElementById("itemNombre").value.trim() || "Item";
+            let cod = "";
+            let htmlTooltip = "";
+
+            if (window.tipoActual !== "pasiva" && window.tipoActual !== "objetivo") {
+                htmlTooltip = `<strong style="color:gold; font-size:1.2em;">${nombre}</strong><br>`;
+                let efecto = document.getElementById("itemEfecto").value;
+                const sinergiaModo = document.getElementById("itemSinergiaModo").value;
+                
+                let efectoStr = "null";
+                if (efecto !== "ninguno") {
+                    const param1 = document.getElementById("efectoParam1").value; 
+                    const eTurnos = document.getElementById("efectoTurnos").value;
+                    if(efecto === 'congelado' || efecto === 'paralizado') {
+                        efectoStr = `{ tipo: '${efecto}', chanceStun: ${param1}, turnos: ${eTurnos} }`;
+                        htmlTooltip += `<span style="color:#00e5ff;">❄️ Control: ${efecto.toUpperCase()} (${Math.round(param1*100)}% prob / ${eTurnos} turnos)</span><br>`;
+                    } else {
+                        efectoStr = `{ tipo: '${efecto}', dañoTurno: ${param1}, turnos: ${eTurnos} }`;
+                        htmlTooltip += `<span style="color:#ff4757;">✨ Efecto: ${efecto.toUpperCase()} (${param1} dmg / ${eTurnos} turnos)</span><br>`;
+                    }
+                }
+
+                let construccionItem = "";
+                if (window.tipoActual === "arma") {
+                    const dano = document.getElementById("armaDano").value;
+                    const agi = document.getElementById("armaAgi").value;
+                    htmlTooltip += `⚔️ Daño: <span style="color:#4cd137;">+${dano}</span> | 🏃 Agilidad: -${agi}`;
+                    construccionItem = `new Arma("${nombre}", ${dano}, ${agi}, ${efectoStr}, ${document.getElementById("armaPrecio").value})`;
+                } 
+                else if (window.tipoActual === "armadura") {
+                    const mit = document.getElementById("armaduraMit").value;
+                    const agi = document.getElementById("armaduraAgi").value;
+                    htmlTooltip += `🛡️ Defensa: <span style="color:#00a8ff;">${Math.round(mit*100)}%</span> | 🏃 Agilidad: -${agi}`;
+                    construccionItem = `new Armadura("${nombre}", ${mit}, ${agi}, ${document.getElementById("armaduraPrecio").value})`;
+                    if (efecto !== "ninguno") construccionItem = `Object.assign(${construccionItem}, { efecto: ${efectoStr} })`;
+                }
+                else if (window.tipoActual === "mascota") {
+                    const fue = document.getElementById("mascotaFuerza").value;
+                    const agi = document.getElementById("mascotaAgi").value;
+                    htmlTooltip += `🐾 Daño: <span style="color:#4cd137;">${fue}</span> | ⚡ Agi: ${agi}`;
+                    construccionItem = `new Mascota("${nombre}", ${fue}, ${agi}, ${document.getElementById("mascotaPrecio").value})`;
+                    if (efecto !== "ninguno") construccionItem = `Object.assign(${construccionItem}, { efecto: ${efectoStr} })`;
+                }
+
+                if (sinergiaModo === "sinergia") {
+                    const cond = document.getElementById("aVisCond").value;
+                    const target = document.getElementById("aVisTarget").value.trim();
+                    const bono = document.getElementById("aVisBono").value;
+                    
+                    let condStr = `if (luchador.mascotaActiva) `;
+                    if (cond === "mascotaEspecifica") condStr = `if (luchador.mascotaActiva && luchador.mascotaActiva.nombre === "${target}") `;
+                    if (cond === "armaduraEspecifica") condStr = `if (luchador.armaduraEquipada && luchador.armaduraEquipada.nombre === "${target}") `;
+                    if (cond === "armaEspecifica") condStr = `if (luchador.armaEquipada && luchador.armaEquipada.nombre === "${target}") `;
+                    if (cond === "vida25") condStr = `if (luchador.vidaActual <= (luchador.vidaMaxima * 0.25)) `;
+
+                    cod = `    ${id}: Object.assign(${construccionItem}, {\n        modificarDañoBruto: (luchador, dañoBase, logs) => {\n            ${condStr}{\n                logs.push("<span style='color:#ffaa00;'>¡Sinergia de ${nombre}! (+${bono} dmg)</span><br>");\n                return dañoBase + ${bono};\n            }\n            return dañoBase;\n        }\n    }),`;
+                    htmlTooltip += `<br><span style="color:#ffaa00; font-size:0.9em;">🧩 Sinergia Oculta Activa</span>`;
+                } else if (sinergiaModo === "avanzada") {
+                    let hookCode = armarHookText('iVis', nombre);
+                    cod = `    ${id}: Object.assign(${construccionItem}, {${hookCode}\n    }),`;
+                    htmlTooltip += `<br><span style="color:#ffaa00; font-size:0.9em;">⚙️ Pasiva Avanzada Activa</span>`;
+                } else if (sinergiaModo === "existente") {
+                    const pasivaId = document.getElementById("itemPasivaExistente").value;
+                    cod = `    ${id}: Object.assign(${construccionItem}, (({ id, nombre, desc, ...hooks }) => hooks)(PasivasDisponibles['${pasivaId}'])),`;
+                    htmlTooltip += `<br><span style="color:#ffaa00; font-size:0.9em;">🔗 Vinculado a pasiva: ${pasivaId}</span>`;
+                } else {
+                    cod = `    ${id}: ${construccionItem},`;
+                }
+            } 
+            else if (window.tipoActual === "pasiva") {
+                htmlTooltip = `<strong style="color:gold; font-size:1.2em;">${nombre}</strong><br>`;
+                const desc = document.getElementById("pasivaDesc").value || "...";
+                htmlTooltip += `<span style="color:#ccc; font-style:italic;">"${desc}"</span>`;
+
+                let hookCode = armarHookText('pVis', nombre);
+                cod = `    ${id}: { \n        id: "${id}", \n        nombre: "${nombre}", \n        desc: "${desc}",${hookCode}\n    },`;
+            }
+            else if (window.tipoActual === "objetivo") {
+                const tipoM = document.getElementById("objTipoM").value;
+                const valReq = document.getElementById("objValor").value || 0;
+                let clave = "";
+                if (tipoM === 'jugador') { clave = document.getElementById("objClaveB").value; } 
+                else {
+                    const selTarget = document.getElementById("objClaveExtraSelect").value;
+                    if(selTarget === 'manual') clave = document.getElementById("objClaveE").value.trim() || 'stat_desconocido';
+                    else if (['partidasConMascota', 'victoriasCualquierArma', 'victoriasCualquierArmadura', 'rachaDerrotas', 'jefesAsesinados', 'eventosParticipados'].includes(selTarget)) clave = selTarget;
+                    else clave = `${selTarget}_${document.getElementById("objClaveExtraTarget").value}`;
+                }
+                const recTipo = document.getElementById("objPremioTipo").value;
+                let recId = document.getElementById("objPremioIdSelect").value;
+                if(recId === 'manual') recId = document.getElementById("objPremioIdManual").value.trim() || "item_id";
+                const msg = document.getElementById("objMsg").value.trim() || `Has desbloqueado algo.`;
+
+                htmlTooltip = `<strong style="color:gold; font-size:1.2em;">🏆 Logro: ${id}</strong><br><span style="color:#aaa;">Condición: Alcanzar ${valReq} en '${clave}'</span><br><span style="color:#4cd137;">🎁 Premio: [${recTipo}] ${recId}</span><br><br><span style="font-style:italic;">"${msg}"</span>`;
+                cod = `    { id: '${id}', tipo: '${tipoM}', clave: '${clave}', valorRequerido: ${valReq}, recompensa: { tipo: '${recTipo}', id: '${recId}', msg: '${msg}' } },`;
+            }
+
+            document.getElementById("resultado").value = cod;
+            document.getElementById("tooltip-in-game").innerHTML = htmlTooltip;
+        }
+
+        window.copiarCodigo = function() {
+            const caja = document.getElementById("resultado");
+            caja.select(); document.execCommand('copy');
+            const btn = document.querySelector('.btn-copiar');
+            btn.innerText = "✅ ¡COPIADO!"; btn.style.background = "#4cd137";
+            setTimeout(() => { btn.innerText = "📋 COPIAR AL PORTAPAPELES"; btn.style.background = "linear-gradient(180deg, #aa0000 0%, #660000 100%)"; }, 1500);
+        }
+
+        document.querySelectorAll('input, select').forEach(el => {
+            if(el.id !== 'selectorExistente' && !el.id.startsWith('pVisOp') && !el.id.startsWith('iVisOp') && el.id !== 'itemPasivaExistente') {
+                el.addEventListener('input', window.generarTodoEnVivo);
+                el.addEventListener('change', window.generarTodoEnVivo);
+            }
+        });
+
+        // INIT
+        window.actualizarListaExistentes();
+        window.actualizarTargetTelemetria(); 
+        window.actualizarListaRecompensas(); 
+        window.generarTodoEnVivo();
+    </script>
+</body>
+</html>

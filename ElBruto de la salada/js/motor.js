@@ -211,7 +211,21 @@ export const PasivasDisponibles = {
     sangre_fria: { 
         id: "sangre_fria", nombre: "Sangre Fría", desc: "Inmunidad total a los efectos de estado",
         esInmuneEstados: (luchador, inmune) => true
-    }
+    },
+
+        bendicion_animal: { 
+        id: "bendicion_animal", 
+        nombre: "Bendición Animal", 
+        desc: "Al iniciar un turno con menos del 25% de tu vida y tener una mascota activa, tienes una probabilidad del 50% de curarte un 20% de tu vida máxima.",
+        alInicioTurno: (luchador, dañoFinal, rival, logs) => {
+            if (((luchador.vidaActual <= (luchador.vidaMaxima * 0.25)) && (luchador.mascotaActiva)) && (Math.random() <= 0.50)) {
+                let cantidad = Math.floor(luchador.vidaMaxima * 0.20);
+                logs.push(`<span style='color:#ffaa00;'>🐺 ¡Tu mascota te reanima! (+${cantidad} HP)</span><br>`);
+                luchador.vidaActual = Math.min(luchador.vidaMaxima, luchador.vidaActual + cantidad);
+            }
+            
+        }
+    },
 };
 
 // ==========================================
@@ -326,7 +340,7 @@ export class Luchador {
 
     static random(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-    // ==========================================
+// ==========================================
     // 🎯 MOTOR DE HOOKS (Eventos Data-Driven)
     // ==========================================
     ejecutarHookRetorno(nombreHook, valorInicial, ...args) {
@@ -345,17 +359,30 @@ export class Luchador {
         let armadura = this.obtenerArmaduraOficial();
         if (armadura && armadura[nombreHook]) resultado = armadura[nombreHook](this, resultado, ...args);
 
+        // 3. Revisar Mascota Activa (¡CORREGIDO!)
+        let mascota = this.obtenerMascotaOficial();
+        if (mascota && mascota[nombreHook]) resultado = mascota[nombreHook](this, resultado, ...args);
+
         return resultado;
     }
 
     ejecutarHookAccion(nombreHook, ...args) {
+        // 1. Revisar pasivas
         this.pasivas.forEach(pId => {
             let pasiva = PasivasDisponibles[pId];
             if (pasiva && pasiva[nombreHook]) pasiva[nombreHook](this, ...args);
         });
 
+        // 2. Revisar Equipamiento Activo
         let arma = this.obtenerArmaOficial();
         if (arma && arma[nombreHook]) arma[nombreHook](this, ...args);
+
+        let armadura = this.obtenerArmaduraOficial();
+        if (armadura && armadura[nombreHook]) armadura[nombreHook](this, ...args);
+
+        // 3. Revisar Mascota Activa (¡CORREGIDO!)
+        let mascota = this.obtenerMascotaOficial();
+        if (mascota && mascota[nombreHook]) mascota[nombreHook](this, ...args);
     }
 
     // ==========================================

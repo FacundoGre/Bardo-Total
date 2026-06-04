@@ -42,7 +42,6 @@ async function simularCombateVisual(jugadorA, jugadorB) {
     let [atacante, defensor] = clonA.calcularIniciativa() >= clonB.calcularIniciativa() ? [clonA, clonB] : [clonB, clonA];
     registrar(`⚡ ${atacante.nombre} toma la iniciativa.`, 'sistema', 1000);
 
-    // BUCLE MATEMÁTICO (Sin await, termina en 1 milisegundo)
     // BUCLE MATEMÁTICO DATA-DRIVEN (Con Hooks, sin awaits, para la cinta de reproducción)
     while (clonA.vidaActual > 0 && clonB.vidaActual > 0) {
         let tipoAtacante = (atacante === clonA) ? 'jugador' : 'enemigo';
@@ -55,6 +54,20 @@ async function simularCombateVisual(jugadorA, jugadorB) {
         }
 
         if (atacante.intentarSacarArma()) registrar(`🎒 ¡${atacante.nombre} saca ${atacante.armaEquipada.nombre}!`, 'sistema', 800);
+        
+        // CHEQUEO DE EFECTOS DE CONTROL (STUN)
+        let estaStuneado = false;
+        atacante.estados.forEach(estado => {
+            if (estado.chanceStun && Math.random() <= estado.chanceStun) {
+                estaStuneado = true;
+                registrar(`❄️ ¡${atacante.nombre} está inmovilizado por ${estado.tipo} y pierde su turno!`, 'sistema', 1200);
+            }
+        });
+
+        if (estaStuneado) {
+            [atacante, defensor] = [defensor, atacante]; 
+            continue; // Salta al siguiente turno automáticamente
+        }
 
         let armaTxt = atacante.armaEquipada ? ` con ${atacante.armaEquipada.nombre}` : " a puño limpio";
         let mensajeTurno = `⚔️ ${atacante.nombre} ataca${armaTxt}...<br>`;
@@ -64,6 +77,17 @@ async function simularCombateVisual(jugadorA, jugadorB) {
         } else {
             let dañoBruto = atacante.calcularDaño();
             
+            // 👇 NUEVO: SISTEMA DE PIEDAD (LOSER'S BUFF) 👇
+            let rachaMala = atacante.estadisticasExtra?.rachaDerrotas || 0;
+            if (rachaMala >= 5) {
+                // Matemática: 0.02 * (1.5 elevado a la cantidad de derrotas extra)
+                let multiPiedad = 0.02 * Math.pow(1.5, (rachaMala - 5)); 
+                let bonoPity = Math.floor(dañoBruto * multiPiedad);
+                dañoBruto += bonoPity;
+                mensajeTurno += `<span style="color:#00e5ff; font-style:italic;">🌟 [Furia del Caído: +${Math.round(multiPiedad*100)}% Daño extra]</span><br>`;
+            }
+            // 👆 FIN SISTEMA DE PIEDAD 👆
+
             // 🌟 HOOK: Modificar Daño Bruto (Ej: Berserker)
             let logsExtraAtaque = [];
             dañoBruto = atacante.ejecutarHookRetorno('modificarDañoBruto', dañoBruto, logsExtraAtaque);
@@ -136,7 +160,7 @@ async function simularCombateVisual(jugadorA, jugadorB) {
     }
 
     // =======================================================
-    // 2. CONTROL DEL PROGRESO Y EL ANTI-F5 (PREPARACIÓN)
+    // 2. CONTROL DEL PROGRESO Y TELEMETRÍA DE OBJETIVOS
     // =======================================================
     let ganadorClon = clonA.vidaActual > 0 ? clonA : clonB; 
     let ganadorReal = ganadorClon.id === jugadorA.id ? jugadorA : jugadorB;
@@ -146,7 +170,6 @@ async function simularCombateVisual(jugadorA, jugadorB) {
     let eloAntesGanador = ganadorReal.elo; 
     let eloAntesPerdedor = perdedorReal.elo;
 
-    // Inicializamos variables de diferencia que usaremos al final
     let eloGanado = 0;
     let eloPerdido = 0;
 
@@ -160,6 +183,56 @@ async function simularCombateVisual(jugadorA, jugadorB) {
 
     if (ganadorReal.buffPartidas > 0) ganadorReal.buffPartidas--;
     if (perdedorReal.buffPartidas > 0) perdedorReal.buffPartidas--;
+
+    // 📊 RECOLECCIÓN DE DATOS UNIVERSAL (Autoconfigurable y Extendida)
+    if (!ganadorReal.estadisticasExtra) ganadorReal.estadisticasExtra = {};
+    if (!perdedorReal.estadisticasExtra) perdedorReal.estadisticasExtra = {};
+
+    // --- RACHA DE DERROTAS ---
+    perdedorReal.estadisticasExtra.rachaDerrotas = (perdedorReal.estadisticasExtra.rachaDerrotas || 0) + 1;
+    ganadorReal.estadisticasExtra.rachaDerrotas = 0; // Se resetea al ganar
+
+    // --- EVENTOS Y JEFES (Preparando el terreno) ---
+    // (Si el rival tiene una propiedad esJefe en el futuro, el sensor ya está listo)
+    if (perdedorReal.esJefe) {
+        ganadorReal.estadisticasExtra.jefesAsesinados = (ganadorReal.estadisticasExtra.jefesAsesinados || 0) + 1;
+        let idJefe = perdedorReal.nombre.replace(/\s+/g, '_').toLowerCase();
+        ganadorReal.estadisticasExtra[`jefeAsesinado_${idJefe}`] = (ganadorReal.estadisticasExtra[`jefeAsesinado_${idJefe}`] || 0) + 1;
+    }
+
+    // --- 1. MASCOTAS (Victorias y Derrotas) ---
+    if (ganadorReal.mascotas && ganadorReal.mascotas.length > 0) {
+        ganadorReal.estadisticasExtra.partidasConMascota = (ganadorReal.estadisticasExtra.partidasConMascota || 0) + 1;
+        let idMascota = ganadorReal.mascotas[0].nombre.replace(/\s+/g, '_').toLowerCase();
+        ganadorReal.estadisticasExtra[`victoriasMascota_${idMascota}`] = (ganadorReal.estadisticasExtra[`victoriasMascota_${idMascota}`] || 0) + 1;
+    }
+    if (perdedorReal.mascotas && perdedorReal.mascotas.length > 0) {
+        perdedorReal.estadisticasExtra.partidasConMascota = (perdedorReal.estadisticasExtra.partidasConMascota || 0) + 1;
+        let idMascota = perdedorReal.mascotas[0].nombre.replace(/\s+/g, '_').toLowerCase();
+        perdedorReal.estadisticasExtra[`derrotasMascota_${idMascota}`] = (perdedorReal.estadisticasExtra[`derrotasMascota_${idMascota}`] || 0) + 1;
+    }
+
+    // --- 2. ARMAS (Cualquiera y Específicas) ---
+    if (ganadorReal.armaEquipada) {
+        ganadorReal.estadisticasExtra.victoriasCualquierArma = (ganadorReal.estadisticasExtra.victoriasCualquierArma || 0) + 1;
+        let idArma = ganadorReal.armaEquipada.nombre.replace(/\s+/g, '_').toLowerCase();
+        ganadorReal.estadisticasExtra[`victoriasArma_${idArma}`] = (ganadorReal.estadisticasExtra[`victoriasArma_${idArma}`] || 0) + 1;
+    }
+    if (perdedorReal.armaEquipada) {
+        let idArma = perdedorReal.armaEquipada.nombre.replace(/\s+/g, '_').toLowerCase();
+        perdedorReal.estadisticasExtra[`derrotasArma_${idArma}`] = (perdedorReal.estadisticasExtra[`derrotasArma_${idArma}`] || 0) + 1;
+    }
+
+    // --- 3. ARMADURAS (Cualquiera y Específicas) ---
+    if (ganadorReal.armaduraEquipada) {
+        ganadorReal.estadisticasExtra.victoriasCualquierArmadura = (ganadorReal.estadisticasExtra.victoriasCualquierArmadura || 0) + 1;
+        let idArma = ganadorReal.armaduraEquipada.nombre.replace(/\s+/g, '_').toLowerCase();
+        ganadorReal.estadisticasExtra[`victoriasArmadura_${idArma}`] = (ganadorReal.estadisticasExtra[`victoriasArmadura_${idArma}`] || 0) + 1;
+    }
+    if (perdedorReal.armaduraEquipada) {
+        let idArma = perdedorReal.armaduraEquipada.nombre.replace(/\s+/g, '_').toLowerCase();
+        perdedorReal.estadisticasExtra[`derrotasArmadura_${idArma}`] = (perdedorReal.estadisticasExtra[`derrotasArmadura_${idArma}`] || 0) + 1;
+    }
 
     // 👇 Si el Anti-F5 está PRENDIDO, impactamos la Base de Datos YA MISMO
     if (antiF5Activo) {
