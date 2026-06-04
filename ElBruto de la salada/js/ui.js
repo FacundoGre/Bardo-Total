@@ -60,7 +60,6 @@ export function renderizarMiHub(jugador) {
             else btnAdmin.style.display = "none";
         }
 
-        // 👇 NUEVAS ESTADÍSTICAS DEL HUB 👇
         let elFuerza = document.getElementById("hub-fuerza");
         if (elFuerza) elFuerza.innerText = jugador.fuerza || 0;
 
@@ -76,7 +75,6 @@ export function renderizarMiHub(jugador) {
             if (elPuesto) elPuesto.innerHTML = `Posición Global: <b style="color:#fff;">${medallaPuesto}</b>`;
         });
 
-        // 👇 DIBUJAR PASIVAS EN EL HUB 👇
         const divPasivas = document.getElementById("hub-pasivas-lista");
         if (divPasivas) {
             divPasivas.innerHTML = "";
@@ -84,7 +82,6 @@ export function renderizarMiHub(jugador) {
                 jugador.pasivas.forEach(pId => {
                     const info = PasivasDisponibles[pId];
                     if (info) {
-                        // El 'title' es lo que hace que al pasar el mouse salga el cuadradito nativo con la descripción
                         divPasivas.innerHTML += `<div data-tooltip="${info.desc}" style="background:#222; border:1px solid #ff3333; border-radius:4px; padding:4px 10px; font-size:0.85em; color:#ff3333; cursor:help; box-shadow: 0 0 5px rgba(255,51,51,0.2);">🔮 ${info.nombre}</div>`;
                     }
                 });
@@ -167,7 +164,28 @@ export function escribirLog(mensaje, tipo = 'sistema', contenedorId = "log-comba
 
 export function actualizarUI(jugador, numPanel) {
     const hpDiv = document.getElementById(`hp${numPanel}`);
-    if (hpDiv) hpDiv.style.width = `${Math.max(0, (jugador.vidaActual / jugador.vidaMaxima) * 100)}%`;
+    const trailDiv = document.getElementById(`hp-trail${numPanel}`);
+    const pct = Math.max(0, (jugador.vidaActual / jugador.vidaMaxima) * 100);
+    const pctAnterior = parseFloat(hpDiv.style.width) || 100;
+
+    if (hpDiv) {
+        // Si recuperó vida, dibujamos el flash en el segmento nuevo
+        if (pct > pctAnterior) {
+            const flash = document.createElement("div");
+            flash.className = "heal-flash-layer";
+            flash.style.width = `${pct - pctAnterior}%`; // Solo el cacho que subió
+            hpDiv.parentElement.appendChild(flash);
+            setTimeout(() => flash.remove(), 600);
+        }
+        hpDiv.style.width = `${pct}%`;
+    }
+    
+    if (trailDiv) {
+        setTimeout(() => {
+            if (trailDiv) trailDiv.style.width = `${pct}%`;
+        }, 400); 
+    }
+
     const txtHp = document.getElementById(`texto-hp${numPanel}`);
     if (txtHp) txtHp.innerText = `${Math.max(0, Math.floor(jugador.vidaActual))}/${jugador.vidaMaxima} HP`;
 
@@ -175,8 +193,16 @@ export function actualizarUI(jugador, numPanel) {
     const titulo = calcularTitulo(jugador.elo);
     const titleDiv = document.getElementById(`titulo${numPanel}`);
     if (titleDiv) titleDiv.innerHTML = `🏆 <span class="${claseDiv}">${titulo}</span>`;
+    
     const avatarDiv = document.getElementById(`avatar${numPanel}`);
-    if (avatarDiv) avatarDiv.innerHTML = renderizarSVG(jugador.avatar);
+    if (avatarDiv) {
+    avatarDiv.innerHTML = renderizarSVG(jugador.avatar);
+    
+    // Solo quitamos las animaciones si el jugador sigue vivo
+    if (jugador.vidaActual > 0) {
+        avatarDiv.classList.remove('anim-muerte', 'anim-atacar-izq', 'anim-atacar-der', 'anim-daño', 'anim-cura', 'anim-esquivar-izq', 'anim-esquivar-der');
+    }
+}
 
     let cartelRacha = jugador.rachaActual >= 2 ? ` | <span style="color:#ff3333; font-weight:bold;">🔥 ${jugador.rachaActual}</span>` : "";
     const recDiv = document.getElementById(`record${numPanel}`);
@@ -196,7 +222,6 @@ export function bloquearBotones(estado) {
 export function mostrarAlerta(mensaje, textoBoton = "OK", callback = null) {
     const modal = document.getElementById("modal-confirmacion");
     
-    // Ocultamos el input del prompt por si quedó abierto antes
     const inputPrompt = document.getElementById("modal-conf-input");
     if (inputPrompt) inputPrompt.style.display = "none";
 
@@ -214,7 +239,7 @@ export function mostrarAlerta(mensaje, textoBoton = "OK", callback = null) {
     
     btnSi.addEventListener("click", () => {
         modal.style.display = "none";
-        btnSi.innerText = "Sí"; // Restaura texto original
+        btnSi.innerText = "Sí"; 
         btnNo.style.display = "inline-block";
         if (callback) callback();
     });
@@ -223,7 +248,6 @@ export function mostrarAlerta(mensaje, textoBoton = "OK", callback = null) {
 export function mostrarConfirmacion(mensaje, callbackAccion) {
     const modal = document.getElementById("modal-confirmacion");
     
-    // Ocultamos el input del prompt por si quedó abierto antes
     const inputPrompt = document.getElementById("modal-conf-input");
     if (inputPrompt) inputPrompt.style.display = "none";
 
@@ -278,15 +302,13 @@ export function mostrarPrompt(mensaje, placeholder = "") {
         btnNo.innerText = "Cancelar"; 
         modal.style.display = "flex";
 
-        // 👇 FUNCIÓN PARA EL ENTER 👇
         const manejarEnter = (evento) => {
             if (evento.key === "Enter") {
-                evento.preventDefault(); // Evita comportamientos raros del form
-                btnSi.click(); // Dispara la misma lógica del botón Aceptar
+                evento.preventDefault(); 
+                btnSi.click(); 
             }
         };
 
-        // Escuchamos el Enter mientras el usuario escribe
         if (inputPrompt) {
             inputPrompt.addEventListener("keydown", manejarEnter);
         }
@@ -295,7 +317,7 @@ export function mostrarPrompt(mensaje, placeholder = "") {
             modal.style.display = "none";
             const valorIngresado = inputPrompt ? inputPrompt.value : "";
             if (inputPrompt) {
-                inputPrompt.removeEventListener("keydown", manejarEnter); // Limpieza
+                inputPrompt.removeEventListener("keydown", manejarEnter); 
                 inputPrompt.style.display = "none";
             }
             btnSi.innerText = "Sí"; 
@@ -306,7 +328,7 @@ export function mostrarPrompt(mensaje, placeholder = "") {
         btnNo.addEventListener("click", () => {
             modal.style.display = "none";
             if (inputPrompt) {
-                inputPrompt.removeEventListener("keydown", manejarEnter); // Limpieza
+                inputPrompt.removeEventListener("keydown", manejarEnter); 
                 inputPrompt.style.display = "none";
             }
             btnSi.innerText = "Sí"; 
@@ -316,7 +338,6 @@ export function mostrarPrompt(mensaje, placeholder = "") {
     });
 }
 
-// 🛠️ FÁBRICA DE MEDALLAS CUSTOM (Glossy y limpias)
 function obtenerMedallaSVG(puesto) {
     let color, oscuro, texto;
     if(puesto === 1) { color = "#FFD700"; oscuro = "#B8860B"; texto = "1"; }
@@ -333,38 +354,30 @@ function obtenerMedallaSVG(puesto) {
     </svg>`;
 }
 
-// ⚔️ FÁBRICA DE LIGAS (Las 7 Divisiones del Bardo)
 function obtenerLigaSVG(division) {
     let divLow = division.toLowerCase();
     let svg = "";
     
     switch(divLow) {
         case 'hierro':
-            // Yunque de hierro oscuro
             svg = `<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px; filter:drop-shadow(0 0 2px #2c3e50);"><path d="M21 11c0-2.5-2-5-5-5H8c-2.5 0-5 2.5-5 5v2h18v-2zm-9 4H8v6h4v-6z" fill="#7f8c8d"/></svg>`;
             break;
         case 'bronce':
-            // Escudo redondo de bronce
             svg = `<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px; filter:drop-shadow(0 0 2px #a0522d);"><circle cx="12" cy="12" r="10" fill="#cd7f32"/><circle cx="12" cy="12" r="7" fill="#8b4513"/><circle cx="12" cy="12" r="3" fill="#cd7f32"/></svg>`;
             break;
         case 'plata':
-            // Escudo heráldico de plata
             svg = `<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px; filter:drop-shadow(0 0 3px #aaa);"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" fill="#bdc3c7"/><path d="M12 3v18c4-1 7-5 7-10V6l-7-3z" fill="#95a5a6"/></svg>`;
             break;
         case 'oro':
-            // Corona dorada
             svg = `<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px; filter:drop-shadow(0 0 4px #ffaa00);"><path d="M5 16h14l-2-9-4 3-2-6-2 6-4-3-2 9zm-2 2h18v2H3v-2z" fill="#f1c40f"/></svg>`;
             break;
         case 'platino':
-            // Estrella rúnica cian
             svg = `<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px; filter:drop-shadow(0 0 5px #00e5ff);"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#00e5ff"/></svg>`;
             break;
         case 'diamante':
-            // Gema facetada azul
             svg = `<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px; filter:drop-shadow(0 0 5px #2980b9);"><path d="M12 2L2 9l10 13 10-13L12 2zm0 3.5l5.5 5H6.5L12 5.5z" fill="#3498db"/></svg>`;
             break;
         case 'leyenda':
-            // Llama oscura / Emblema magenta legendario
             svg = `<svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px; filter:drop-shadow(0 0 6px #ff00ff);"><path d="M12 2c-3 4-5 7-5 11 0 2.76 2.24 5 5 5s5-2.24 5-5c0-4-2-7-5-11zm0 14c-1.66 0-3-1.34-3-3 0-2 1.5-4 3-6 1.5 2 3 4 3 6 0 1.66-1.34 3-3 3z" fill="#f0f"/><path d="M12 12c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="#fff"/></svg>`;
             break;
         default:
@@ -401,7 +414,6 @@ export async function abrirRankingCompleto(miId) {
             let esMio = (miId && doc.id === miId);
             let badgeMia = esMio ? `<span class="badge-mia">TÚ</span>` : "";
 
-            // --- RENDER DEL PODIO CON MEDALLAS SVG (Top 3) ---
             if (posicion <= 3) {
                 const pod = document.createElement("div");
                 pod.className = `podium-item podium-${posicion} ${esMio ? 'fila-mia' : ''}`;
@@ -424,7 +436,6 @@ export async function abrirRankingCompleto(miId) {
                 `;
                 podium.appendChild(pod);
             } 
-            // --- RENDER DE LA LISTA EN GRILLA (4 al 100) ---
             else {
                 const li = document.createElement("li"); 
                 li.className = `fila-ranking ${esMio ? 'fila-mia' : ''}`;
@@ -456,7 +467,7 @@ export async function abrirRankingCompleto(miId) {
                 lista.appendChild(li); 
             }
             posicion++;
-        }); // 👈 ¡ESTO ES LO QUE FALTABA! ACÁ SE CIERRA EL BUCLE
+        }); 
 
         const inputBuscador = document.getElementById("buscador-ranking");
         if (inputBuscador) {
@@ -485,11 +496,9 @@ export function abrirCodice() {
     const contenedor = document.getElementById("contenido-codice");
     let htmlWiki = "";
 
-    // Estilos base para las tarjetas
     const estiloCard = "background:#1a1a1a; border:1px solid #333; border-radius:8px; padding:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display:flex; flex-direction:column; justify-content:center;";
     const estiloGrid = "display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;";
 
-    // 1. PASIVAS (Tarjetas Rojas)
     htmlWiki += `
         <h3 style="color:#ff3333; font-size:1.5em; border-bottom:1px solid #ff3333; padding-bottom:5px;">🔮 Pasivas Míticas</h3>
         <div style="${estiloGrid}">
@@ -504,7 +513,6 @@ export function abrirCodice() {
     }
     htmlWiki += `</div>`;
 
-    // 2. ARSENAL (Tarjetas Verdes)
     htmlWiki += `
         <h3 style="color:#44ff44; font-size:1.5em; border-bottom:1px solid #44ff44; padding-bottom:5px; margin-top:25px;">⚔️ Arsenal de Armas</h3>
         <div style="${estiloGrid}">
@@ -513,7 +521,6 @@ export function abrirCodice() {
         let a = Arsenal[key];
         let efectoTxt = "";
         
-        // Si el arma tiene un efecto, armamos el tooltip dinámico
         if (a.efecto) {
             let descEfecto = `Inflige ${a.efecto.dañoTurno} de daño por ${a.efecto.turnos} turnos.`;
             efectoTxt = `
@@ -534,7 +541,6 @@ export function abrirCodice() {
     }
     htmlWiki += `</div>`;
 
-    // 3. BESTIARIO (Tarjetas Azules)
     htmlWiki += `
         <h3 style="color:#4444ff; font-size:1.5em; border-bottom:1px solid #4444ff; padding-bottom:5px;">🐺 Bestiario</h3>
         <div style="${estiloGrid}">
@@ -560,10 +566,9 @@ export function abrirCodice() {
 // 🎯 MOTOR GLOBAL DE TOOLTIPS
 // ==========================================
 export function iniciarMotorTooltips() {
-    const tooltip = document.getElementById("custom-tooltip"); // 👈 VOLVIÓ AL ID ORIGINAL
+    const tooltip = document.getElementById("custom-tooltip");
     if(!tooltip) return;
 
-    // Cuando el mouse ENTRA a un elemento
     document.addEventListener("mouseover", (e) => {
         const target = e.target.closest("[data-tooltip]");
         if(target) {
@@ -572,7 +577,6 @@ export function iniciarMotorTooltips() {
         }
     });
 
-    // Cuando el mouse SE MUEVE adentro del elemento
     document.addEventListener("mousemove", (e) => {
         if(tooltip.style.display === "block") {
             tooltip.style.left = (e.pageX + 15) + "px";
@@ -580,9 +584,110 @@ export function iniciarMotorTooltips() {
         }
     });
 
-    // Cuando el mouse SALE del elemento
     document.addEventListener("mouseout", (e) => {
         const target = e.target.closest("[data-tooltip]");
         if(target) tooltip.style.display = "none";
     });
 }
+
+// ==========================================
+// 🎬 SISTEMA DE ANIMACIONES VISUALES (JUICE)
+// ==========================================
+export function animarAvatar(numPanel, animacion) {
+    const avatar = document.getElementById(`avatar${numPanel}`);
+    if (!avatar) return;
+    
+    if (avatar.classList.contains('anim-muerte')) return;
+
+    avatar.classList.remove('anim-atacar-izq', 'anim-atacar-der', 'anim-daño', 'anim-cura', 'anim-esquivar-izq', 'anim-esquivar-der');
+    void avatar.offsetWidth; 
+    avatar.classList.add(animacion);
+}
+
+export function animarShake() {
+    const arena = document.querySelector(".arena");
+    if (!arena) return;
+    arena.classList.remove("anim-shake");
+    void arena.offsetWidth;
+    arena.classList.add("anim-shake");
+}
+
+export function flashCritico() {
+    const flash = document.getElementById("pantalla-flash");
+    if (!flash) return;
+    flash.classList.remove("anim-flash");
+    void flash.offsetWidth;
+    flash.classList.add("anim-flash");
+}
+
+export function mostrarTextoFlotante(numPanel, texto, tipo = "float-dmg") {
+    const avatar = document.getElementById(`avatar${numPanel}`);
+    if (!avatar) return;
+    
+    const span = document.createElement("span");
+    span.className = `floating-text ${tipo}`;
+    span.innerHTML = texto;
+    
+    const offsetX = (Math.random() - 0.5) * 60;
+    span.style.marginLeft = `${offsetX}px`;
+    avatar.parentElement.appendChild(span);
+    setTimeout(() => span.remove(), 1200);
+}
+
+export function mostrarVFX(numPanel, emoji) {
+    const avatar = document.getElementById(`avatar${numPanel}`);
+    if (!avatar) return;
+    
+    const span = document.createElement("span");
+    span.className = `hit-vfx`;
+    span.innerHTML = emoji;
+    avatar.parentElement.appendChild(span);
+    setTimeout(() => span.remove(), 500);
+}
+
+export function mostrarCombo(numPanel, hits) {
+    const avatar = document.getElementById(`avatar${numPanel}`);
+    if (!avatar) return;
+    const span = document.createElement("span");
+    span.className = `combo-text`;
+    span.innerHTML = `<span style="font-size:0.5em; color:#fff;">COMBO</span><br>x${hits}`;
+    
+    span.style.left = numPanel === 1 ? "-20px" : "80%";
+    
+    avatar.parentElement.appendChild(span);
+    setTimeout(() => span.remove(), 800);
+}
+
+// ==========================================
+// 🎵 MOTOR DE AUDIO CENTRAL (SINTETIZADOR)
+// ==========================================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// Función matemática que genera ruiditos retro (No necesitas archivos .mp3)
+function generarTono(freq, tipoOnda, duracion, volumen = 0.1) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = tipoOnda; // 'square', 'sawtooth', 'triangle', 'sine'
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    
+    // Hace que el sonido se apague suavemente
+    gain.gain.setValueAtTime(volumen, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duracion);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duracion);
+}
+
+// 📦 LIBRERÍA DE EFECTOS
+// EL DÍA DE MAÑANA: Borrás el "generarTono(...)" y ponés -> new Audio("recursos/golpe.mp3").play();
+export const SFX = {
+    golpe: () => generarTono(150, 'square', 0.1, 0.05), // Ruido seco
+    critico: () => { generarTono(100, 'sawtooth', 0.2, 0.1); generarTono(800, 'square', 0.1, 0.05); }, // Ruido eléctrico
+    cura: () => { generarTono(400, 'sine', 0.1, 0.05); setTimeout(() => generarTono(600, 'sine', 0.2, 0.05), 100); }, // Campanita 1UP
+    esquive: () => generarTono(300, 'sine', 0.1, 0.02), // Swoosh suave
+    muerte: () => { generarTono(100, 'sawtooth', 0.5, 0.1); setTimeout(() => generarTono(50, 'sawtooth', 0.8, 0.1), 200); } // Caída dramática
+};
+

@@ -48,6 +48,7 @@ async function generarNuevoJefe(jefeRef) {
 }
 
 export async function initEvento() {
+    document.getElementById("jefe-player-avatar").classList.remove("anim-muerte");
     cambiarVista('vista-evento');
     document.getElementById('log-jefe').innerHTML = "<p style='color:#888; text-align:center;'>Entrando a la guarida...</p>";
 
@@ -84,7 +85,14 @@ export async function initEvento() {
 function actualizarHpVisual(prefijo, vidaRestante, vidaMax) {
     const pct = Math.max(0, (vidaRestante / vidaMax) * 100);
     document.getElementById(`${prefijo}-hp-bar`).style.width = `${pct}%`;
-    // ACÁ ESTÁ EL CAMBIO (Math.max):
+    
+    const trail = document.getElementById(`${prefijo}-hp-trail`);
+    if (trail) {
+        setTimeout(() => {
+            if (trail) trail.style.width = `${pct}%`;
+        }, 400);
+    }
+    
     document.getElementById(`${prefijo}-hp-text`).innerText = `${Math.max(0, Math.floor(vidaRestante))} / ${vidaMax} HP`;
 }
 

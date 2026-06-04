@@ -1,10 +1,11 @@
 import { db, collection, query, orderBy, limit, getDocs, doc, getDoc } from "./firebase.js";
 import { buscarOponentePorElo, actualizarHistorialDB, instanciarLuchadorDesdeDB, guardarProgresoDB } from "./db.js";
-import { escribirLog, actualizarUI, bloquearBotones, pausar, renderizarMiHub } from "./ui.js";
+import { escribirLog, actualizarUI, bloquearBotones, pausar, renderizarMiHub, animarAvatar, animarShake, mostrarTextoFlotante, flashCritico, mostrarVFX, mostrarCombo, SFX } from "./ui.js";
 import { miGladiador } from "./auth.js";
 import { renderizarArmario } from "./rpg.js"; 
 import { Luchador } from "./motor.js";
 import { verificarObjetivos } from "./objetivos.js";
+
 
 // 🛡️ CREA UN CLON LIMPIO PARA NO ROMPER EL INVENTARIO ORIGINAL
 function clonarParaArena(luchador) {
@@ -246,12 +247,132 @@ async function simularCombateVisual(jugadorA, jugadorB) {
     }
 
     // =======================================================
-    // 3. REPRODUCCIÓN VISUAL (La película de la pelea)
+    // 3. REPRODUCCIÓN VISUAL (JUICE MAXIMIZADO + COMBOS)
     // =======================================================
-    for (let accion of lineaDeTiempo) {
+    let hpAnteriorA = clonA.vidaActual;
+    let hpAnteriorB = clonB.vidaActual;
+    let comboA = 0; // 👈 Contadores de combo
+    let comboB = 0;
+
+for (let accion of lineaDeTiempo) {
         escribirLog(accion.msg, accion.tipo);
+
+        let esCritico = accion.msg.includes("CRÍTICO");
+        let atacoMascota = accion.msg.includes("🐾");
+        let atacoArma = accion.msg.includes("🗡️") || accion.msg.includes("🎒");
+        let esquive = accion.msg.includes("falla") || accion.msg.includes("esquiva");
+        let bloqueoEscudo = accion.msg.includes("🛡️") && accion.msg.includes("absorb");
+        
+        let huboImpacto = false;
+
+        // --- JUGADOR 1 (A) RECIBE DAÑO ---
+        if (accion.hpA < hpAnteriorA) {
+            let daño = hpAnteriorA - accion.hpA;
+            mostrarTextoFlotante(1, `-${Math.floor(daño)}`, esCritico ? 'float-crit' : 'float-dmg');
+            animarAvatar(1, 'anim-daño');
+            animarAvatar(2, 'anim-atacar-der'); 
+            huboImpacto = true;
+            
+            // 🎵 SONIDO: Si es crítico suena el trueno eléctrico, si no, el golpe seco
+            if (esCritico) SFX.critico();
+            else SFX.golpe();
+            
+            comboB++; comboA = 0;
+            if (comboB >= 2) mostrarCombo(2, comboB);
+
+            if (atacoMascota) mostrarVFX(1, '🐾');
+            else if (atacoArma) mostrarVFX(1, '💥');
+
+            if (bloqueoEscudo) mostrarVFX(1, '🛡️');
+        } 
+        // JUGADOR 1 SE CURA
+        else if (accion.hpA > hpAnteriorA) {
+            let cura = accion.hpA - hpAnteriorA;
+            mostrarTextoFlotante(1, `+${Math.floor(cura)}`, 'float-heal');
+            animarAvatar(1, 'anim-cura');
+            mostrarVFX(1, '✨');
+            
+            // 🎵 SONIDO: Campanita de curación
+            SFX.cura();
+        }
+
+        // --- JUGADOR 2 (B) RECIBE DAÑO ---
+        if (accion.hpB < hpAnteriorB) {
+            let daño = hpAnteriorB - hpAnteriorB; // Nota: Aquí tenías un typo en tu código original (hpAnteriorB - hpB), lo corregí a: hpAnteriorB - accion.hpB
+            daño = hpAnteriorB - accion.hpB; 
+            mostrarTextoFlotante(2, `-${Math.floor(daño)}`, esCritico ? 'float-crit' : 'float-dmg');
+            animarAvatar(2, 'anim-daño');
+            animarAvatar(1, 'anim-atacar-izq'); 
+            huboImpacto = true;
+
+            // 🎵 SONIDO: Lo mismo para el rival
+            if (esCritico) SFX.critico();
+            else SFX.golpe();
+
+            comboA++; comboB = 0;
+            if (comboA >= 2) mostrarCombo(1, comboA);
+
+            if (atacoMascota) mostrarVFX(2, '🐾');
+            else if (atacoArma) mostrarVFX(2, '💥');
+
+            if (bloqueoEscudo) mostrarVFX(2, '🛡️');
+        } 
+        // JUGADOR 2 SE CURA
+        else if (accion.hpB > hpAnteriorB) {
+            let cura = accion.hpB - hpAnteriorB;
+            mostrarTextoFlotante(2, `+${Math.floor(cura)}`, 'float-heal');
+            animarAvatar(2, 'anim-cura');
+            mostrarVFX(2, '✨');
+            
+            // 🎵 SONIDO: Campanita de curación
+            SFX.cura();
+        }
+
+        // --- FINTAS Y ESQUIVES (MATRIX) ---
+        if (esquive) {
+            comboA = 0; comboB = 0; 
+            
+            // 🎵 SONIDO: Swoosh de esquive
+            SFX.esquive();
+
+            if (accion.tipo === 'jugador') {
+                animarAvatar(1, 'anim-atacar-izq');
+                animarAvatar(2, 'anim-esquivar-der'); 
+                mostrarVFX(2, '💨');
+                mostrarTextoFlotante(2, '¡FALLÓ!', 'float-miss');
+            } 
+            if (accion.tipo === 'enemigo') {
+                animarAvatar(2, 'anim-atacar-der');
+                animarAvatar(1, 'anim-esquivar-izq'); 
+                mostrarVFX(1, '💨');
+                mostrarTextoFlotante(1, '¡FALLÓ!', 'float-miss');
+            }
+        }
+
+        // --- HIT-STOP Y DESTELLOS PARA CRÍTICOS ---
+        if (esCritico && huboImpacto) {
+            flashCritico();
+            animarShake();
+            await pausar(250); 
+        }
+
+        // --- MUERTES DRAMÁTICAS ---
+        if (accion.hpA <= 0 && hpAnteriorA > 0) {
+            animarAvatar(1, 'anim-muerte');
+            SFX.muerte(); // 🎵 SONIDO: Game Over para el jugador A
+        }
+        if (accion.hpB <= 0 && hpAnteriorB > 0) {
+            animarAvatar(2, 'anim-muerte');
+            SFX.muerte(); // 🎵 SONIDO: Caída para el jugador B
+        }
+
+        // Actualizamos estado para el siguiente frame
+        hpAnteriorA = accion.hpA;
+        hpAnteriorB = accion.hpB;
         clonA.vidaActual = accion.hpA; clonB.vidaActual = accion.hpB; 
+        
         actualizarUI(clonA, 1); actualizarUI(clonB, 2);
+        
         await pausar(accion.pausa);
     }
 
