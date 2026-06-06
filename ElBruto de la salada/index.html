@@ -254,6 +254,13 @@
                 style="padding: 2px; height: 85px; width: 280px; display: flex; justify-content: center; align-items: center;">
                 <img src="recursos/enfrentarbestia-boton.svg" alt="Bestia">
             </button>
+            <button id="btn-ir-torre" class="btn-accion"
+                style="padding: 2px; height: 85px; width: 280px; display: flex; justify-content: center; align-items: center; background: #1a0b2e; border: 2px solid #8e44ad; box-shadow: 0 0 15px rgba(142, 68, 173, 0.4); transition: all 0.2s;">
+                <div
+                    style="font-size: 1.3em; color: #e0aaff; text-shadow: 1px 1px 2px #000; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">
+                    🏰 El Purgatorio
+                </div>
+            </button>
         </div>
 
         <div class="layout-principal" style="width: 100%;">
@@ -374,6 +381,7 @@
                     <h2 id="jefe-player-nombre" class="nombre-luchador" style="color:#fff;">Tú</h2>
                     <div class="barra-vida-fondo">
                         <div id="jefe-player-hp-trail" class="barra-vida-trail" style="width: 100%"></div>
+                        <div id="hp-player-bestia" class="barra-vida-heal" style="width: 0%"></div>
                         <div id="jefe-player-hp-bar" class="barra-vida-relleno" style="width: 100%"></div>
                     </div>
                     <p id="jefe-player-hp-text" style="font-size: 1.2em; font-weight: bold;">100/100 HP</p>
@@ -400,6 +408,7 @@
                     <h3 id="jefe-stats" style="color: #aaa; font-size: 0.9em;">Fuerza: ? | Agilidad: ?</h3>
                     <div class="barra-vida-fondo">
                         <div id="jefe-hp-trail" class="barra-vida-trail" style="width: 100%"></div>
+                        <div id="hp-bestia" class="barra-vida-heal" style="width: 0%"></div>
                         <div id="jefe-hp-bar" class="barra-vida-relleno"
                             style="width: 100%; background: linear-gradient(90deg, #8b0000, #ff0000);"></div>
                     </div>
@@ -433,6 +442,7 @@
                 <span id="record1" class="record-stats">1200 Elo<br>🏆 0 | 💀 0</span>
                 <div class="barra-vida-fondo">
                     <div id="hp-trail1" class="barra-vida-trail" style="width: 100%"></div>
+                    <div id="hpjefe-player" class="barra-vida-heal" style="width: 0%"></div>
                     <div id="hp1" class="barra-vida-relleno" style="width: 100%"></div>
                 </div>
                 <p id="texto-hp1">100/100 HP</p>
@@ -445,6 +455,7 @@
                 <span id="record2" class="record-stats">1200 Elo<br>🏆 0 | 💀 0</span>
                 <div class="barra-vida-fondo">
                     <div id="hp-trail2" class="barra-vida-trail" style="width: 100%"></div>
+                    <div id="hp-jefejefe" class="barra-vida-heal" style="width: 0%"></div>
                     <div id="hp2" class="barra-vida-relleno" style="width: 100%"></div>
                 </div>
                 <p id="texto-hp2">100/100 HP</p>
@@ -461,6 +472,100 @@
                     <img src="./recursos/volverAlCampamento-botonAMARILLO.svg" alt="Volver">
                 </button>
             </div>
+        </div>
+    </div>
+
+    <div id="vista-limbo" class="vista-juego"
+        style="display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh;">
+
+        <h1 class="texto-dorado-3d"
+            style="font-size: 4.5em; margin-bottom: 5px; color: #8a0303 !important; filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.3));">
+            EL PURGATORIO</h1>
+        <h2 style="color: #ff3333; letter-spacing: 4px; margin-top: 0; text-shadow: 2px 2px 0 #000;">SOBREVIVISTE AL
+            PISO <span id="limbo-piso-actual" style="font-size:1.5em; color:#fff;">1</span></h2>
+
+        <p
+            style="color: #bbb; max-width: 650px; text-align: center; margin-bottom: 40px; font-size: 1.15em; line-height: 1.6; background: rgba(0,0,0,0.6); padding: 20px; border: 1px solid #333; border-radius: 8px;">
+            El abismo exige más sangre, pero te permite un respiro temporal.<br>
+            <b style="color: #ffaa00; letter-spacing: 1px;">ELIGE TU OFRENDA PARA EL SIGUIENTE PISO:</b>
+        </p>
+
+        <div class="contenedor-cartas-limbo">
+
+            <div class="carta-limbo" id="carta-limbo-cura"
+                style="--color-tema: #4cd137; --glow-tema: rgba(76,209,55,0.5);">
+                <div class="carta-borde-interno"></div>
+                <div class="carta-icono-svg">
+                    <svg viewBox="0 0 100 100" width="100" height="100">
+                        <defs>
+                            <radialGradient id="gradCura" cx="40%" cy="30%" r="60%">
+                                <stop offset="0%" stop-color="#a8ff78" />
+                                <stop offset="60%" stop-color="#4cd137" />
+                                <stop offset="100%" stop-color="#144d14" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="45" fill="url(#gradCura)" />
+                        <path d="M40 30 h20 v15 h15 v20 h-15 v15 h-20 v-15 h-15 v-20 h15 z"
+                            fill="rgba(255,255,255,0.7)" />
+                        <ellipse cx="50" cy="25" rx="25" ry="12" fill="rgba(255,255,255,0.6)"
+                            transform="rotate(-15 50 25)" />
+                        <path d="M 25 70 Q 50 95 75 70 Q 50 85 25 70" fill="rgba(255,255,255,0.3)" />
+                    </svg>
+                </div>
+                <h3 class="carta-titulo">ALIENTO DE VIDA</h3>
+                <p class="carta-desc">El orbe sella tus heridas abiertas. Recuperas un <strong>30%</strong> de tu Vida
+                    Máxima instantáneamente.</p>
+            </div>
+
+            <div class="carta-limbo" id="carta-limbo-buff"
+                style="--color-tema: #00e5ff; --glow-tema: rgba(0,229,255,0.5);">
+                <div class="carta-borde-interno"></div>
+                <div class="carta-icono-svg">
+                    <svg viewBox="0 0 100 100" width="100" height="100">
+                        <defs>
+                            <radialGradient id="gradBuff" cx="35%" cy="35%" r="65%">
+                                <stop offset="0%" stop-color="#ffffff" />
+                                <stop offset="40%" stop-color="#00e5ff" />
+                                <stop offset="100%" stop-color="#003366" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="45" fill="url(#gradBuff)" />
+                        <polygon points="55,15 30,55 50,55 45,85 75,45 55,45" fill="rgba(255,255,255,0.9)" />
+                        <ellipse cx="40" cy="25" rx="20" ry="10" fill="rgba(255,255,255,0.7)"
+                            transform="rotate(-30 40 25)" />
+                        <path d="M 20 60 Q 50 90 80 60 Q 50 80 20 60" fill="rgba(255,255,255,0.2)" />
+                    </svg>
+                </div>
+                <h3 class="carta-titulo">FURIA EFÍMERA</h3>
+                <p class="carta-desc">La adrenalina pura recorre tus venas. Obtienes <strong>+5 Daño</strong> y
+                    <strong>+5 Agilidad</strong> para el próximo piso.</p>
+            </div>
+
+            <div class="carta-limbo" id="carta-limbo-item"
+                style="--color-tema: #ffaa00; --glow-tema: rgba(255,170,0,0.5);">
+                <div class="carta-borde-interno"></div>
+                <div class="carta-icono-svg">
+                    <svg viewBox="0 0 100 100" width="100" height="100">
+                        <defs>
+                            <radialGradient id="gradItem" cx="40%" cy="40%" r="60%">
+                                <stop offset="0%" stop-color="#ffeaa7" />
+                                <stop offset="50%" stop-color="#ffaa00" />
+                                <stop offset="100%" stop-color="#4a2500" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="45" fill="url(#gradItem)" />
+                        <text x="50" y="70" font-family="'Cinzel', serif" font-weight="900" font-size="55"
+                            fill="rgba(255,255,255,0.8)" text-anchor="middle"
+                            filter="drop-shadow(2px 2px 2px rgba(0,0,0,0.5))">?</text>
+                        <ellipse cx="50" cy="20" rx="25" ry="8" fill="rgba(255,255,255,0.6)" />
+                        <path d="M 15 50 A 35 35 0 0 0 85 50 A 38 38 0 0 1 15 50" fill="rgba(255,255,255,0.3)" />
+                    </svg>
+                </div>
+                <h3 class="carta-titulo">CAJA DE PANDORA</h3>
+                <p class="carta-desc">Obtienes un <strong>Ítem Exclusivo</strong> de la torre. Puede ser la llave de tu
+                    victoria, o simple basura.</p>
+            </div>
+
         </div>
     </div>
 

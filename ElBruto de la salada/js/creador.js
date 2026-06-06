@@ -95,7 +95,7 @@ export function inicializarCreador() {
         avatarState.items[dragCategory].x = initialTransformX + (e.clientX - startMouseX) * 0.3; avatarState.items[dragCategory].y = initialTransformY + (e.clientY - startMouseY) * 0.3;
         updateVisuals();
     });
-    window.addEventListener('mouseup', () => { activeDraalertgElement = null; dragCategory = null; });
+    window.addEventListener('mouseup', () => { activeDragElement = null; dragCategory = null; });
 
     svgContainer.addEventListener('wheel', (e) => {
         const targetGroup = e.target.closest('.draggable'); if (!targetGroup) return; e.preventDefault();

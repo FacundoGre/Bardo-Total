@@ -18,6 +18,9 @@ export function instanciarLuchadorDesdeDB(docu) {
     
     let luchador = new Luchador(data.nombre, data.vidaMaxima, data.fuerza, data.agilidad, data.velocidad, victorias, derrotas, docu.id, elo, division, rachaActual, avatar, oro, xp, nivel, puntosStat, buffPartidas, intentosJefe, fechaUltimoIntento, cosmeticos, logros);
     
+    // 👇 FIX: Ahora sí le cargamos la telemetría al muñeco después de crearlo
+    luchador.estadisticasExtra = data.estadisticasExtra || {};
+    
     if (data.inventario) luchador.inventario = data.inventario.map(a => new Arma(a.nombre, a.bonoDaño, a.penalidadAgilidad, a.efecto, a.precio));
     if (data.armaduras) luchador.armaduras = data.armaduras.map(a => new Armadura(a.nombre, a.mitigacion, a.penalidadAgilidad, a.precio));
     if (data.mascotas) luchador.mascotas = data.mascotas.map(m => new Mascota(m.nombre, m.fuerza, m.agilidad, m.precio));
@@ -47,7 +50,6 @@ export async function obtenerMiGladiador(uid) {
         const configSnap = await getDoc(doc(db, "servidor", "configAdmin"));
         if (configSnap.exists()) {
             const reglas = configSnap.data();
-            // Solo dejamos el decaimiento de Élite. Eliminamos la barrera anti-f5 de este archivo.
             if (reglas.decay && luchador.elo > 2000) {
                 const diasInactivo = Math.floor((Date.now() - luchador.timestampUltimaPelea) / (1000 * 60 * 60 * 24));
                 if (diasInactivo >= 7) {
@@ -105,6 +107,7 @@ export async function buscarOponentePorElo(miElo, miId) {
         return validos[Math.floor(Math.random() * validos.length)];
     } catch (error) { return null; }
 }
+
 export async function actualizarHistorialDB(ganador, perdedor) {
     try {
         if (!ganador.id || !perdedor.id) return;
@@ -122,7 +125,6 @@ export async function actualizarHistorialDB(ganador, perdedor) {
         ganador.timestampUltimaPelea = Date.now();
         perdedor.timestampUltimaPelea = Date.now();
 
-        // 👇 FIX CRÍTICO: Ahora SÍ le impactamos los cambios a los luchadores en la base de datos
         await updateDoc(doc(db, "luchadores", ganador.id), {
             "estadisticas.elo": ganador.elo, "estadisticas.division": ganador.division,
             "estadisticas.rachaActual": ganador.rachaActual, "estadisticas.victorias": ganador.victorias,
@@ -144,19 +146,15 @@ export async function actualizarHistorialDB(ganador, perdedor) {
         
     } catch(error) { console.error("❌ Error en historial: ", error); }
 }
-// ==========================================
-// 🧬 HERRAMIENTA DE DIOS: TRASPLANTE DE ALMA
-// ==========================================
+
 export async function trasplantarAlma(idDocViejo, uidAuthNuevo) {
     try {
-        // 1. Buscamos y fulminamos el "clon nivel 1" que se creó al registrar la cuenta nueva
         const q = query(collection(db, "luchadores"), where("userId", "==", uidAuthNuevo));
         const snapNuevo = await getDocs(q);
         snapNuevo.forEach(async (d) => {
             await deleteDoc(doc(db, "luchadores", d.id));
         });
 
-        // 2. Al documento viejo, simplemente le cambiamos el "alma" (la etiqueta de dueño)
         const docRefViejo = doc(db, "luchadores", idDocViejo);
         await updateDoc(docRefViejo, { userId: uidAuthNuevo });
 
@@ -169,9 +167,8 @@ export async function trasplantarAlma(idDocViejo, uidAuthNuevo) {
 
 export async function obtenerMiPuestoRanking(miElo) {
     try {
-        // Cuenta exactamente cuánta gente en el servidor tiene más Elo que vos
         const q = query(collection(db, "luchadores"), where("estadisticas.elo", ">", miElo));
         const snapshot = await getCountFromServer(q);
-        return snapshot.data().count + 1; // Tu puesto es esa cantidad + 1
+        return snapshot.data().count + 1; 
     } catch (e) { return "?"; }
 }

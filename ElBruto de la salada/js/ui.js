@@ -164,26 +164,33 @@ export function escribirLog(mensaje, tipo = 'sistema', contenedorId = "log-comba
 
 export function actualizarUI(jugador, numPanel) {
     const hpDiv = document.getElementById(`hp${numPanel}`);
-    const trailDiv = document.getElementById(`hp-trail${numPanel}`);
+    const trailDiv = document.getElementById(`hp-trail${numPanel}`); 
+    const healDiv = document.getElementById(`hp-heal${numPanel}`); 
     const pct = Math.max(0, (jugador.vidaActual / jugador.vidaMaxima) * 100);
-    const pctAnterior = parseFloat(hpDiv.style.width) || 100;
-
+    
+    // --- LÓGICA DE BARRA ---
     if (hpDiv) {
-        // Si recuperó vida, dibujamos el flash en el segmento nuevo
-        if (pct > pctAnterior) {
-            const flash = document.createElement("div");
-            flash.className = "heal-flash-layer";
-            flash.style.width = `${pct - pctAnterior}%`; // Solo el cacho que subió
-            hpDiv.parentElement.appendChild(flash);
-            setTimeout(() => flash.remove(), 600);
+        if (parseFloat(hpDiv.style.width) < pct) {
+            if (healDiv) { 
+                healDiv.style.width = `${pct - parseFloat(hpDiv.style.width)}%`;
+                setTimeout(() => { healDiv.style.width = "0%"; }, 500);
+            }
         }
         hpDiv.style.width = `${pct}%`;
     }
     
     if (trailDiv) {
-        setTimeout(() => {
-            if (trailDiv) trailDiv.style.width = `${pct}%`;
-        }, 400); 
+        setTimeout(() => { trailDiv.style.width = `${pct}%`; }, 400); 
+    }
+
+    // --- ALARMA LOW HP (Latido) ---
+    const avatarImg = document.getElementById(`avatar${numPanel}`);
+    if (avatarImg) {
+        const panel = avatarImg.closest('.panel-luchador'); 
+        if (panel) {
+            if (pct < 20 && pct > 0) panel.classList.add('anim-low-hp');
+            else panel.classList.remove('anim-low-hp');
+        }
     }
 
     const txtHp = document.getElementById(`texto-hp${numPanel}`);
@@ -196,13 +203,16 @@ export function actualizarUI(jugador, numPanel) {
     
     const avatarDiv = document.getElementById(`avatar${numPanel}`);
     if (avatarDiv) {
-    avatarDiv.innerHTML = renderizarSVG(jugador.avatar);
-    
-    // Solo quitamos las animaciones si el jugador sigue vivo
-    if (jugador.vidaActual > 0) {
-        avatarDiv.classList.remove('anim-muerte', 'anim-atacar-izq', 'anim-atacar-der', 'anim-daño', 'anim-cura', 'anim-esquivar-izq', 'anim-esquivar-der');
+        avatarDiv.innerHTML = renderizarSVG(jugador.avatar);
+        
+        // 👇 ACA ESTÁ LA MAGIA ARREGLADA: Los vivos se limpian, los muertos se quedan muertos 👇
+        if (jugador.vidaActual > 0) {
+            avatarDiv.classList.remove('anim-muerte', 'anim-atacar-izq', 'anim-atacar-der', 'anim-daño', 'anim-cura', 'anim-esquivar-izq', 'anim-esquivar-der');
+        } else {
+            avatarDiv.classList.remove('anim-atacar-izq', 'anim-atacar-der', 'anim-daño', 'anim-cura', 'anim-esquivar-izq', 'anim-esquivar-der');
+            avatarDiv.classList.add('anim-muerte');
+        }
     }
-}
 
     let cartelRacha = jugador.rachaActual >= 2 ? ` | <span style="color:#ff3333; font-weight:bold;">🔥 ${jugador.rachaActual}</span>` : "";
     const recDiv = document.getElementById(`record${numPanel}`);
@@ -216,9 +226,6 @@ export function bloquearBotones(estado) {
     const btn2 = document.getElementById("btn-desafiar"); if (btn2) btn2.disabled = estado;
 }
 
-// ==========================================
-// MODALES CUSTOMIZADOS (Reemplazo de alert y confirm)
-// ==========================================
 export function mostrarAlerta(mensaje, textoBoton = "OK", callback = null) {
     const modal = document.getElementById("modal-confirmacion");
     
@@ -489,9 +496,6 @@ export async function abrirRankingCompleto(miId) {
     }
 }
 
-// ==========================================
-// 📖 EL CÓDICE (WIKI DEL JUEGO)
-// ==========================================
 export function abrirCodice() {
     const contenedor = document.getElementById("contenido-codice");
     let htmlWiki = "";
@@ -562,9 +566,6 @@ export function abrirCodice() {
     document.getElementById("modal-codice").style.display = "flex";
 }
 
-// ==========================================
-// 🎯 MOTOR GLOBAL DE TOOLTIPS
-// ==========================================
 export function iniciarMotorTooltips() {
     const tooltip = document.getElementById("custom-tooltip");
     if(!tooltip) return;
@@ -658,36 +659,212 @@ export function mostrarCombo(numPanel, hits) {
     setTimeout(() => span.remove(), 800);
 }
 
+export function lanzarChispas(numPanel, cantidad = 10) {
+    const avatar = document.getElementById(`avatar${numPanel}`);
+    if (!avatar) return;
+
+    for (let i = 0; i < cantidad; i++) {
+        const spark = document.createElement("div");
+        spark.style.cssText = `
+            position: absolute; width: 6px; height: 6px; background: ${Math.random() > 0.5 ? '#ffaa00' : '#ff3333'};
+            z-index: 200; pointer-events: none;
+        `;
+        avatar.parentElement.appendChild(spark);
+
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 10 + 5;
+        let x = 50, y = 50, vx = Math.cos(angle) * velocity, vy = Math.sin(angle) * velocity;
+
+        let frame = setInterval(() => {
+            x += vx; y += vy; vy += 0.5; // Gravedad
+            spark.style.left = `${x}%`; spark.style.top = `${y}%`;
+            spark.style.opacity -= 0.05;
+            if (spark.style.opacity <= 0) { clearInterval(frame); spark.remove(); }
+        }, 20);
+    }
+}
+
 // ==========================================
-// 🎵 MOTOR DE AUDIO CENTRAL (SINTETIZADOR)
+// 🎵 MOTOR DE AUDIO CENTRAL (BRUTO 64 NATIVO)
 // ==========================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// Función matemática que genera ruiditos retro (No necesitas archivos .mp3)
-function generarTono(freq, tipoOnda, duracion, volumen = 0.1) {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = tipoOnda; // 'square', 'sawtooth', 'triangle', 'sine'
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+// Generador de texturas de audio digital rústico
+function generate64Buffer(type, duration, customSR = 12000) {
+    const sampleRate = audioCtx.sampleRate;
+    const bufferSize = sampleRate * duration;
+    const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
+    const data = buffer.getChannelData(0);
     
-    // Hace que el sonido se apague suavemente
-    gain.gain.setValueAtTime(volumen, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duracion);
-    
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duracion);
+    const skip = Math.floor(sampleRate / customSR);
+    let lastVal = 0;
+
+    for (let i = 0; i < bufferSize; i++) {
+        if (i % skip === 0) {
+            const t = i / sampleRate;
+            
+            if (type === 'clean_punch') {
+                const crack = (Math.random() * 2 - 1) * Math.exp(-350 * t) * 1.2;
+                const body = Math.sin(2 * Math.PI * (90 + 140 * Math.exp(-40 * t)) * t) * Math.exp(-28 * t);
+                const thump = Math.sin(2 * Math.PI * 55 * t) * Math.exp(-18 * t) * 0.8;
+                const mix = crack + body + thump;
+                lastVal = Math.tanh(mix * 2.8);
+
+            } else if (type === 'vamp_core') {
+                const freqMod = 120 + Math.sin(2 * Math.PI * 12 * t) * 60 + Math.sin(2 * Math.PI * 27 * t) * 20;
+                const core = Math.sin(2 * Math.PI * freqMod * t);
+                const undertone = Math.sin(2 * Math.PI * 70 * t) * 0.35;
+                const grit = (Math.random() * 2 - 1) * 0.25;
+                lastVal = (core + undertone + grit) * Math.exp(-2.8 * t);
+
+            } else if (type === 'pure_wind') {
+                const noise = (Math.random() * 2 - 1);
+                const shape = Math.sin(Math.PI * Math.min(t / 0.12, 1));
+                lastVal = noise * shape * Math.exp(-5 * t);
+
+            } else if (type === 'critical_combo') {
+                const air = (Math.random() * 2 - 1) * Math.exp(-120 * t) * 0.8;
+                const crack = (Math.random() * 2 - 1) * Math.exp(-220 * t);
+                const resonance = Math.sin(2 * Math.PI * 900 * t) * Math.exp(-80 * t) * 0.25;
+                const thud = Math.sin(2 * Math.PI * (55 + 50 * Math.exp(-18 * t)) * t) * Math.exp(-10 * t);
+                lastVal = Math.tanh(air + crack + resonance + (thud * 1.6));
+
+            } else if (type === 'ko_brass') {
+                const f1 = Math.sin(2 * Math.PI * 115 * t);
+                const f2 = Math.sin(2 * Math.PI * 165 * t) * 0.6;
+                const f3 = Math.sin(2 * Math.PI * 230 * t) * 0.4;
+                lastVal = (f1 + f2 + f3) * Math.exp(-2.2 * t);
+
+            } else if (type === 'ko_thud') {
+                lastVal = Math.sin(2 * Math.PI * 45 * t) * Math.exp(-7 * t) * 1.5;
+            }
+        }
+        data[i] = Math.max(-0.95, Math.min(0.95, lastVal * 1.5));
+    }
+    return buffer;
 }
 
-// 📦 LIBRERÍA DE EFECTOS
-// EL DÍA DE MAÑANA: Borrás el "generarTono(...)" y ponés -> new Audio("recursos/golpe.mp3").play();
-export const SFX = {
-    golpe: () => generarTono(150, 'square', 0.1, 0.05), // Ruido seco
-    critico: () => { generarTono(100, 'sawtooth', 0.2, 0.1); generarTono(800, 'square', 0.1, 0.05); }, // Ruido eléctrico
-    cura: () => { generarTono(400, 'sine', 0.1, 0.05); setTimeout(() => generarTono(600, 'sine', 0.2, 0.05), 100); }, // Campanita 1UP
-    esquive: () => generarTono(300, 'sine', 0.1, 0.02), // Swoosh suave
-    muerte: () => { generarTono(100, 'sawtooth', 0.5, 0.1); setTimeout(() => generarTono(50, 'sawtooth', 0.8, 0.1), 200); } // Caída dramática
+// Banco de memoria de texturas cargadas al inicio
+const Bank = {
+    punch: generate64Buffer('clean_punch', 0.25, 12000),
+    vamp: generate64Buffer('vamp_core', 0.5, 12000),
+    wind: generate64Buffer('pure_wind', 0.3, 12000),
+    criticalCombo: generate64Buffer('critical_combo', 0.3, 22000), 
+    ko_brass: generate64Buffer('ko_brass', 1.2, 12000),
+    ko_thud: generate64Buffer('ko_thud', 0.8, 12000)
 };
 
+/**
+ * Procesador de Nodos Dinámicos N64
+ */
+export function playSFX({ buffer, pitch, pitchEnd = null, duration, filterFreq, filterEnd = null, filterType = 'lowpass', vol, delay = 0, eco = false, swooshSweep = false }) {
+    setTimeout(() => {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const ahora = audioCtx.currentTime;
+
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        
+        source.playbackRate.setValueAtTime(pitch, ahora);
+        if (pitchEnd) {
+            source.playbackRate.exponentialRampToValueAtTime(pitchEnd, ahora + duration);
+        }
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = filterType;
+        
+        if (swooshSweep) {
+            filter.Q.setValueAtTime(5, ahora); 
+            filter.frequency.setValueAtTime(350, ahora);
+            filter.frequency.exponentialRampToValueAtTime(1900, ahora + duration * 0.3);
+            filter.frequency.exponentialRampToValueAtTime(200, ahora + duration);
+        } else {
+            const endFreq = filterEnd !== null ? filterEnd : Math.max(40, filterFreq * 0.1);
+            filter.frequency.setValueAtTime(filterFreq, ahora);
+            filter.frequency.exponentialRampToValueAtTime(filterFreq * 0.4, ahora + duration * 0.3);
+            filter.frequency.exponentialRampToValueAtTime(endFreq, ahora + duration);
+            filter.Q.setValueAtTime(5, ahora);
+        }
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.001, ahora);
+        gain.gain.linearRampToValueAtTime(vol, ahora + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.001, ahora + duration);
+
+        source.connect(filter);
+        filter.connect(gain);
+
+        if (eco) {
+            const delayNode = audioCtx.createDelay();
+            const feedback = audioCtx.createGain();
+            delayNode.delayTime.setValueAtTime(0.06, ahora);
+            feedback.gain.setValueAtTime(0.45, ahora);
+            filter.connect(delayNode);
+            delayNode.connect(feedback);
+            feedback.connect(delayNode);
+            delayNode.connect(gain);
+        }
+
+        gain.connect(audioCtx.destination);
+        source.start(ahora);
+        source.stop(ahora + duration);
+    }, delay);
+}
+
+export const SFX = {
+    golpe: () => {
+        playSFX({ buffer: Bank.wind, pitch: 2.2, vol: 0.3, duration: 0.03, filterFreq: 5000 });
+        playSFX({ buffer: Bank.punch, pitch: 1.35, vol: 0.8, duration: 0.06, filterFreq: 3000 });
+        playSFX({ buffer: Bank.punch, pitch: 0.95, vol: 1.4, duration: 0.11, filterFreq: 1400 });
+        playSFX({ buffer: Bank.punch, pitch: 0.55, vol: 1.7, duration: 0.16, filterFreq: 450, delay: 6 });
+    },
+    
+    cura: () => {
+        playSFX({ buffer: Bank.vamp, pitch: 0.6, vol: 1.0, duration: 0.45, filterFreq: 850, eco: true });
+        playSFX({ buffer: Bank.punch, pitch: 1.3, vol: 0.4, duration: 0.12, filterFreq: 1100, delay: 40 });
+    },
+    
+    esquive: () => {
+        playSFX({
+            buffer: Bank.wind,
+            pitch: 1.3,
+            pitchEnd: 0.6,
+            vol: 1.7,
+            duration: 0.20,
+            filterFreq: 2000,
+            filterType: 'bandpass',
+            swooshSweep: true
+        });
+        playSFX({
+            buffer: Bank.wind,
+            pitch: 0.7,
+            vol: 0.3,
+            duration: 0.15,
+            filterFreq: 700,
+            delay: 15
+        });
+    },
+    
+    critico: () => {
+        // 1. Aire inicial veloz (ffff...)
+        playSFX({ buffer: Bank.wind, pitch: 3.0, vol: 0.25, duration: 0.03, filterFreq: 6000 });
+
+        // 2. KRAK-THOOM desfasado por tu delay táctico de 16ms
+        playSFX({
+            buffer: Bank.criticalCombo,
+            pitch: 1.0,
+            vol: 2.0,
+            duration: 0.22,
+            filterFreq: 4200, 
+            filterEnd: 150,   
+            delay: 16         
+        });
+    },
+    
+    muerte: () => {
+        playSFX({ buffer: Bank.punch, pitch: 0.5, vol: 1.5, duration: 0.6, filterFreq: 400, eco: true });
+        playSFX({ buffer: Bank.ko_thud, pitch: 0.3, vol: 0.9, duration: 0.8, filterFreq: 300, delay: 30, eco: true });
+        playSFX({ buffer: Bank.ko_brass, pitch: 0.75, pitchEnd: 0.5, vol: 1.1, duration: 1.2, filterFreq: 900, delay: 180, eco: true });
+        playSFX({ buffer: Bank.vamp, pitch: 0.25, vol: 0.45, duration: 1.0, filterFreq: 300, delay: 220, eco: true });
+    }
+};

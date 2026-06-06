@@ -1406,3 +1406,87 @@ body {
 .anim-heal-bar {
     animation: healBarFlash 0.6s ease-out !important;
 }
+
+/* 🌟 BARRA DE CURACIÓN DE PRECISIÓN (Solo el trozo curado) */
+.barra-vida-heal {
+    position: absolute; top: 0; right: 0; /* Sale desde la derecha */
+    background: #4cd137; height: 100%; z-index: 3;
+    transition: width 0.3s ease-out;
+    box-shadow: 0 0 10px #4cd137;
+}
+
+/* 🌟 ALARMA LOW HP (Latido suave) */
+@keyframes latidoPantalla {
+    0% { box-shadow: inset 0 0 50px rgba(255,0,0,0); }
+    50% { box-shadow: inset 0 0 100px rgba(180,0,0,0.5); }
+    100% { box-shadow: inset 0 0 50px rgba(255,0,0,0); }
+}
+.anim-low-hp { animation: latidoPantalla 2s infinite ease-in-out; }
+
+/* ==========================================
+   🃏 EL LIMBO: CARTAS DE RECOMPENSA (REMASTER)
+========================================== */
+.contenedor-cartas-limbo {
+    display: flex; gap: 35px; justify-content: center; align-items: center; flex-wrap: wrap; 
+    perspective: 1200px; margin-top: 30px; z-index: 10; position: relative;
+}
+
+.carta-limbo {
+    width: 270px; height: 420px;
+    background: linear-gradient(180deg, #161616 0%, #0a0a0a 100%);
+    border: 2px solid #222; border-radius: 12px;
+    position: relative; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 0 15px rgba(255,255,255,0.03);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.carta-borde-interno {
+    position: absolute; top: 12px; left: 12px; right: 12px; bottom: 12px;
+    border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; pointer-events: none;
+    transition: border-color 0.4s;
+}
+
+.carta-limbo:hover {
+    transform: translateY(-25px) rotateY(8deg);
+    border-color: var(--color-tema);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(255,255,255,0.05), 0 0 25px var(--glow-tema);
+}
+
+.carta-limbo:hover .carta-borde-interno {
+    border-color: var(--color-tema);
+    opacity: 0.5;
+}
+
+.carta-icono-svg {
+    height: 140px; width: 100%;
+    display: flex; justify-content: center; align-items: center;
+    margin-top: 25px; margin-bottom: 15px;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.8));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s;
+}
+
+.carta-limbo:hover .carta-icono-svg {
+    transform: scale(1.15) translateY(-5px);
+    filter: drop-shadow(0 15px 20px var(--glow-tema));
+}
+
+.carta-titulo {
+    font-family: 'Cinzel', serif; font-size: 1.35em; color: #eee;
+    margin: 10px 0; width: 80%; text-align: center;
+    border-bottom: 1px solid #333; padding-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 1px;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.carta-limbo:hover .carta-titulo {
+    color: var(--color-tema); border-color: var(--color-tema);
+}
+
+.carta-desc {
+    font-size: 0.9em; color: #999; line-height: 1.6;
+    text-align: center; width: 85%; padding-top: 10px;
+}
+
+.carta-desc strong { color: #fff; transition: color 0.3s; }
+.carta-limbo:hover .carta-desc strong { color: var(--color-tema); text-shadow: 0 0 5px var(--glow-tema); }

@@ -66,7 +66,6 @@ export const Arsenal = {
     espada: new Arma("Espada Corta", 8, 2, null, 300),
     mazo: new Arma("Mazo de Hierro", 15, 6, null, 600),
     
-    // 🌟 ARMA CON HOOK: Lanza + Cualquier mascota
     lanza: Object.assign(new Arma("Lanza de Caballería", 12, 4, null, 800), {
         modificarDañoBruto: (luchador, dañoBase, logs) => {
             if (luchador.mascotaActiva) {
@@ -83,7 +82,6 @@ export const Arsenal = {
     cable: new Arma("Cable MIDI de 5 Patitas", 5, 0, { tipo: 'locura', dañoTurno: 5, turnos: 3 }, 800),
     criptex: new Arma("Criptex de Da Vinci", 8, 2, null, 1000),
     
-    // 🌟 ARMA CON HOOK: Teclado (50% chance de meter un acorde letal)
     teclado: Object.assign(new Arma("Yamaha PSR-E323", 18, 8, null, 1500), {
         modificarDañoBruto: (luchador, dañoBase, logs) => {
             if (Math.random() > 0.5) {
@@ -97,7 +95,6 @@ export const Arsenal = {
     latigo: new Arma("Látigo Ígneo", 6, 1, { tipo: 'quemadura', dañoTurno: 4, turnos: 3 }, 1500),
     cuchillo: new Arma("Cuchillo Ponzoñoso", 5, 0, { tipo: 'veneno', dañoTurno: 5, turnos: 4 }, 1500),
     
-    // 🌟 ARMA CON HOOK: Cáliz + Carnotaurus (Chau Independiente, hola dinosaurios)
     caliz: Object.assign(new Arma("Cáliz del Primer Monarca", 10, 4, null, 1967), {
         modificarDañoBruto: (luchador, dañoBase, logs) => {
             if (luchador.mascotaActiva && luchador.mascotaActiva.nombre === "Carnotaurus") {
@@ -111,7 +108,6 @@ export const Arsenal = {
 
     codice: new Arma("Códice Críptico", 2, 1, { tipo: 'locura', dañoTurno: 8, turnos: 2 }, 2500),
     
-    // 🌟 ARMA CON HOOK: Tronco + Zorro
     rama: Object.assign(new Arma("Tronco de Parque Leloir", 14, 5, null, 400), {
         modificarDañoBruto: (luchador, dañoBase, logs) => {
             if (luchador.mascotaActiva && luchador.mascotaActiva.nombre === "Zorro de Udaondo") {
@@ -161,7 +157,7 @@ export const PasivasDisponibles = {
     },
     evasion: { 
         id: "evasion", nombre: "Paso Fantasma", desc: "+15% permanente a la evasión",
-        modificarChanceEvasion: (luchador, chanceRival) => chanceRival - 15 // Le resta 15% a la chance de impacto del rival
+        modificarChanceEvasion: (luchador, chanceRival) => chanceRival - 15 
     },
     aireSucio: { 
         id: "aireSucio", nombre: "Estela de Aire Sucio", desc: "Corta la aerodinámica del rival",
@@ -179,7 +175,6 @@ export const PasivasDisponibles = {
         id: "efectoSuelo", nombre: "Efecto Suelo", desc: "Tu armadura pesada te da agarre en lugar de frenarte",
         modificarAgilidad: (luchador, agi) => {
             if (luchador.armaduraEquipada && luchador.armaduraEquipada.penalidadAgilidad > 0) {
-                // Sumamos la penalidad para anularla, y le sumamos un 50% extra de bonus
                 return agi + luchador.armaduraEquipada.penalidadAgilidad + Math.floor(luchador.armaduraEquipada.penalidadAgilidad / 2);
             }
             return agi;
@@ -213,7 +208,7 @@ export const PasivasDisponibles = {
         esInmuneEstados: (luchador, inmune) => true
     },
 
-        bendicion_animal: { 
+    bendicion_animal: { 
         id: "bendicion_animal", 
         nombre: "Bendición Animal", 
         desc: "Al iniciar un turno con menos del 25% de tu vida y tener una mascota activa, tienes una probabilidad del 50% de curarte un 20% de tu vida máxima.",
@@ -288,6 +283,12 @@ export const SVGsBestias = {
 
 export function renderizarSVG(state) {
     if (!state || typeof state === 'string') return `<div style="font-size:3.5em; filter:grayscale(20%)">${state || '👤'}</div>`;
+
+    // 👇 NUEVA LÓGICA: Si tiene el flag esBestia, usa el renderizador de bestias
+    if (state.esBestia) {
+        return renderizarBestiaSVG(state);
+    }
+
     const getT = (item) => `transform="translate(${item.x}, ${item.y}) scale(${item.scale})" style="transform-origin: 50px 50px;"`;
     return `<svg viewBox="0 0 100 100" width="100%" height="100%">
         <g ${getT(state.items.hair)}>${SVGs.hairBack[state.items.hair.id].replaceAll('{hairColor}', state.colors.hair)}</g>
@@ -327,9 +328,9 @@ export class Luchador {
         this.divisionAnterior = null;
         this.timestampUltimaPelea = 0;
 
-        // 🛡️ BLINDAJE EXTRA: Por si la BD devuelve null
         this.cosmeticos = cosmeticos || [];
         this.logros = logros || [];
+        this.estadisticasExtra = {}; // 👈 INICIALIZADO SIEMPRE ACÁ PARA QUE FIREBASE NO LLORE
 
         this.avatar = avatar || { skinColor: '#8d5524', colors: { hair: '#111111', clothes: '#aa0000', pants: '#3b4d61', shoes: '#d0006e' }, items: { face: { id: 1 }, hair: { id: 6, x: 0, y: 0, scale: 1 }, clothes: { id: 1, x: 0, y: 0, scale: 1 }, pants: { id: 2, x: 0, y: 0, scale: 1 }, shoes: { id: 2, x: 0, y: 0, scale: 1 }, details: { id: 1, x: 0, y: 0, scale: 1 } } };
 
@@ -359,7 +360,7 @@ export class Luchador {
         let armadura = this.obtenerArmaduraOficial();
         if (armadura && armadura[nombreHook]) resultado = armadura[nombreHook](this, resultado, ...args);
 
-        // 3. Revisar Mascota Activa (¡CORREGIDO!)
+        // 3. Revisar Mascota Activa
         let mascota = this.obtenerMascotaOficial();
         if (mascota && mascota[nombreHook]) resultado = mascota[nombreHook](this, resultado, ...args);
 
@@ -380,7 +381,7 @@ export class Luchador {
         let armadura = this.obtenerArmaduraOficial();
         if (armadura && armadura[nombreHook]) armadura[nombreHook](this, ...args);
 
-        // 3. Revisar Mascota Activa (¡CORREGIDO!)
+        // 3. Revisar Mascota Activa
         let mascota = this.obtenerMascotaOficial();
         if (mascota && mascota[nombreHook]) mascota[nombreHook](this, ...args);
     }
@@ -428,7 +429,6 @@ export class Luchador {
         if (armaOficial) agilidadReal -= armaOficial.penalidadAgilidad;
         if (armaduraOficial) agilidadReal -= armaduraOficial.penalidadAgilidad; 
 
-        // 👉 TUS COMBOS DE ITEMS (Ahora validando que existan oficialmente)
         if (armaOficial && armaOficial.nombre === "Daga Oculta" &&
             armaduraOficial && armaduraOficial.nombre === "Túnica de Sombras") {
             agilidadReal += 8;
@@ -438,7 +438,6 @@ export class Luchador {
             agilidadReal += 12;
         }
 
-        // 🌟 HOOK: Modificar Agilidad
         agilidadReal = this.ejecutarHookRetorno('modificarAgilidad', agilidadReal);
 
         return Math.max(1, agilidadReal);
@@ -447,13 +446,11 @@ export class Luchador {
     golpea(defensor) {
         let agilidadRival = defensor.obtenerAgilidadActual();
 
-        // 🌟 HOOK: El atacante modifica la agilidad del rival
         agilidadRival = this.ejecutarHookRetorno('modificarAgilidadRival', agilidadRival);
 
         let chance = (this.obtenerAgilidadActual() / (this.obtenerAgilidadActual() + agilidadRival)) * 100;
         chance = Math.max(20, Math.min(90, chance));
 
-        // 🌟 HOOK: El defensor modifica su chance de ser evadido
         chance = defensor.ejecutarHookRetorno('modificarChanceEvasion', chance);
 
         return Luchador.random(1, 100) <= chance;
@@ -463,7 +460,6 @@ export class Luchador {
         let armaOficial = this.obtenerArmaOficial();
         let armaduraOficial = this.obtenerArmaduraOficial();
 
-        // 👉 TUS COMBOS
         if (armaduraOficial && armaduraOficial.nombre === "Sábana de Medjed" &&
             armaOficial && armaOficial.nombre === "Códice Críptico") {
             return Luchador.random(1, 100) <= 80;
@@ -499,7 +495,6 @@ export class Luchador {
     procesarEstados() {
         let logs = [];
 
-        // 🌟 HOOK: Efectos que pasan al inicio del turno
         this.ejecutarHookAccion('alInicioTurno', logs);
 
         for (let i = this.estados.length - 1; i >= 0; i--) {
@@ -521,15 +516,13 @@ export class Luchador {
         return {
             nombre: this.nombre, vidaMaxima: this.vidaMaxima, fuerza: this.fuerza, agilidad: this.agilidadBase, velocidad: this.velocidad,
             
-            // 🧹 LIMPIEZA AUTOMÁTICA Y SINCRONIZACIÓN DE ARMAS
             inventario: this.inventario
-                .filter(a => Object.values(Arsenal).some(oficial => oficial.nombre === a.nombre)) // Filtra las borradas (Chau Orto Intenso)
+                .filter(a => Object.values(Arsenal).some(oficial => oficial.nombre === a.nombre)) 
                 .map(a => {
                     let oficial = Object.values(Arsenal).find(o => o.nombre === a.nombre);
                     return { nombre: oficial.nombre, bonoDaño: oficial.bonoDaño, penalidadAgilidad: oficial.penalidadAgilidad, efecto: oficial.efecto ? { ...oficial.efecto } : null, precio: oficial.precio };
-                }), // 👈 Guarda con las stats actualizadas de motor.js
+                }), 
                 
-            // 🧹 LIMPIEZA AUTOMÁTICA Y SINCRONIZACIÓN DE ARMADURAS
             armaduras: this.armaduras
                 .filter(a => Object.values(Armeria).some(oficial => oficial.nombre === a.nombre))
                 .map(a => {
@@ -537,7 +530,6 @@ export class Luchador {
                     return { nombre: oficial.nombre, mitigacion: oficial.mitigacion, penalidadAgilidad: oficial.penalidadAgilidad, precio: oficial.precio };
                 }),
                 
-            // 🧹 LIMPIEZA AUTOMÁTICA Y SINCRONIZACIÓN DE MASCOTAS
             mascotas: this.mascotas
                 .filter(m => Object.values(Bestiario).some(oficial => oficial.nombre === m.nombre))
                 .map(m => {
@@ -545,7 +537,6 @@ export class Luchador {
                     return { nombre: oficial.nombre, fuerza: oficial.fuerza, agilidad: oficial.agilidad, precio: oficial.precio };
                 }),
                 
-            // Equipamiento actual validado por los buscadores oficiales
             armaduraEquipada: this.obtenerArmaduraOficial() ? { nombre: this.obtenerArmaduraOficial().nombre, mitigacion: this.obtenerArmaduraOficial().mitigacion, penalidadAgilidad: this.obtenerArmaduraOficial().penalidadAgilidad, precio: this.obtenerArmaduraOficial().precio } : null,
             armaEquipada: this.obtenerArmaOficial() ? { nombre: this.obtenerArmaOficial().nombre, bonoDaño: this.obtenerArmaOficial().bonoDaño, penalidadAgilidad: this.obtenerArmaOficial().penalidadAgilidad, efecto: this.obtenerArmaOficial().efecto ? { ...this.obtenerArmaOficial().efecto } : null, precio: this.obtenerArmaOficial().precio } : null,
             mascotaActiva: this.obtenerMascotaOficial() ? { nombre: this.obtenerMascotaOficial().nombre, fuerza: this.obtenerMascotaOficial().fuerza, agilidad: this.obtenerMascotaOficial().agilidad, precio: this.obtenerMascotaOficial().precio } : null,
@@ -557,7 +548,9 @@ export class Luchador {
 
             oro: this.oro, xp: this.xp, nivel: this.nivel, puntosStat: this.puntosStat, buffPartidas: this.buffPartidas,
             intentosJefe: this.intentosJefe, fechaUltimoIntento: this.fechaUltimoIntento, cosmeticos: this.cosmeticos, logros: this.logros,
-            avatar: this.avatar, fechaCreacion: new Date().toISOString()
+            avatar: this.avatar, fechaCreacion: new Date().toISOString(),
+            
+            estadisticasExtra: this.estadisticasExtra || {}
         };
     }
 }
@@ -574,7 +567,6 @@ export function calcularTitulo(elo) {
 
 export function actualizarElo(eloA, eloB, ganaA, partidasA = 20, partidasB = 20, rachaA = 0, rachaB = 0) {
 
-    // 1. K Dinámico
     let kA = partidasA < 20 ? 64 : (eloA >= 2000 ? 16 : 32);
     let kB = partidasB < 20 ? 64 : (eloB >= 2000 ? 16 : 32);
 
@@ -584,24 +576,19 @@ export function actualizarElo(eloA, eloB, ganaA, partidasA = 20, partidasB = 20,
     let nuevoEloA = Math.round(eloA + kA * ((ganaA ? 1 : 0) - esperadoA));
     let nuevoEloB = Math.round(eloB + kB * ((ganaA ? 0 : 1) - esperadoB));
 
-    // 🔥 MECÁNICAS DE JUEGO
     if (ganaA) {
 
-        // Mecánica 1: "Imparable" (Bono racha propia)
-        // Solo lo damos si el jugador A NO está en el top (elo < 2000) para evitar inflación en la cima
         if (rachaA >= 3 && eloA < 2000) {
             nuevoEloA += 5;
         }
 
-        // Mecánica 2: "Cazarrecompensas" (Robo real de la racha rival)
         if (rachaB >= 3) {
             let recompensaBounty = Math.min(rachaB, 10);
-            nuevoEloA += recompensaBounty; // A gana los puntos
-            nuevoEloB -= recompensaBounty; // B PIERDE los puntos (suma cero)
+            nuevoEloA += recompensaBounty; 
+            nuevoEloB -= recompensaBounty; 
         }
     }
 
-    // 5. Blindaje: Nadie baja de 0 de Elo
     return {
         nuevoEloA: Math.max(0, nuevoEloA),
         nuevoEloB: Math.max(0, nuevoEloB)

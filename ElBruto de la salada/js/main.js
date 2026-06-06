@@ -6,8 +6,9 @@ import { initMercado, subirStatRPG } from "./rpg.js";
 import { initEvento, pelearContraJefe, salirEvento } from "./eventos.js";
 import { abrirPanelAdmin, bindAdminEvents } from "./admin.js";
 import { inicializarSastreria, abrirSastreria, intentarSalirSastreria, guardarApariencia } from "./sastreria.js";
-import { trasplantarAlma } from "./db.js"; // 👈 AGREGAR ESTA LÍNEA
+import { trasplantarAlma } from "./db.js";
 import { db, doc, getDoc } from "./firebase.js";
+import { iniciarPurgatorio } from "./purgatorio.js";
 
 iniciarEscuchaRanking();
 iniciarEscuchaHistorial();
@@ -157,3 +158,6 @@ enchufar("btn-cerrar-ranking-top", () => document.getElementById("modal-ranking-
 
 enchufar("btn-abrir-codice", abrirCodice);
 enchufar("btn-cerrar-codice", () => document.getElementById("modal-codice").style.display = "none");
+
+//PURGATORIO
+enchufar("btn-ir-torre", iniciarPurgatorio);
